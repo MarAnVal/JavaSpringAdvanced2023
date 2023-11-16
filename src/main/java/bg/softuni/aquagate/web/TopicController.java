@@ -2,15 +2,20 @@ package bg.softuni.aquagate.web;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/")
-public interface HomeController {
-    @GetMapping("/")
-    String index(Model model);
+@RequestMapping("/topics")
+public interface TopicController {
 
-    @GetMapping("/about")
-    public String about();
+    @GetMapping("/")
+    public String topics(Model model);
+
+    @GetMapping("/add")
+    public String addTopic();
+
+    @GetMapping("/details")
+    public String topicDetails();
 
     @GetMapping("/freshwater")
     public String freshwater();
@@ -23,4 +28,10 @@ public interface HomeController {
 
     @GetMapping("/brackish-water")
     public String brackishWater();
+
+    @PostMapping("/approve")
+    public String approve();
+
+    @PostMapping("/remove")
+    public String remove();
 }

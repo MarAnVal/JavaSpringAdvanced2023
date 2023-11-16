@@ -29,17 +29,4 @@ public class Post extends BaseEntity{
 
     @ManyToOne
     private Topic topic;
-    //id - Accepts UUID String or Long values
-    //
-    //· approved - Accepts boolean values
-    //
-    //· created - Accepts Date and Time values
-    //
-    //o The values should not be future dates
-    //
-    //· text content - Accepts very long text values
-    //
-    //· author - Accepts User Entities as values
-    //
-    //· route - Accepts Route Entities as values
 }

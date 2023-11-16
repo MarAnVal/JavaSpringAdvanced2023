@@ -6,8 +6,6 @@ import bg.softuni.aquagate.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class RoleService {
     private final RoleRepo roleRepo;
@@ -27,7 +25,7 @@ public class RoleService {
         }
     }
 
-    public Role getRolesByName(RoleEnum roleEnum) {
+    public Role findRolesByName(RoleEnum roleEnum) {
         return roleRepo.findRoleByName(roleEnum);
     }
 }

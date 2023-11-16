@@ -25,47 +25,29 @@ public class HomeControllerImpl implements HomeController {
         return "index";
     }
 
-    @GetMapping("/about")
+    @Override
     public String about() {
         return "about";
     }
 
-    @GetMapping("/freshwater")
+    @Override
     public String freshwater() {
         return "freshwater";
     }
 
-    @GetMapping("/reef")
+    @Override
     public String reef() {
         return "reef";
     }
 
-    @GetMapping("/blackwater")
+    @Override
     public String blackwater() {
         return "blackwater";
     }
 
-    @GetMapping("/brackish-water")
+    @Override
     public String brackishWater() {
         return "brackish-water";
-    }
-
-
-
-
-    @GetMapping("/topics")
-    public String topics(Model model) {
-        return "topics";
-    }
-
-    @GetMapping("/topics/add")
-    public String addTopic() {
-        return "add-topic";
-    }
-
-    @GetMapping("/topics/details")
-    public String topicDetails() {
-        return "topic-details";
     }
 
 }

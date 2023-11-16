@@ -1,5 +1,6 @@
 package bg.softuni.aquagate.data.entity;
 
+import bg.softuni.aquagate.data.entity.enumeration.LevelEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,9 +23,9 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne
-    private Level level;
+    @Enumerated(EnumType.STRING)
+    private LevelEnum level;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Role> role;
+    private List<Role> roles;
 }

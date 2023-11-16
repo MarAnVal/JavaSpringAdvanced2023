@@ -1,5 +1,6 @@
 package bg.softuni.aquagate.web;
 
+import bg.softuni.aquagate.data.model.UserEditDTO;
 import bg.softuni.aquagate.data.model.UserRegistrationDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.security.Principal;
 public interface AuthController {
 
     @ModelAttribute("userRegistrationDTO")
-    public UserRegistrationDTO initForm();
+    public UserRegistrationDTO initRegistrationForm();
 
     @GetMapping("/register")
     public String register();
@@ -33,4 +34,15 @@ public interface AuthController {
 
     @GetMapping("/profile")
     public String profile(Principal principal, Model model);
+
+    @ModelAttribute("userEditDTO")
+    public UserEditDTO initEditForm();
+
+    @GetMapping("/edit")
+    public String editUser();
+
+    @PostMapping("/edit")
+    public String doEditUser(@Valid UserEditDTO userEditDTO,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) ;
 }

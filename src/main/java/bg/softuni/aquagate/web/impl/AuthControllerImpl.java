@@ -1,5 +1,6 @@
 package bg.softuni.aquagate.web.impl;
 
+import bg.softuni.aquagate.data.model.UserEditDTO;
 import bg.softuni.aquagate.data.model.UserRegistrationDTO;
 import bg.softuni.aquagate.data.view.UserProfileView;
 import bg.softuni.aquagate.service.AuthService;
@@ -23,7 +24,7 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
-    public UserRegistrationDTO initForm() {
+    public UserRegistrationDTO initRegistrationForm() {
         return new UserRegistrationDTO();
     }
 
@@ -62,5 +63,33 @@ public class AuthControllerImpl implements AuthController {
         model.addAttribute("user", userProfileView);
 
         return "profile";
+    }
+
+    @Override
+    public UserEditDTO initEditForm() {
+        return new UserEditDTO();
+    }
+
+    @Override
+    public String editUser() {
+
+        return "edit";
+    }
+
+    @Override
+    public String doEditUser(UserEditDTO userEditDTO, BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("userEditDTO", userEditDTO);
+            redirectAttributes
+                    .addFlashAttribute("org.springframework.validation.BindingResult.userEditDTO",
+                            bindingResult);
+
+            return "redirect:/edit";
+        }
+
+        this.authService.edit(userEditDTO);
+
+        return "redirect:/";
     }
 }

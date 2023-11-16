@@ -1,12 +1,12 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head"></head>
+<head th:replace="~{fragments/head}"></head>
 
 <body>
 <div class="wrapper">
     <!-- Navigation -->
-    <header th:replace="fragments/header"></header>
+    <header th:replace="~{fragments/header}"></header>
 
     <section class="topic">
         <img src="/images/pic4.jpg" alt="Title image">
@@ -22,5 +22,5 @@
 </div>
 <!-- Wrapper Ends -->
 </body>
-<footer th:replace="fragments/footer"></footer>
+<footer th:replace="~{fragments/footer}"></footer>
 </html>

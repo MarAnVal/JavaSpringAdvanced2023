@@ -24,13 +24,4 @@ public class Picture extends BaseEntity{
 
     @ManyToOne
     private Topic topic;
-    //· id - Accepts UUID String or Long values
-    //
-    //· title - Accepts String values
-    //
-    //· url - Accepts very long String values
-    //
-    //· author - Accepts User Entities as values
-    //
-    //· route - Accepts Route Entities as values
 }

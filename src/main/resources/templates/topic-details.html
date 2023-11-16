@@ -1,11 +1,11 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head"></head>
+<head th:replace="~{fragments/head}"></head>
 
 <body>
 <div class="wrapper">
-    <header th:replace="fragments/header"></header>
+    <header th:replace="~{fragments/header}"></header>
 
     <input type="hidden" name="topicId" id="topicId">
     <div class="details-main">
@@ -101,6 +101,6 @@
     <script th:src="@{/js/comments.js}"></script>
     -->
 </div>
-<footer th:replace="fragments/footer"></footer>
+<footer th:replace="~{fragments/footer}"></footer>
 </body>
 </html>

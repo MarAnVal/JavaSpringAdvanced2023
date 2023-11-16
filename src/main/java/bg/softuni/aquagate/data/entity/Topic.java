@@ -1,5 +1,7 @@
 package bg.softuni.aquagate.data.entity;
 
+import bg.softuni.aquagate.data.entity.enumeration.HabitatEnum;
+import bg.softuni.aquagate.data.entity.enumeration.LevelEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +18,11 @@ public class Topic extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne
-    private Habitat habitat;
+    @Enumerated(EnumType.STRING)
+    private HabitatEnum habitat;
 
-    @ManyToOne
-    private Level level;
+    @Enumerated(EnumType.STRING)
+    private LevelEnum level;
 
     @Column(nullable = false)
     private String description;

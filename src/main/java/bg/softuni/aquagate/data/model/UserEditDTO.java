@@ -12,8 +12,10 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Setter
 @NoArgsConstructor
+public class UserEditDTO {
 
-public class UserRegistrationDTO {
+    private Long id;
+
     @UniqueUsername
     @NotBlank
     @Length(min = 5, max = 20)
@@ -25,10 +27,8 @@ public class UserRegistrationDTO {
     private String email;
 
     @NotBlank
-    @Length(min = 5, max = 20)
-    private String password;
+    private String level;
 
     @NotBlank
-    @Length(min = 5, max = 20)
-    private String confirmPassword;
+    private String role;
 }

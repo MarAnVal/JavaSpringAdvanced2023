@@ -1,12 +1,12 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="fragments/head"></head>
+<head th:replace="~{fragments/head}"></head>
 
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
 
-    <header th:replace="fragments/header"></header>
+    <header th:replace="~{fragments/header}"></header>
 
     <h1 class="border-bottom mb-5">Login</h1>
     <div class="d-flex justify-content-center">
@@ -49,6 +49,6 @@
         </div>
     </div>
 </main>
-<footer th:replace="fragments/footer"></footer>
+<footer th:replace="~{fragments/footer}"></footer>
 </body>
 </html>
