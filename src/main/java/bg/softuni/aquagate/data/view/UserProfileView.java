@@ -11,11 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserProfileView {
 
+    private Long id;
+
     private String username;
 
     private String email;
 
-    private String password;
-
-    private String level;
+    private LevelEnum level;
 }

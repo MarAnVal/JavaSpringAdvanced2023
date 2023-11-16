@@ -1,18 +1,24 @@
 package bg.softuni.aquagate.web.impl;
 
+import bg.softuni.aquagate.data.entity.Topic;
 import bg.softuni.aquagate.data.model.TopicAddDTO;
 import bg.softuni.aquagate.data.model.UserEditDTO;
+import bg.softuni.aquagate.service.CommentService;
+import bg.softuni.aquagate.service.HabitatService;
 import bg.softuni.aquagate.service.TopicService;
 import bg.softuni.aquagate.web.TopicController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 public class TopicControllerImpl implements TopicController {
     private final TopicService topicService;
+
 
     @Autowired
     public TopicControllerImpl(TopicService topicService) {
@@ -20,8 +26,10 @@ public class TopicControllerImpl implements TopicController {
     }
 
     @Override
-    public String topics() {
-        //TODO
+    public String topics(Model model) {
+        //TODO to decide all approved or users approved topics?
+        List<Topic> allApprovedTopics = topicService.getAllApprovedTopics();
+        model.addAttribute(allApprovedTopics);
         return "topics";
     }
 
@@ -44,7 +52,7 @@ public class TopicControllerImpl implements TopicController {
             return "redirect:topics/add";
         }
 
-        this.topicService.register(topicAddDTO);
+        this.topicService.Add(topicAddDTO);
 
         return "redirect:/";
     }
@@ -59,6 +67,8 @@ public class TopicControllerImpl implements TopicController {
         //TODO
         return "topic-details";
     }
+
+    //TODO unify search by habitat and methods for it
 
     @Override
     public String freshwater() {
@@ -83,6 +93,8 @@ public class TopicControllerImpl implements TopicController {
 
         return "brackish-water";
     }
+
+    //TODO refactor in adminController?
 
     @Override
     public String approve() {

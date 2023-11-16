@@ -30,6 +30,8 @@ public class HomeControllerImpl implements HomeController {
         return "about";
     }
 
+    //TODO refactor habitats pages in new controller and unify the methods and htmls?
+
     @Override
     public String freshwater() {
         return "freshwater";

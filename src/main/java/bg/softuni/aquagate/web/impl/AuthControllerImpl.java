@@ -5,6 +5,7 @@ import bg.softuni.aquagate.data.model.UserRegistrationDTO;
 import bg.softuni.aquagate.data.view.UserProfileView;
 import bg.softuni.aquagate.service.AuthService;
 import bg.softuni.aquagate.web.AuthController;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +19,12 @@ public class AuthControllerImpl implements AuthController {
 
     private final AuthService authService;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public AuthControllerImpl(AuthService authService) {
+    public AuthControllerImpl(AuthService authService, ModelMapper modelMapper) {
         this.authService = authService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -37,13 +41,14 @@ public class AuthControllerImpl implements AuthController {
     public String doRegister(UserRegistrationDTO userRegistrationDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
+        //TODO with spring security encode password and password match with confirmPassword!
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userRegistrationDTO", userRegistrationDTO);
             redirectAttributes
                     .addFlashAttribute("org.springframework.validation.BindingResult.userRegistrationDTO",
                             bindingResult);
 
-            return "redirect:/register";
+            return "redirect:/users/register";
         }
 
         this.authService.register(userRegistrationDTO);
@@ -59,11 +64,14 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public String profile(Principal principal, Model model) {
         String username = principal.getName();
-        UserProfileView userProfileView = authService.findUserByUsername(username);
+        UserProfileView userProfileView = modelMapper
+                .map(authService.findUserByUsername(username), UserProfileView.class);
         model.addAttribute("user", userProfileView);
 
         return "profile";
     }
+
+    //TODO refactor in adminController??
 
     @Override
     public UserEditDTO initEditForm() {

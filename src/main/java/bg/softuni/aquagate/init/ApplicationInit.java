@@ -14,6 +14,7 @@ public class ApplicationInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //TODO demoInit() and look
         roleService.init();
     }
 }

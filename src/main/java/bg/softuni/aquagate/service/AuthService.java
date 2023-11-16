@@ -6,7 +6,6 @@ import bg.softuni.aquagate.data.entity.enumeration.LevelEnum;
 import bg.softuni.aquagate.data.entity.enumeration.RoleEnum;
 import bg.softuni.aquagate.data.model.UserEditDTO;
 import bg.softuni.aquagate.data.model.UserRegistrationDTO;
-import bg.softuni.aquagate.data.view.UserProfileView;
 import bg.softuni.aquagate.repository.UserRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,20 +43,12 @@ public class AuthService {
         return roles;
     }
 
-    public UserProfileView findUserByEmail(String email) {
-        UserEntity user = userRepo.findUserByEmail(email);
-        UserProfileView userProfileView = modelMapper.map(user, UserProfileView.class);
-        userProfileView.setLevel(user.getLevel().toString());
-
-        return userProfileView;
+    public UserEntity findUserByEmail(String email) {
+        return userRepo.findUserByEmail(email);
     }
 
-    public UserProfileView findUserByUsername(String username) {
-        UserEntity user = userRepo.findUserByUsername(username);
-        UserProfileView userProfileView = modelMapper.map(user, UserProfileView.class);
-        userProfileView.setLevel(user.getLevel().toString());
-
-        return userProfileView;
+    public UserEntity findUserByUsername(String username) {
+        return userRepo.findUserByUsername(username);
     }
 
     public void edit(UserEditDTO userEditDTO) {

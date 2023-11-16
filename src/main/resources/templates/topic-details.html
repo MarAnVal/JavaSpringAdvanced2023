@@ -6,23 +6,25 @@
 <body>
 <div class="wrapper">
     <header th:replace="~{fragments/header}"></header>
-
+<!--TODO add the topicView data-->
     <input type="hidden" name="topicId" id="topicId">
     <div class="details-main">
         <section class="topic-info text-center">
             <h4 id="track-name"></h4>
-            <p>Total distance: <span id="totalDistance"></span> km</p>
+<!--            TODO add fileds values habitat ana author-->
+            <p>Habitat: <span id="habitat"></span></p>
             <p>Author name: <span id="authorName"></span></p>
             <h4>Difficulty Level (1-3):</h4>
-
             <div class="level">
-                <p><img class="level-img" src="/images/difficulty-level.png" alt=""></p>
-                <p><img class="level-img" src="/images/difficulty-level.png" alt=""></p>
-                <p><img class="level-img" src="/images/difficulty-level.png" alt=""></p>
+<!--                TODO difficulty lvl pics-->
+<!--                <p><img class="level-img" src="...TODO" alt=""></p>-->
+<!--                <p><img class="level-img" src="...TODO" alt=""></p>-->
+<!--                <p><img class="level-img" src="...TODO" alt=""></p>-->
             </div>
 
             <div>
                 <h4>Choose picture</h4>
+<!--                TODO add action-->
                 <form action="/" method="POST" enctype="multipart/form-data">
                     <input type="hidden" id="id" name="topicId">
                     <div class="form-group">
@@ -30,9 +32,11 @@
                             <input type="text" name="title">
                         </label>
                     </div>
+<!--                    Upload more pictures-->
                     <div class="image-upload">
                         <label for="picture">
-                            <img src="/images/add-img.png" alt=""/>
+<!--                            TODO download and add the add-img picture-->
+<!--                            <img src="/images/add-img.png" alt=""/>-->
                         </label>
                         <input style="display: none" id="picture" type="file" name="picture"/>
                     </div>
@@ -45,28 +49,30 @@
         </section>
         <section id="map"></section>
         <section id="video">
-            <iframe id="frame" src="https://www.youtube.com/embed/">
-            </iframe>
+<!--            TODO check the correct adding of video url!!!-->
+<!--            <iframe id="frame" src="https://www.youtube.com/embed/{videoURL}">-->
+<!--            </iframe>-->
         </section>
         <section class="topic-description text-center">
             <h4>Description:</h4>
             <p id="topic-description">Description: </p>
         </section>
         <section class="gallery">
-            <img class="rounded" src="/images/pic4.jpg" height="100%" alt="">
-            <img class="rounded" src="/images/pic1.jpg" height="100%" alt="">
+<!--            TODO th:each of the pictures-->
+<!--            <img class="rounded" src="/" height="100%" alt="">-->
+<!--            <img class="rounded" src="/" height="100%" alt="">-->
         </section>
         <section class="comments">
 
             <h1>Comments</h1>
             <div>
                 <!-- Comments submission -->
+<!--                TODO add action-->
                 <form id="commentForm" method="POST"
                       action="/">
                     <div class="form-group">
                         <h4>Leave a comment</h4>
                         <label for="message">Message</label>
-
                         <textarea name="message"
                                   id="message"
                                   cols="30"
@@ -94,7 +100,6 @@
             </div>
             <!-- EO: All comments section -->
         </section>
-        <p style="visibility: hidden">GPX Download: <a id="gpxDownload"></a></p>
     </div>
     <!-- Scripts: track and comments
     <script th:src="@{/js/track.js}"></script>

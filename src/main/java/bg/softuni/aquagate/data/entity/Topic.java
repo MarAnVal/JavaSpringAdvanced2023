@@ -16,10 +16,13 @@ import java.util.List;
 public class Topic extends BaseEntity {
 
     @Column(nullable = false)
+    private Boolean approved;
+
+    @Column(nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private HabitatEnum habitat;
+    @ManyToOne
+    private Habitat habitat;
 
     @Enumerated(EnumType.STRING)
     private LevelEnum level;
@@ -37,9 +40,6 @@ public class Topic extends BaseEntity {
     private String videoUrl;
 
     @OneToMany
-    private List<Post> posts;
-
-    @Column(nullable = false)
-    private Boolean approved;
+    private List<Comment> comments;
 
 }

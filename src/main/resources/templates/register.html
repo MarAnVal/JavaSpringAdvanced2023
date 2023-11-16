@@ -16,7 +16,7 @@
             <form
                     class="registration-form"
                     th:action="@{/users/register}"
-                    th:method="post"
+                    th:method="POST"
                     th:object="${userRegistrationDTO}">
 
                 <div>
@@ -50,13 +50,15 @@
                     <div class="col-auto">
                         <input name="email"
                                th:field="*{email}"
+                               th:errorclass="is-invalid"
                                type="email"
                                id="inputEmail"
                                class="form-control"
                                aria-describedby="emailHelpInline">
-                        <small th:if="${#fields.hasErrors('email')}"
-                               id="emailError"
+                        <small id="emailError"
                                class="invalid-feedback  form-text bg-danger rounded">Must be valid email</small>
+                        <small id="emailUniqueError"
+                               class="invalid-feedback bg-danger rounded">Email is already occupied</small>
                     </div>
                 </div>
 

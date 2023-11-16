@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Post extends BaseEntity{
+public class Comment extends BaseEntity{
 
     @Column(nullable = false)
     private Boolean approved;
@@ -22,7 +22,7 @@ public class Post extends BaseEntity{
     private LocalDate created;
 
     @Column(nullable = false)
-    private String content;
+    private String context;
 
     @ManyToOne
     private UserEntity author;

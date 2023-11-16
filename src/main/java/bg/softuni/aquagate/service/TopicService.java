@@ -9,20 +9,25 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TopicService {
     private final TopicRepo topicRepo;
+    private final CommentService commentService;
+    private final HabitatService habitatService;
 
     @Autowired
-    public TopicService(TopicRepo topicRepo) {
+    public TopicService(TopicRepo topicRepo,
+                        CommentService commentService,
+                        HabitatService habitatService) {
         this.topicRepo = topicRepo;
+        this.commentService = commentService;
+        this.habitatService = habitatService;
     }
 
     public Topic getMostCommented() {
         Topic topic;
-        if(topicRepo.getMostCommented().isPresent()) {
+        if (topicRepo.getMostCommented().isPresent()) {
             topic = topicRepo.getMostCommented().get();
         } else {
             topic = new Topic();
@@ -36,7 +41,12 @@ public class TopicService {
         return topic;
     }
 
-    public void register(TopicAddDTO topicAddDTO) {
+    public void Add(TopicAddDTO topicAddDTO) {
+        //TODO
+    }
 
+    public List<Topic> getAllApprovedTopics() {
+        //TODO decide if needed or getMyTopics()
+        return null;
     }
 }

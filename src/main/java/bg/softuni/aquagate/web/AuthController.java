@@ -35,6 +35,8 @@ public interface AuthController {
     @GetMapping("/profile")
     public String profile(Principal principal, Model model);
 
+    //TODO refactor in adminController??
+
     @ModelAttribute("userEditDTO")
     public UserEditDTO initEditForm();
 

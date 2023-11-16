@@ -15,6 +15,8 @@ public class RoleService {
         this.roleRepo = roleRepo;
     }
 
+    //TODO adminInit() and demoInit()
+
     public void init(){
         for (RoleEnum value : RoleEnum.values()) {
             if(roleRepo.findByName(value).isEmpty()){
@@ -28,4 +30,5 @@ public class RoleService {
     public Role findRolesByName(RoleEnum roleEnum) {
         return roleRepo.findRoleByName(roleEnum);
     }
+
 }

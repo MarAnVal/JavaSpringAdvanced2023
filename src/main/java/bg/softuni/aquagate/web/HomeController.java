@@ -12,6 +12,8 @@ public interface HomeController {
     @GetMapping("/about")
     public String about();
 
+    //TODO refactor habitats pages in new controller and unify the methods and htmls?
+
     @GetMapping("/freshwater")
     public String freshwater();
 

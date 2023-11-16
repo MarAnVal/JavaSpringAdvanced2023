@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public interface TopicController {
 
     @GetMapping("/")
-    public String topics();
+    public String topics(Model model);
 
     @GetMapping("/add")
     public String addTopic();
@@ -32,6 +32,8 @@ public interface TopicController {
     @GetMapping("/details")
     public String topicDetails();
 
+    //TODO unify search by habitat and methods for it
+
     @GetMapping("/freshwater")
     public String freshwater();
 
@@ -43,6 +45,8 @@ public interface TopicController {
 
     @GetMapping("/brackish-water")
     public String brackishWater();
+
+    //TODO refactor in adminController?
 
     @PostMapping("/approve")
     public String approve();

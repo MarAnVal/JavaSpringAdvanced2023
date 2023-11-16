@@ -1,5 +1,7 @@
 package bg.softuni.aquagate.vallidation;
 
+import bg.softuni.aquagate.data.entity.UserEntity;
+import bg.softuni.aquagate.data.view.UserProfileView;
 import bg.softuni.aquagate.service.AuthService;
 import bg.softuni.aquagate.vallidation.anotation.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
@@ -15,6 +17,6 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return authService.findUserByEmail(value) == null;
+        return authService.findUserByEmail(value)  == null;
     }
 }

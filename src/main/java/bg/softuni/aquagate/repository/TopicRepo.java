@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface TopicRepo extends JpaRepository<Topic, Long> {
-    @Query("SELECT t FROM Topic t ORDER BY size(t.posts) DESC")
+    @Query("SELECT t FROM Topic t ORDER BY size(t.comments) DESC")
     Optional<Topic> getMostCommented();
 }
