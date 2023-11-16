@@ -1,0 +1,26 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head"></head>
+
+<body>
+<div class="wrapper">
+    <!-- Navigation -->
+    <header th:replace="fragments/header"></header>
+
+    <section class="topic">
+        <img src="/images/pic4.jpg" alt="Title image">
+        <div>
+<!--            TODO th:each for added topics-->
+            <h2>All topics</h2>
+            <p>....</p>
+            <a href="/" class="btn">Learn More</a>
+<!--            TODO hide if not admin or own topic-->
+            <a href="/" class="btn">Remove</a>
+        </div>
+    </section>
+</div>
+<!-- Wrapper Ends -->
+</body>
+<footer th:replace="fragments/footer"></footer>
+</html>
