@@ -38,16 +38,8 @@ public class Topic extends BaseEntity {
 
     @OneToMany
     private List<Post> posts;
-    //id - Accepts UUID String or Long values
-    //
-    //· gpx coordinates - Accepts very long text values
-    //
-    //· level - Accepts the levels of the routes (BEGINNER, INTERMEDIATE, ADVANCED) as values
-    //
-    //· name - Accepts String values
-    //
-    //· author - Accepts User Entities as values
-    //
-    //· video url – Accepts the ids of youtube videos as values
+
+    @Column(nullable = false)
+    private Boolean approved;
 
 }

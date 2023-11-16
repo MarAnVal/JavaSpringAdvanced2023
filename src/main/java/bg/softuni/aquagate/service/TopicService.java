@@ -2,6 +2,7 @@ package bg.softuni.aquagate.service;
 
 import bg.softuni.aquagate.data.entity.Picture;
 import bg.softuni.aquagate.data.entity.Topic;
+import bg.softuni.aquagate.data.model.TopicAddDTO;
 import bg.softuni.aquagate.repository.TopicRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,5 +34,9 @@ public class TopicService {
             topic.setPictures(pictures);
         }
         return topic;
+    }
+
+    public void register(TopicAddDTO topicAddDTO) {
+
     }
 }

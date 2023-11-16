@@ -14,8 +14,10 @@
 
         <div class="align-items-center">
             <form
-                  action="/"
-                  method="/" enctype="multipart/form-data">
+                    th:action="@{/topics/add}"
+                    th:method="post"
+                    th:object="${topicAddDTO}"
+                    enctype="multipart/form-data">
                 <div>
                     <div class="form-group">
                         <label for="inputName" class="col-form-label ">Name</label>
