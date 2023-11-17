@@ -1,8 +1,6 @@
 package bg.softuni.aquagate.data.model;
 
-import bg.softuni.aquagate.vallidation.anotation.UniqueEmail;
-import bg.softuni.aquagate.vallidation.anotation.UniqueUsername;
-import jakarta.validation.constraints.Email;
+import bg.softuni.aquagate.vallidation.anotation.ExistingUsername;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,17 +12,10 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class UserEditDTO {
 
-    private Long id;
-
-    @UniqueUsername
+    @ExistingUsername
     @NotBlank
     @Length(min = 5, max = 20)
     private String username;
-
-    @UniqueEmail
-    @Email
-    @NotBlank
-    private String email;
 
     @NotBlank
     private String level;

@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/topics")
 public interface TopicController {
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public String topics(Model model);
 
     @GetMapping("/add")
@@ -27,29 +27,22 @@ public interface TopicController {
                              RedirectAttributes redirectAttributes) ;
 
     @ModelAttribute("topicAddDTO")
-    public UserEditDTO initAddForm();
+    public TopicAddDTO initAddForm();
+
+    //TODO change the path to /details/{id},
+    // add parameter for id and model,
+    // do postMapping
 
     @GetMapping("/details")
     public String topicDetails();
 
-    //TODO unify search by habitat and methods for it
-
-    @GetMapping("/freshwater")
-    public String freshwater();
-
-    @GetMapping("/reef")
-    public String reef();
-
-    @GetMapping("/blackwater")
-    public String blackwater();
-
-    @GetMapping("/brackish-water")
-    public String brackishWater();
+    @GetMapping("/latest")
+    public String latestTopic(Model model);
 
     //TODO refactor in adminController?
 
     @PostMapping("/approve")
-    public String approve();
+    public String approve(Model model);
 
     @PostMapping("/remove")
     public String remove();

@@ -39,7 +39,7 @@ public class AuthService {
 
     private List<Role> getRegistrationRoles() {
         List<Role> roles = new ArrayList<>();
-        roles.add(roleService.findRolesByName(RoleEnum.USER));
+        roles.add(roleService.findRoleByName(RoleEnum.USER));
         return roles;
     }
 
@@ -53,18 +53,21 @@ public class AuthService {
 
     public void edit(UserEditDTO userEditDTO) {
         UserEntity user = userRepo.findUserByUsername(userEditDTO.getUsername());
+        LevelEnum level = LevelEnum.valueOf(userEditDTO.getLevel());
+        List<Role> roles = getEditedRoles(userEditDTO.getRole(), user.getRoles());
 
-        user.setRoles(getEditedRoles(userEditDTO.getRole(), user.getRoles()));
+        user.setRoles(roles);
+        user.setLevel(level);
 
         userRepo.save(user);
     }
 
     private List<Role> getEditedRoles(String role, List<Role> userRoles) {
-        Role newRole = roleService.findRolesByName(RoleEnum.valueOf(role));
+        //TODO try to find general way to get roles without specific if for any of them
+        Role newRole = roleService.findRoleByName(RoleEnum.valueOf(role));
         if (!userRoles.contains(newRole)) {
-            List<Role> newRoles = new ArrayList<>(userRoles);
-            newRoles.add(newRole);
-            return newRoles;
+            userRoles.add(newRole);
+            return userRoles;
 
         } else if (newRole.getName().equals(RoleEnum.USER) && userRoles.size() > 1) {
             List<Role> newRoles = new ArrayList<>();

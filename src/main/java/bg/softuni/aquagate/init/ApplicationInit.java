@@ -14,7 +14,7 @@ public class ApplicationInit implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //TODO demoInit() and look
+        //TODO level and habitat init, picture galery1 and galery2 from resources init
         roleService.init();
     }
 }

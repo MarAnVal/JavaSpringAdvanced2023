@@ -14,18 +14,19 @@
             <h1>Find amazing topics</h1>
             <p>
                 Looking for amazing underwater species and how to take care of them?
+                Don't hesitate to ask and share your experience!
                 Find out one hidden world and enjoy nature!
             </p>
-            <a href="/topics" class="btn">To topics</a>
+            <a th:href="@{/topics}" class="btn">To topics</a>
         </div>
-        <a href="/beginners-guide" class="main-btn">
+        <a th:href="@{/topics/my-topics}" class="main-btn">
             <div class="box">
-                <img src="images/beginners-guide-icon.png" height="150px" alt="">
-                <h3>Begginer's guide</h3>
-                <p>You just started up your first aquarium?</p>
+                <img src="/images/my-topics.png" height="150px" alt="">
+                <h3>My topics</h3>
+                <p>What topics I started?</p>
             </div>
         </a>
-        <a href="/latest-topic" class="main-btn">
+        <a th:href="@{/topics/latest}" class="main-btn">
             <div class="box">
                 <img src="/images/latest-topic.png" height="150px" alt="">
                 <h3>Latest topic</h3>
@@ -36,28 +37,28 @@
 
     <!-- Boxes Section -->
     <section class="boxes">
-        <a href="/freshwater" class="main-btn">
+        <a th:href="@{/freshwater}" class="main-btn">
             <div class="box">
                 <img src="/images/freshwater-icon.png" height="150px" alt="">
                 <h3>Freshwater setup</h3>
                 <p>You love the classic setup?</p>
             </div>
         </a>
-        <a href="/blackwater" class="main-btn">
+        <a th:href="@{/blackwater}" class="main-btn">
             <div class="box">
                 <img src="/images/blackwater-icon.png" height="150px" alt="">
                 <h3>Blackwater setup</h3>
                 <p>When you want mimic the nature.</p>
             </div>
         </a>
-        <a href="/brackish-water" class="main-btn">
+        <a th:href="@{/brackish-water}" class="main-btn">
             <div class="box">
                 <img src="/images/brackish-water-icon.png" height="150px" alt="">
                 <h3>Brackish water setup</h3>
                 <p>Challenging meeting of river end sea?</p>
             </div>
         </a>
-        <a href="/reef" class="main-btn">
+        <a th:href="@{/reef}" class="main-btn">
             <div class="box">
                 <img src="/images/reef-icon.png" height="150px" alt="">
                 <h3>Reef setup</h3>
@@ -71,17 +72,21 @@
         <!--        Most commented topics first picture -->
         <img th:src="${mostCommented.pictures.get(0).getPictureUrl()}" alt="">
         <div>
-            <h2>The most commented topics: <span th:text="${mostCommented.name}"></span></h2>
+            <h2>The most commented topics:
+                <span th:text="${mostCommented.name}"></span>
+            </h2>
             <p>Read more about the most commented topics and do not miss the
-                chance give your opinion to help other users.</p>
+                chance to give your opinion and to help other users.</p>
             <!--            Generate link to topics -->
-            <a th:unless="mostCommented.id != null" th:href="@{/topic/details/:id(id = ${mostCommented.id})}" class="btn">
+<!--            TODO check the button?-->
+            <a th:unless="mostCommented.id != null" th:href="@{/topic/details/id(id = ${mostCommented.id})}" class="btn">
                 Learn More</a>
         </div>
     </section>
 
     <!-- Portfolio -->
     <section class="gallery">
+<!--        TODO change to added view with last 2 added pictures after init that 2 -->
         <img src="/images/galery1.webp" width="200px"
              height="200px" alt="">
         <img src="/images/galery2.jpg" width="200px"

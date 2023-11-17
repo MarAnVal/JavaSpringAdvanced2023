@@ -38,8 +38,8 @@
                                class="invalid-feedback bg-danger rounded">Username length must be more than 3
                             characters</small>
 
-                        <small id="usernameUniqueError"
-                               class="invalid-feedback bg-danger rounded">Username is already occupied</small>
+                        <small id="usernameExistError"
+                               class="invalid-feedback bg-danger rounded">Username do not exist</small>
                     </div>
                 </div>
 
@@ -48,12 +48,13 @@
                         <label for="inputLevel" class="col-form-label ">Level</label>
                         <select name="level"
                                 th:field="*{level}"
+                                required
                                 type="level"
                                 id="inputLevel" class="custom-select">
                             <option value="" selected>Select level</option>
-                            <option value="1" text="BEGINNER">Beginner</option>
-                            <option value="2" text="INTERMEDIATE">Intermediate</option>
-                            <option value="3" text="ADVANCED">Advanced</option>
+                            <option value="BEGINNER">Beginner</option>
+                            <option value="INTERMEDIATE">Intermediate</option>
+                            <option value="ADVANCED">Advanced</option>
                         </select>
                         <small th:if="${#fields.hasErrors('level')}"
                                id="levelError"
@@ -66,11 +67,12 @@
                         <label for="inputRole" class="col-form-label ">Role</label>
                         <select name="inputRole"
                                 th:field="*{role}"
+                                required
                                 type="role"
                                 id="inputRole" class="custom-select">
-                            <option value="" selected>Select level</option>
-                            <option value="1" text="USER">User</option>
-                            <option value="2" text="MODERATOR">Moderator</option>
+                            <option value="" selected>Select role</option>
+                            <option value="USER">User</option>
+                            <option value="MODERATOR">Moderator</option>
                         </select>
                         <small th:if="${#fields.hasErrors('role')}"
                                id="roleError"

@@ -1,14 +1,10 @@
 package bg.softuni.aquagate.web.impl;
 
 import bg.softuni.aquagate.data.entity.Topic;
-import bg.softuni.aquagate.data.model.UserRegistrationDTO;
 import bg.softuni.aquagate.service.TopicService;
 import bg.softuni.aquagate.web.HomeController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class HomeControllerImpl implements HomeController {
@@ -21,6 +17,8 @@ public class HomeControllerImpl implements HomeController {
     @Override
     public String index(Model model) {
         Topic topic = topicService.getMostCommented();
+        //TODO add in model last 2 added pictures;
+        // get pictures only from approved topics
         model.addAttribute("mostCommented", topic);
         return "index";
     }
@@ -30,7 +28,10 @@ public class HomeControllerImpl implements HomeController {
         return "about";
     }
 
-    //TODO refactor habitats pages in new controller and unify the methods and htmls?
+    //TODO think about unify pages and the methods
+    // (refactor the description from htmls to filed description in class Habitat)
+    // and call it from there with parameter
+    // maybe refactor in habitatController?
 
     @Override
     public String freshwater() {
@@ -51,5 +52,4 @@ public class HomeControllerImpl implements HomeController {
     public String brackishWater() {
         return "brackish-water";
     }
-
 }

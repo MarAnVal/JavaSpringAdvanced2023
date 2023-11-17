@@ -16,12 +16,6 @@ import java.time.LocalDate;
 public class Comment extends BaseEntity{
 
     @Column(nullable = false)
-    private Boolean approved;
-
-    @Column(nullable = false)
-    private LocalDate created;
-
-    @Column(nullable = false)
     private String context;
 
     @ManyToOne

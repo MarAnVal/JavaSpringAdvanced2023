@@ -18,13 +18,4 @@ public class Habitat extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private HabitatEnum name;
-
-    @Column(nullable = false)
-    private String titleText;
-
-    @Column(nullable = false)
-    private String bodyText;
-
-    @Column(nullable = false)
-    private String iconUrl;
 }

@@ -30,6 +30,7 @@ public class TopicService {
         if (topicRepo.getMostCommented().isPresent()) {
             topic = topicRepo.getMostCommented().get();
         } else {
+            //TODO remove after adding custom exceptions
             topic = new Topic();
             topic.setName("No topics added");
             List<Picture> pictures = new ArrayList<>();
@@ -42,11 +43,18 @@ public class TopicService {
     }
 
     public void Add(TopicAddDTO topicAddDTO) {
-        //TODO
+        //TODO implement and use cloudinary upload for picture
     }
 
     public List<Topic> getAllApprovedTopics() {
-        //TODO decide if needed or getMyTopics()
-        return null;
+        return topicRepo.findAllByApproved(true);
+    }
+
+    public List<Topic> getAllNotApprovedTopics() {
+        return topicRepo.findAllByApproved(false);
+    }
+
+    public Topic findLatestTopic() {
+        return topicRepo.findLatestTopic();
     }
 }

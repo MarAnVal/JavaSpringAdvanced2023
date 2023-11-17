@@ -41,7 +41,7 @@ public class AuthControllerImpl implements AuthController {
     public String doRegister(UserRegistrationDTO userRegistrationDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
-        //TODO with spring security encode password and password match with confirmPassword!
+        //TODO config modelMapper to encode password and password match with confirmPassword!
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userRegistrationDTO", userRegistrationDTO);
             redirectAttributes
@@ -58,11 +58,13 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public String login() {
+        //TODO after adding spring security
         return "login";
     }
 
     @Override
     public String profile(Principal principal, Model model) {
+        //TODO debug after adding spring security
         String username = principal.getName();
         UserProfileView userProfileView = modelMapper
                 .map(authService.findUserByUsername(username), UserProfileView.class);
@@ -80,7 +82,6 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public String editUser() {
-
         return "edit";
     }
 
@@ -93,7 +94,7 @@ public class AuthControllerImpl implements AuthController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.userEditDTO",
                             bindingResult);
 
-            return "redirect:/edit";
+            return "redirect:/users/edit";
         }
 
         this.authService.edit(userEditDTO);

@@ -1,14 +1,22 @@
 package bg.softuni.aquagate.repository;
 
 import bg.softuni.aquagate.data.entity.Topic;
+import bg.softuni.aquagate.data.entity.enumeration.HabitatEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface TopicRepo extends JpaRepository<Topic, Long> {
     @Query("SELECT t FROM Topic t ORDER BY size(t.comments) DESC")
     Optional<Topic> getMostCommented();
+
+    List<Topic> findAllByApproved(boolean approved);
+    @Query("SELECT t FROM Topic t ORDER BY t.id DESC LIMIT 1")
+    Topic findLatestTopic();
+
+    List<Topic> findAllByHabitatName(HabitatEnum habitatEnum);
 }
