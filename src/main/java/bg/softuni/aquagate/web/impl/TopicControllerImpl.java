@@ -1,7 +1,7 @@
 package bg.softuni.aquagate.web.impl;
 
 import bg.softuni.aquagate.data.model.TopicAddDTO;
-import bg.softuni.aquagate.data.view.TopicView;
+import bg.softuni.aquagate.data.view.TopicDetailsView;
 import bg.softuni.aquagate.data.view.TopicsAllView;
 import bg.softuni.aquagate.service.TopicService;
 import bg.softuni.aquagate.web.TopicController;
@@ -29,7 +29,6 @@ public class TopicControllerImpl implements TopicController {
 
     @Override
     public String topics(Model model) {
-        //TODO filter all approved topics
         List<TopicsAllView> allApprovedTopics = topicService.getAllApprovedTopics()
                 .stream()
                 .map(e -> {
@@ -37,6 +36,7 @@ public class TopicControllerImpl implements TopicController {
                 })
                 .collect(Collectors.toList());
 
+        //TODO check for no topics
         model.addAttribute(allApprovedTopics);
 
         return "topics";
@@ -81,8 +81,9 @@ public class TopicControllerImpl implements TopicController {
 
     @Override
     public String latestTopic(Model model) {
-        TopicView topicView = modelMapper.map(topicService.findLatestTopic(), TopicView.class);
-        return "redirect:/topics/details/" + topicView.getId();
+        TopicDetailsView topicDetailsView = modelMapper.map(topicService.findLatestTopic(), TopicDetailsView.class);
+        //TODO check for no topics
+        return "redirect:/topics/details/" + topicDetailsView.getId();
     }
 
     //TODO refactor in adminController?
