@@ -1,12 +1,12 @@
 package bg.softuni.aquagate.web.impl;
 
+import bg.softuni.aquagate.data.model.CommentAddDTO;
+import bg.softuni.aquagate.data.model.PictureAddDTO;
 import bg.softuni.aquagate.data.model.TopicAddDTO;
-import bg.softuni.aquagate.data.view.TopicDetailsView;
-import bg.softuni.aquagate.data.view.TopicsAllView;
-import bg.softuni.aquagate.service.AuthService;
+import bg.softuni.aquagate.data.view.TopicsDetailsView;
+import bg.softuni.aquagate.data.view.TopicsView;
 import bg.softuni.aquagate.service.TopicService;
 import bg.softuni.aquagate.web.TopicController;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,41 +16,30 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class TopicControllerImpl implements TopicController {
     private final TopicService topicService;
-    private final AuthService authService;
-    private final ModelMapper modelMapper;
 
 
     @Autowired
-    public TopicControllerImpl(TopicService topicService,
-                               AuthService authService,
-                               ModelMapper modelMapper) {
+    public TopicControllerImpl(TopicService topicService) {
         this.topicService = topicService;
-        this.authService = authService;
-        this.modelMapper = modelMapper;
     }
 
     @Override
     public String topics(Model model) {
-        List<TopicsAllView> allApprovedTopics = topicService.getAllApprovedTopics()
-                .stream()
-                .map(e -> {
-                    return modelMapper.map(e, TopicsAllView.class);
-                })
-                .collect(Collectors.toList());
+        List<TopicsView> allApprovedTopics = topicService.mapTopicDetailsViewList(topicService.getAllApprovedTopics());
 
-        //TODO check for no topics
-        model.addAttribute(allApprovedTopics);
+        model.addAttribute("topics", allApprovedTopics);
 
         return "topics";
     }
 
-    //TODO add approved habitat selected topics pages (/topics/freshwater and so on)
-    // or leave the habitat pages only like information ones with back home button?
+    @Override
+    public TopicAddDTO initAddTopicForm() {
+        return new TopicAddDTO();
+    }
 
     @Override
     public String addTopic() {
@@ -71,54 +60,42 @@ public class TopicControllerImpl implements TopicController {
             return "redirect:topics/add";
         }
 
-        this.topicService.AddTopic(topicAddDTO, authService.findUserByUsername(principal.getName()));
+        topicAddDTO.setUserName(principal.getName());
+        this.topicService.AddTopic(topicAddDTO);
 
         return "redirect:/";
     }
 
     @Override
-    public TopicAddDTO initAddTopicForm(){
-        return new TopicAddDTO();
-    }
+    public String topicDetails(Long id, Model model) {
+        TopicsDetailsView topicsDetailsView = topicService.mapTopicsDetailsView(topicService.findById(id));
 
-    @Override
-    public String topicDetails() {
-        //TODO add parameter and model and change path to topics/details/{id}
+        model.addAttribute("topicsDetailsView", topicsDetailsView);
+
         return "topic-details";
     }
 
     @Override
-    public String latestTopic(Model model) {
-        TopicDetailsView topicDetailsView = modelMapper.map(topicService.findLatestTopic(), TopicDetailsView.class);
-        //TODO check for no topics
-        return "redirect:/topics/details/" + topicDetailsView.getId();
+    public String latestTopic() {
+        return "redirect:/topics/details/" + topicService.findLatestTopic().getId();
     }
 
-    //TODO refactor in adminController?
-
     @Override
-    public String approve(Model model) {
-        //TODO moderator and administrator could approve
-        List<TopicsAllView> allApprovedTopics = topicService.getAllNotApprovedTopics()
-                .stream()
-                .map(e -> {
-                    return modelMapper.map(e, TopicsAllView.class);
-                })
-                .collect(Collectors.toList());
-
-        //TODO check for no topics
-        model.addAttribute(allApprovedTopics);
-
-        return "topics";
+    public String mostCommented() {
+        return "redirect:/topics/details/" + topicService.getMostCommented().getId();
     }
 
-    //TODO postMapping for topics/approve/details/{id} and topics/remove/details/{id}
-    // think about better paths
+    @Override
+    public String doCommentAdd(Long id, CommentAddDTO commentAddDTO, BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes, Principal principal) {
+        //TODO implement
+        return null;
+    }
 
     @Override
-    public String remove() {
-        //TODO add parameter and postMapping
-        // admin could remove not approved topics
+    public String doPictureAdd(Long id, PictureAddDTO commentAddDTO, BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes, Principal principal) {
+        //TODO implement
         return null;
     }
 }

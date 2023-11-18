@@ -1,55 +1,44 @@
 package bg.softuni.aquagate.web.impl;
 
-import bg.softuni.aquagate.data.entity.Topic;
+import bg.softuni.aquagate.data.view.PictureView;
+import bg.softuni.aquagate.data.view.TopicsView;
+import bg.softuni.aquagate.service.PictureService;
 import bg.softuni.aquagate.service.TopicService;
 import bg.softuni.aquagate.web.HomeController;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class HomeControllerImpl implements HomeController {
     private final TopicService topicService;
+    private final PictureService pictureService;
+    private final ModelMapper modelMapper;
 
-    public HomeControllerImpl(TopicService topicService) {
+    public HomeControllerImpl(TopicService topicService, PictureService pictureService, ModelMapper modelMapper) {
         this.topicService = topicService;
+        this.pictureService = pictureService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public String index(Model model) {
-        Topic topic = topicService.getMostCommented();
-        //TODO add in model last 2 added pictures;
-        // get pictures only from approved topics
-        model.addAttribute("mostCommented", topic);
+        TopicsView topicsView = modelMapper.map(topicService.getMostCommented(), TopicsView.class);
+        List<PictureView> pictureViews = pictureService.getLatestPictures()
+                .stream()
+                .map(e -> modelMapper.map(e, PictureView.class))
+                .collect(Collectors.toList());
+
+        model.addAttribute("lastPictures", pictureViews);
+        model.addAttribute("mostCommented", topicsView);
         return "index";
     }
 
     @Override
     public String about() {
         return "about";
-    }
-
-    //TODO think about unify pages and the methods
-    // (refactor the description from htmls to filed description in class Habitat)
-    // and call it from there with parameter
-    // maybe refactor in habitatController?
-
-    @Override
-    public String freshwater() {
-        return "freshwater";
-    }
-
-    @Override
-    public String reef() {
-        return "reef";
-    }
-
-    @Override
-    public String blackwater() {
-        return "blackwater";
-    }
-
-    @Override
-    public String brackishWater() {
-        return "brackish-water";
     }
 }

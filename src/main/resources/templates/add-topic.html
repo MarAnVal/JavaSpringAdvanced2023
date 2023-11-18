@@ -1,7 +1,9 @@
+<!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head}"></head>
+<head th:replace="~{fragments/head}">
+    <title>Add topic</title></head>
 
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
@@ -60,7 +62,7 @@
                     <div class="form-group">
                         <input type="file"
                                name="picture"
-                               th:field="*{pictureUrl}"
+                               th:field="*{pictureFile}"
                                th:errorclass="is-invalid"
                                id="inputPicture"
                                class="form-control-file"

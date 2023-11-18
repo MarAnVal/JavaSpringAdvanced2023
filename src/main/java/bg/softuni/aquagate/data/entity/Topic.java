@@ -1,6 +1,5 @@
 package bg.softuni.aquagate.data.entity;
 
-import bg.softuni.aquagate.data.entity.enumeration.HabitatEnum;
 import bg.softuni.aquagate.data.entity.enumeration.LevelEnum;
 import jakarta.persistence.*;
 import lombok.Getter;

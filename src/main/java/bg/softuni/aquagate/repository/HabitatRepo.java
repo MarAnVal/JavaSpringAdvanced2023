@@ -5,7 +5,9 @@ import bg.softuni.aquagate.data.entity.enumeration.HabitatEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface HabitatRepo extends JpaRepository<Habitat, Long> {
-    Habitat findByName(HabitatEnum value);
+    Optional<Habitat> findByName(HabitatEnum value);
 }

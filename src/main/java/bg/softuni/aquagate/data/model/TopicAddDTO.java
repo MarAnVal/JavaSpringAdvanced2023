@@ -23,7 +23,9 @@ public class TopicAddDTO {
     @NotBlank
     private String description;
 
-    private MultipartFile pictureUrl;
+    private MultipartFile pictureFile;
 
     private String videoUrl;
+
+    private String userName;
 }

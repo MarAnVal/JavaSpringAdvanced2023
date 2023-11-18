@@ -1,7 +1,9 @@
+<!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head}"></head>
+<head th:replace="~{fragments/head}">
+    <title>Login</title></head>
 
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
@@ -13,8 +15,9 @@
 
         <div class="row g-3 align-items-center">
             <form
-                    action="/"
-                    method="">
+                    th:action="/identity/login"
+                    th:method="Post"
+                    th:object="${UserLoginDTO}">
                 <div>
                     <div class="col-auto">
                         <label for="inputUsername" class="col-form-label ">Username</label>

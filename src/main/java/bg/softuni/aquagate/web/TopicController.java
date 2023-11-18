@@ -1,13 +1,12 @@
 package bg.softuni.aquagate.web;
 
+import bg.softuni.aquagate.data.model.CommentAddDTO;
+import bg.softuni.aquagate.data.model.PictureAddDTO;
 import bg.softuni.aquagate.data.model.TopicAddDTO;
 import jakarta.validation.Valid;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
@@ -16,36 +15,39 @@ import java.security.Principal;
 @RequestMapping("/topics")
 public interface TopicController {
 
-    @GetMapping("/all")
-    public String topics(Model model);
-
-    @GetMapping("/add")
-    public String addTopic();
-
-    @PostMapping("/add")
-    public String doAddTopic(@Valid TopicAddDTO topicAddDTO,
-                             BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes,
-                             Principal principal) throws IOException;
+    @GetMapping("/")
+    String topics(Model model);
 
     @ModelAttribute("topicAddDTO")
-    public TopicAddDTO initAddTopicForm();
+    TopicAddDTO initAddTopicForm();
 
-    //TODO change the path to /details/{id},
-    // add parameter for id and model,
-    // do postMapping
+    @GetMapping("/add")
+    String addTopic();
 
-    @GetMapping("/details")
-    public String topicDetails();
+    @PostMapping("/add")
+    String doAddTopic(@Valid TopicAddDTO topicAddDTO,
+                      BindingResult bindingResult,
+                      RedirectAttributes redirectAttributes,
+                      Principal principal) throws IOException;
+
+    @GetMapping("/details/{id}")
+    String topicDetails(@PathVariable Long id, Model model);
 
     @GetMapping("/latest")
-    public String latestTopic(Model model);
+    String latestTopic();
 
-    //TODO refactor in adminController?
+    @GetMapping("/most-popular")
+    String mostCommented();
 
-    @PostMapping("/approve")
-    public String approve(Model model);
+    @PostMapping("/comments/add/{id}")
+    String doCommentAdd(@PathVariable Long id, @Valid CommentAddDTO commentAddDTO,
+                        BindingResult bindingResult,
+                        RedirectAttributes redirectAttributes,
+                        Principal principal);
 
-    @PostMapping("/remove")
-    public String remove();
+    @PostMapping("/comments/add/{id}")
+    String doPictureAdd(@PathVariable Long id, @Valid PictureAddDTO commentAddDTO,
+                        BindingResult bindingResult,
+                        RedirectAttributes redirectAttributes,
+                        Principal principal);
 }

@@ -14,18 +14,33 @@ public class HabitatService {
     public HabitatService(HabitatRepo habitatRepo) {
         this.habitatRepo = habitatRepo;
     }
-    //TODO decide how to be done general init() of habitats with data included atm in habitats htmls
-    public void init(){
-        for (HabitatEnum value : HabitatEnum.values()) {
-            if(habitatRepo.findByName(value)==null){
-                Habitat habitat = new Habitat();
-                habitat.setName(value);
-                habitatRepo.save(habitat);
-            }
+
+    public Habitat findHabitatByName(String habitat) {
+        try {
+            HabitatEnum habitatEnum = HabitatEnum.valueOf(habitat);
+            return habitatRepo.findByName(habitatEnum).orElse(null);
+        } catch (IllegalArgumentException e) {
+            //TODO handle wrong parameter values and null return
+            return null;
         }
     }
 
-    public Habitat findHabitatByName(HabitatEnum habitat) {
-        return habitatRepo.findByName(habitat);
+    public void init() {
+        Habitat habitat = new Habitat();
+        habitat.setName(HabitatEnum.FRESHWATER);
+        habitat.setThFragmentName("freshwater");
+        habitatRepo.save(habitat);
+
+        habitat.setName(HabitatEnum.BLACK_WATER);
+        habitat.setThFragmentName("black-water");
+        habitatRepo.save(habitat);
+
+        habitat.setName(HabitatEnum.BRACKISH_WATER);
+        habitat.setThFragmentName("brackish-water");
+        habitatRepo.save(habitat);
+
+        habitat.setName(HabitatEnum.REEF);
+        habitat.setThFragmentName("reef");
+        habitatRepo.save(habitat);
     }
 }

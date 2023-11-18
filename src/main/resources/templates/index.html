@@ -1,7 +1,9 @@
+<!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head}"></head>
+<head th:replace="~{fragments/head}">
+    <title>Home</title></head>
 
 <body>
 <div class="wrapper">
@@ -78,18 +80,17 @@
             <p>Read more about the most commented topics and do not miss the
                 chance to give your opinion and to help other users.</p>
             <!--            Generate link to topics -->
-<!--            TODO check the button?-->
+
             <a th:unless="mostCommented.id != null" th:href="@{/topic/details/id(id = ${mostCommented.id})}" class="btn">
                 Learn More</a>
         </div>
     </section>
 
-    <!-- Portfolio -->
+    <!-- Last 2 added pictures from approved topics -->
     <section class="gallery">
-<!--        TODO change to added view with last 2 added pictures after init that 2 -->
-        <img src="/images/galery1.webp" width="200px"
+        <img th:src="${lastPictures.get(0).getPictureUrl()}" width="200px"
              height="200px" alt="">
-        <img src="/images/galery2.jpg" width="200px"
+        <img th:src="${lastPictures.get(1).getPictureUrl()}" width="200px"
              height="200px" alt="">
     </section>
 

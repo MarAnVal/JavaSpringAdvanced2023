@@ -25,7 +25,7 @@ public class CloudService {
                 .createTempFile("temp-file", multipartFile.getOriginalFilename());
         multipartFile.transferTo(file);
 
-        return this.cloudinary.uploader()
+        return cloudinary.uploader()
                 .upload(file, new HashMap())
                 .get("url").toString();
     }

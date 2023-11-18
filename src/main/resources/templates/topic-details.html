@@ -1,7 +1,9 @@
+<!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head}"></head>
+<head th:replace="~{fragments/head}">
+    <title>Topic details</title></head>
 
 <body>
 <div class="wrapper">
@@ -107,7 +109,7 @@
             </div>
             <!-- EO: All comments section -->
         </section>
-<!--        TODO add buttons approve(for admin and moderator) and remove(for admin, moderator or ?topic owner)-->
+<!--        TODO add buttons with approve and remove for admin, moderator -->
     </div>
 </div>
 <footer th:replace="~{fragments/footer}"></footer>

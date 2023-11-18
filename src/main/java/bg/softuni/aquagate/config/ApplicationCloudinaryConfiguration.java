@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 
 @Configuration
-class ApplicationCloudConfiguration {
+class ApplicationCloudinaryConfiguration {
 
     @Value("${cloudinary.cloud-name}")
     private String cloudApiName;

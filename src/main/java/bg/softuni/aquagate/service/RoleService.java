@@ -6,6 +6,9 @@ import bg.softuni.aquagate.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class RoleService {
     private final RoleRepo roleRepo;
@@ -15,9 +18,9 @@ public class RoleService {
         this.roleRepo = roleRepo;
     }
 
-    public void init(){
+    public void init() {
         for (RoleEnum value : RoleEnum.values()) {
-            if(roleRepo.findByName(value).isEmpty()){
+            if (roleRepo.findByName(value).isEmpty()) {
                 Role role = new Role();
                 role.setName(value);
                 roleRepo.save(role);
@@ -25,8 +28,25 @@ public class RoleService {
         }
     }
 
-    public Role findRoleByName(RoleEnum roleEnum) {
-        return roleRepo.findRoleByName(roleEnum);
-    }
+    public List<Role> getRolesListByName(RoleEnum roleEnum) {
+        List<Role> roles = new ArrayList<>();
+        switch (roleEnum) {
+            case USER:
+                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER));
+                break;
 
+            case MODERATOR:
+                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER),
+                        roleRepo.findRoleByName(RoleEnum.MODERATOR));
+                break;
+
+            case ADMIN:
+                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER),
+                        roleRepo.findRoleByName(RoleEnum.MODERATOR),
+                        roleRepo.findRoleByName(RoleEnum.ADMIN));
+                break;
+
+        }
+        return roles;
+    }
 }

@@ -18,4 +18,7 @@ public class Habitat extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private HabitatEnum name;
+
+    @Column(nullable = false)
+    private String thFragmentName;
 }

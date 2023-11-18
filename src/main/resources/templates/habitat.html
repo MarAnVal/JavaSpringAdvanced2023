@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head}">
+    <title>Habitats</title></head>
+
+<body>
+<div class="wrapper">
+    <!-- Navigation -->
+    <header th:replace="~{fragments/header}"></header>
+    <!--TODO unify all habitat pages!??????-->
+    <div th:replace="~{|fragments/*{habitatView.getTitle()}|}"> </div>
+
+</div>
+<!-- Wrapper Ends -->
+</body>
+<footer th:replace="~{fragments/footer}"></footer>
+</html>

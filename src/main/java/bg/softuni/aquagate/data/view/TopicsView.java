@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TopicsAllView {
+public class TopicsView {
 
     private Long id;
 
