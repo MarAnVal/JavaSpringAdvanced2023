@@ -3,6 +3,7 @@ package bg.softuni.aquagate.web.impl;
 import bg.softuni.aquagate.data.model.TopicAddDTO;
 import bg.softuni.aquagate.data.view.TopicDetailsView;
 import bg.softuni.aquagate.data.view.TopicsAllView;
+import bg.softuni.aquagate.service.AuthService;
 import bg.softuni.aquagate.service.TopicService;
 import bg.softuni.aquagate.web.TopicController;
 import org.modelmapper.ModelMapper;
@@ -12,18 +13,24 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 public class TopicControllerImpl implements TopicController {
     private final TopicService topicService;
+    private final AuthService authService;
     private final ModelMapper modelMapper;
 
 
     @Autowired
-    public TopicControllerImpl(TopicService topicService, ModelMapper modelMapper) {
+    public TopicControllerImpl(TopicService topicService,
+                               AuthService authService,
+                               ModelMapper modelMapper) {
         this.topicService = topicService;
+        this.authService = authService;
         this.modelMapper = modelMapper;
     }
 
@@ -53,7 +60,8 @@ public class TopicControllerImpl implements TopicController {
     @Override
     public String doAddTopic(TopicAddDTO topicAddDTO,
                              BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Principal principal) throws IOException {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("topicAddDTO", topicAddDTO);
             redirectAttributes
@@ -63,13 +71,13 @@ public class TopicControllerImpl implements TopicController {
             return "redirect:topics/add";
         }
 
-        this.topicService.Add(topicAddDTO);
+        this.topicService.AddTopic(topicAddDTO, authService.findUserByUsername(principal.getName()));
 
         return "redirect:/";
     }
 
     @Override
-    public TopicAddDTO initAddForm(){
+    public TopicAddDTO initAddTopicForm(){
         return new TopicAddDTO();
     }
 
