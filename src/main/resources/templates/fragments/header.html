@@ -1,4 +1,49 @@
 <header>
-    <th:block th:insert="~{/fragments/guest-nav}" />
-    <th:block th:insert="~{/fragments/logged-nav}" />
+    <th:block>
+        <th:block sec :authorize="isAnonymous()">
+            <nav class="main-nav">
+                <ul>
+                    <li>
+                        <a th:href="@{/}">Home</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/identity/login}">Login</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/identity/register}">Register</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/about}">About</a>
+                </ul>
+            </nav>
+        </th:block>
+        <th:block sec :authorize="isAuthenticated()">
+            <nav class="main-nav">
+                <ul>
+                    <li>
+                        <a th:href="@{/topics/add}">Add new topics</a>
+                    </li>
+                    <li>
+                        <a th:href="@{/users/profile}">Profile</a>
+                    </li>
+
+                    <th:block sec :authorize="hasRole('ROLE_MODERATOR')">
+                        <li>
+                            <a th:href="@{/admin/approve}">Topics to approve</a>
+                        </li>
+
+                        <th:block sec :authorize="hasRole('ROLE_ADMIN')">
+                            <li>
+                                <a th:href="@{/admin/edit-user}">Change role and level</a>
+                            </li>
+                        </th:block>
+                    </th:block>
+
+                    <li>
+                        <a th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </th:block>
+    </th:block>
 </header>

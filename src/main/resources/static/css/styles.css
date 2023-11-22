@@ -14,7 +14,7 @@ html {
 }
 
 body {
-    background-image: url("/images/background.jpeg");
+    background-image: url("static/images/background.jpeg");
     backdrop-filter: blur(4px);
     padding: 10px;
     background-repeat: no-repeat;
@@ -91,7 +91,7 @@ img {
     grid-area: showcase;
     min-height: 400px;
     background-size: cover;
-    background: url("/images/topics.jpg") center;
+    background: url("static/images/topics.jpg") center;
     padding: 3rem;
     display: flex;
     flex-direction: column;
@@ -197,14 +197,14 @@ footer {
 }
 
 .info div:nth-child(1) {
-    background-image: url("/images/about-pic1.webp");
+    background-image: url("static/images/about-pic1.webp");
     background-size: cover;
     border-bottom-right-radius: 5rem;
     border-top-left-radius: 5rem;
 }
 
 .info div:nth-child(3) {
-    background-image: url("/images/about-pic2.jpg");
+    background-image: url("static/images/about-pic2.jpg");
     background-size: cover;
     border-bottom-left-radius: 5rem;
     border-top-right-radius: 5rem;
@@ -227,14 +227,14 @@ footer {
 }
 
 .freshwater div:nth-child(1) {
-    background-image: url("/images/freshwater-pic1.webp");
+    background-image: url("static/images/freshwater-pic1.webp");
     background-size: cover;
     border-bottom-right-radius: 5rem;
     border-top-left-radius: 5rem;
 }
 
 .freshwater div:nth-child(3) {
-    background-image: url("/images/freshwater-pic2.jpg");
+    background-image: url("static/images/freshwater-pic2.jpg");
     background-size: cover;
     border-bottom-left-radius: 5rem;
     border-top-right-radius: 5rem;
@@ -256,14 +256,14 @@ footer {
 }
 
 .blackwater div:nth-child(1) {
-    background-image: url("/images/blackwater-pic1.jpg");
+    background-image: url("static/images/blackwater-pic1.jpg");
     background-size: cover;
     border-bottom-right-radius: 5rem;
     border-top-left-radius: 5rem;
 }
 
 .blackwater div:nth-child(3) {
-    background-image: url("/images/blackwater-pic2.jpg");
+    background-image: url("static/images/blackwater-pic2.jpg");
     background-size: cover;
     border-bottom-left-radius: 5rem;
     border-top-right-radius: 5rem;
@@ -286,14 +286,14 @@ footer {
 }
 
 .brackish-water div:nth-child(1) {
-    background-image: url("/images/brackish-water-pic1.webp");
+    background-image: url("static/images/brackish-water-pic1.webp");
     background-size: cover;
     border-bottom-right-radius: 5rem;
     border-top-left-radius: 5rem;
 }
 
 .brackish-water div:nth-child(3) {
-    background-image: url("/images/brackish-water-pic2.jpg");
+    background-image: url("static/images/brackish-water-pic2.jpg");
     background-size: cover;
     border-bottom-left-radius: 5rem;
     border-top-right-radius: 5rem;
@@ -315,14 +315,14 @@ footer {
 }
 
 .reef div:nth-child(1) {
-    background-image: url("/images/reef-pic1.jpg");
+    background-image: url("static/images/reef-pic1.jpg");
     background-size: cover;
     border-bottom-right-radius: 5rem;
     border-top-left-radius: 5rem;
 }
 
 .reef div:nth-child(3) {
-    background-image: url("/images/reef-pic2.jpg");
+    background-image: url("static/images/reef-pic2.jpg");
     background-size: cover;
     border-bottom-left-radius: 5rem;
     border-top-right-radius: 5rem;
@@ -369,7 +369,7 @@ footer {
 
 }
 
-/* AddTopic topic */
+/* addTopic topic */
 
 #map {
     height: 500px;

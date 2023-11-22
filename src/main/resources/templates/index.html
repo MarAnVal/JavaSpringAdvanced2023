@@ -3,7 +3,6 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/head}">
-    <title>Home</title></head>
 
 <body>
 <div class="wrapper">
@@ -19,7 +18,7 @@
                 Don't hesitate to ask and share your experience!
                 Find out one hidden world and enjoy nature!
             </p>
-            <a th:href="@{/topics}" class="btn">To topics</a>
+            <a th:href="@{/topics/}" class="btn">To topics</a>
         </div>
         <a th:href="@{/topics/my-topics}" class="main-btn">
             <div class="box">
@@ -39,28 +38,28 @@
 
     <!-- Boxes Section -->
     <section class="boxes">
-        <a th:href="@{/freshwater}" class="main-btn">
+        <a th:href="@{/habitats/freshwater}" class="main-btn">
             <div class="box">
                 <img src="/images/freshwater-icon.png" height="150px" alt="">
                 <h3>Freshwater setup</h3>
                 <p>You love the classic setup?</p>
             </div>
         </a>
-        <a th:href="@{/blackwater}" class="main-btn">
+        <a th:href="@{/habitats/blackwater}" class="main-btn">
             <div class="box">
                 <img src="/images/blackwater-icon.png" height="150px" alt="">
                 <h3>Blackwater setup</h3>
                 <p>When you want mimic the nature.</p>
             </div>
         </a>
-        <a th:href="@{/brackish-water}" class="main-btn">
+        <a th:href="@{/habitats/brackish-water}" class="main-btn">
             <div class="box">
                 <img src="/images/brackish-water-icon.png" height="150px" alt="">
                 <h3>Brackish water setup</h3>
                 <p>Challenging meeting of river end sea?</p>
             </div>
         </a>
-        <a th:href="@{/reef}" class="main-btn">
+        <a th:href="@{/habitats/reef}" class="main-btn">
             <div class="box">
                 <img src="/images/reef-icon.png" height="150px" alt="">
                 <h3>Reef setup</h3>
@@ -72,7 +71,7 @@
     <!-- Info Section -->
     <section class="topic">
         <!--        Most commented topics first picture -->
-        <img th:src="${mostCommented.pictures.get(0).getPictureUrl()}" alt="">
+        <img th:src="|${mostCommented.getPictureUrl()}|" alt="">
         <div>
             <h2>The most commented topics:
                 <span th:text="${mostCommented.name}"></span>
@@ -88,10 +87,10 @@
 
     <!-- Last 2 added pictures from approved topics -->
     <section class="gallery">
-        <img th:src="${lastPictures.get(0).getPictureUrl()}" width="200px"
-             height="200px" alt="">
-        <img th:src="${lastPictures.get(1).getPictureUrl()}" width="200px"
-             height="200px" alt="">
+        <img th:src="|${lastPictures.get(0).pictureUrl}|" width="200px"
+             height="150px" alt="">
+        <img th:src="|${lastPictures.get(1).pictureUrl}|" width="200px"
+             height="150px" alt="">
     </section>
 
 </div>

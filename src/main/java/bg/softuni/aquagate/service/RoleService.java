@@ -6,7 +6,7 @@ import bg.softuni.aquagate.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import javax.management.relation.RoleNotFoundException;
 import java.util.List;
 
 @Service
@@ -28,23 +28,25 @@ public class RoleService {
         }
     }
 
-    public List<Role> getRolesListByName(RoleEnum roleEnum) {
-        List<Role> roles = new ArrayList<>();
+    public List<Role> getEditedRolesListByName(RoleEnum roleEnum) throws RoleNotFoundException {
+        List<Role> roles;
         switch (roleEnum) {
             case USER:
-                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER));
+                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER).orElseThrow(RoleNotFoundException::new));
                 break;
 
             case MODERATOR:
-                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER),
-                        roleRepo.findRoleByName(RoleEnum.MODERATOR));
+                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER).orElseThrow(RoleNotFoundException::new),
+                        roleRepo.findRoleByName(RoleEnum.MODERATOR).orElseThrow(RoleNotFoundException::new));
                 break;
 
             case ADMIN:
-                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER),
-                        roleRepo.findRoleByName(RoleEnum.MODERATOR),
-                        roleRepo.findRoleByName(RoleEnum.ADMIN));
+                roles = List.of(roleRepo.findRoleByName(RoleEnum.USER).orElseThrow(RoleNotFoundException::new),
+                        roleRepo.findRoleByName(RoleEnum.MODERATOR).orElseThrow(RoleNotFoundException::new),
+                        roleRepo.findRoleByName(RoleEnum.ADMIN).orElseThrow(RoleNotFoundException::new));
                 break;
+            default:
+                throw new RoleNotFoundException();
 
         }
         return roles;

@@ -1,5 +1,6 @@
 package bg.softuni.aquagate.data.model;
 
+import bg.softuni.aquagate.vallidation.anotation.PasswordConfirmed;
 import bg.softuni.aquagate.vallidation.anotation.UniqueEmail;
 import bg.softuni.aquagate.vallidation.anotation.UniqueUsername;
 import jakarta.validation.constraints.Email;
@@ -30,5 +31,6 @@ public class UserRegistrationDTO {
 
     @NotBlank
     @Length(min = 5, max = 20)
+    @PasswordConfirmed
     private String confirmPassword;
 }

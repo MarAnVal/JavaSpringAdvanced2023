@@ -14,4 +14,6 @@ public class TopicsView {
     private String name;
 
     private String description;
+
+    private String pictureUrl;
 }

@@ -14,6 +14,7 @@ import lombok.Setter;
 public class Picture extends BaseEntity{
 
     @Column(nullable = false)
+    //TODO annotation to accept files only ending with jpeg jpg bmp....
     private String pictureUrl;
 
     @ManyToOne

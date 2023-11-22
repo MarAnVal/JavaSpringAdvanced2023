@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface HabitatRepo extends JpaRepository<Habitat, Long> {
     Optional<Habitat> findByName(HabitatEnum value);
+
+    Optional<Habitat> findHabitatByThFragmentName(String habitatName);
 }

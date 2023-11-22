@@ -3,13 +3,17 @@ package bg.softuni.aquagate.service;
 import bg.softuni.aquagate.data.entity.Comment;
 import bg.softuni.aquagate.data.entity.Picture;
 import bg.softuni.aquagate.data.entity.Topic;
+import bg.softuni.aquagate.data.entity.UserEntity;
 import bg.softuni.aquagate.data.entity.enumeration.LevelEnum;
+import bg.softuni.aquagate.data.model.CommentAddDTO;
+import bg.softuni.aquagate.data.model.PictureAddDTO;
 import bg.softuni.aquagate.data.model.TopicAddDTO;
 import bg.softuni.aquagate.data.view.CommentView;
 import bg.softuni.aquagate.data.view.PictureView;
 import bg.softuni.aquagate.data.view.TopicsDetailsView;
 import bg.softuni.aquagate.data.view.TopicsView;
 import bg.softuni.aquagate.repository.TopicRepo;
+import bg.softuni.aquagate.web.error.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,54 +45,64 @@ public class TopicService {
         this.modelMapper = modelMapper;
     }
 
-    public Topic getMostCommented() {
-        //TODO check for null value
-        return topicRepo.getMostCommented().orElse(null);
+    public Topic getMostCommented() throws TopicNotFoundException {
+        return topicRepo.getMostCommented().orElseThrow(TopicNotFoundException::new);
     }
 
-    public void AddTopic(TopicAddDTO topicAddDTO) throws IOException {
+    public Topic getNoTopicUnit() {
+        Topic topic = new Topic();
+        topic.setName("No topics at the moment");
+        topic.setPictures(pictureService.getNoPicturesUnit());
+        return topic;
+    }
+
+    public void addTopic(TopicAddDTO topicAddDTO) throws IOException, UserNotFoundException, HabitatNotFoundException,
+            PictureNotFoundException {
         Topic topic = modelMapper.map(topicAddDTO, Topic.class);
         topic.setApproved(false);
         topic.setHabitat(habitatService.findHabitatByName(topicAddDTO.getHabitat()));
         topic.setLevel(LevelEnum.valueOf(topicAddDTO.getLevel()));
-        topic.setPictures(List.of(pictureService.addPictureToNewTopic(topicAddDTO.getPictureFile())));
+        if (topicAddDTO.getPictureFile().isEmpty()) {
+            topic.setPictures(new ArrayList<>());
+        } else {
+            Picture picture = pictureService.addPictureToNewTopic(topicAddDTO.getPictureFile());
+            topic.setPictures(List.of(picture));
+        }
         topic.setAuthor(userService.findUserByUsername(topicAddDTO.getUserName()));
         topic.setComments(new ArrayList<>());
 
         topicRepo.save(topic);
     }
 
-    public List<Topic> getAllApprovedTopics() {
-        //TODO check for null value
-        return topicRepo.findAllByApproved(true).orElse(null);
+    public List<Topic> getAllApprovedTopics() throws TopicNotFoundException {
+        return topicRepo.findAllByApproved(true).orElseThrow(TopicNotFoundException::new);
+    }
+    public List<Topic> getAllApprovedMyTopics(String username) throws TopicNotFoundException, UserNotFoundException {
+        UserEntity user = userService.findUserByUsername(username);
+        return topicRepo.findAllApprovedByUserId(user.getId()).orElseThrow(TopicNotFoundException::new);
     }
 
-    public List<Topic> getAllNotApprovedTopics() {
-        //TODO check for null value
-        return topicRepo.findAllByApproved(false).orElse(null);
+    public List<Topic> getAllNotApprovedTopics() throws TopicNotFoundException {
+        return topicRepo.findAllByApproved(false).orElseThrow(TopicNotFoundException::new);
     }
 
-    public Topic findLatestTopic() {
-        //TODO check for null value
-        return topicRepo.findLatestTopic().orElse(null);
+    public Topic findLatestTopic() throws TopicNotFoundException {
+        return topicRepo.findLatestTopic().orElseThrow(TopicNotFoundException::new);
     }
 
-    public Topic findById(Long id) {
-        //TODO check for null value
-        return topicRepo.findById(id).orElse(null);
+    public Topic findById(Long id) throws TopicNotFoundException {
+        return topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
     }
 
-    public void approve(Long id) {
-        //TODO check for null value
-        Topic topic = topicRepo.findById(id).orElse(null);
+    public void approve(Long id) throws TopicNotFoundException {
+        Topic topic = topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
 
         topic.setApproved(true);
         topicRepo.save(topic);
     }
 
-    public void remove(Long id) {
-        //TODO check for null or wrong value
-        Topic topic = topicRepo.findById(id).orElse(null);
+    public void remove(Long id) throws CommentNotFoundException, TopicNotFoundException, PictureNotFoundException {
+        Topic topic = topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
 
         for (Comment comment : topic.getComments()) {
             commentService.remove(comment);
@@ -101,8 +115,28 @@ public class TopicService {
         topicRepo.delete(topic);
     }
 
+    public void addComment(CommentAddDTO commentAddDTO) throws UserNotFoundException, TopicNotFoundException {
+        Comment comment = modelMapper.map(commentAddDTO, Comment.class);
+        UserEntity user = userService.findUserByUsername(commentAddDTO.getAuthorUsername());
+        Topic topic = topicRepo.findById(commentAddDTO.getTopicId()).orElseThrow(TopicNotFoundException::new);
+
+        comment.setAuthor(user);
+        topic.getComments().add(comment);
+
+        topicRepo.save(topic);
+    }
+
+    public void addPicture(PictureAddDTO pictureAddDTO) throws TopicNotFoundException {
+        Picture picture = modelMapper.map(pictureAddDTO, Picture.class);
+        Topic topic = topicRepo.findById(pictureAddDTO.getTopicId()).orElseThrow(TopicNotFoundException::new);
+
+        topic.getPictures().add(picture);
+
+        topicRepo.save(topic);
+    }
+
+
     public TopicsDetailsView mapTopicsDetailsView(Topic topic) {
-        //TODO check for null value
         TopicsDetailsView topicsDetailsView = modelMapper.map(topic, TopicsDetailsView.class);
 
         List<PictureView> pictureViews = pictureService.mapPictureViewList(topic.getPictures());
@@ -120,7 +154,6 @@ public class TopicService {
     }
 
     public List<TopicsView> mapTopicDetailsViewList(List<Topic> topics) {
-        //TODO check for null value
         return topics.stream()
                 .map(e -> modelMapper.map(e, TopicsView.class))
                 .collect(Collectors.toList());

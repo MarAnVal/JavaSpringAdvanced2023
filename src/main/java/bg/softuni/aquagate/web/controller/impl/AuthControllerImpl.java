@@ -1,12 +1,15 @@
-package bg.softuni.aquagate.web.impl;
+package bg.softuni.aquagate.web.controller.impl;
 
 import bg.softuni.aquagate.data.model.UserRegistrationDTO;
 import bg.softuni.aquagate.service.AuthService;
-import bg.softuni.aquagate.web.AuthController;
+import bg.softuni.aquagate.web.controller.AuthController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.management.relation.RoleNotFoundException;
 
 @Controller
 public class AuthControllerImpl implements AuthController {
@@ -19,13 +22,13 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
-    public UserRegistrationDTO initRegistrationForm() {
-        return new UserRegistrationDTO();
+    public ModelAndView register() {
+        return new ModelAndView("register");
     }
 
     @Override
-    public String register() {
-        return "register";
+    public UserRegistrationDTO initUserRegistrationForm() {
+        return new UserRegistrationDTO();
     }
 
     @Override
@@ -40,18 +43,19 @@ public class AuthControllerImpl implements AuthController {
 
             return "redirect:/identity/register";
         }
-
-        this.authService.register(userRegistrationDTO);
+        try {
+            this.authService.register(userRegistrationDTO);
+        } catch (RoleNotFoundException e) {
+            redirectAttributes.addFlashAttribute("statusCode", 404);
+            redirectAttributes.addFlashAttribute("message", "Role not found!");
+            return "redirect:/error";
+        }
 
         return "redirect:/identity/login";
     }
 
     @Override
     public String login() {
-        //TODO after adding spring security
-        //TODO check how works with it password decode and match
         return "login";
     }
-
-    //TODO logout
 }

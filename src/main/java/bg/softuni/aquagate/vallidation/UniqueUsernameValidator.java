@@ -1,20 +1,24 @@
 package bg.softuni.aquagate.vallidation;
 
-import bg.softuni.aquagate.service.AuthService;
+import bg.softuni.aquagate.repository.UserRepo;
 import bg.softuni.aquagate.vallidation.anotation.UniqueUsername;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {
 
-    private final AuthService authService;
+    private final UserRepo userRepo;
 
-    public UniqueUsernameValidator(AuthService userService) {
-        this.authService = userService;
+    @Autowired
+    public UniqueUsernameValidator(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return this.authService.findUserByUsername(value) == null;
+        return userRepo.findUserByUsername(value).isEmpty();
     }
 }

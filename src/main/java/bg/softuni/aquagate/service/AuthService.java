@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RoleNotFoundException;
+
 @Service
 public class AuthService {
     private final UserRepo userRepo;
@@ -26,19 +28,11 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void register(UserRegistrationDTO userRegistrationDTO) {
+    public void register(UserRegistrationDTO userRegistrationDTO) throws RoleNotFoundException {
         UserEntity user = modelMapper.map(userRegistrationDTO, UserEntity.class);
         user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
         user.setLevel(LevelEnum.BEGINNER);
-        user.setRoles(roleService.getRolesListByName(RoleEnum.USER));
+        user.setRoles(roleService.getEditedRolesListByName(RoleEnum.USER));
         userRepo.save(user);
-    }
-
-    public UserEntity findUserByEmail(String email) {
-        return userRepo.findUserByEmail(email);
-    }
-
-    public UserEntity findUserByUsername(String username) {
-        return userRepo.findUserByUsername(username);
     }
 }

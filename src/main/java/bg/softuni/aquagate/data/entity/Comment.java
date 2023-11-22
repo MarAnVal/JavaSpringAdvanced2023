@@ -7,20 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Comment extends BaseEntity{
+public class Comment extends BaseEntity {
 
     @Column(nullable = false)
     private String context;
 
     @ManyToOne
     private UserEntity author;
-
-    @ManyToOne
-    private Topic topic;
 }

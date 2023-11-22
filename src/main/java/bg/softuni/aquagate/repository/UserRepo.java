@@ -4,9 +4,11 @@ import bg.softuni.aquagate.data.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepo extends JpaRepository<UserEntity, Long> {
-    UserEntity findUserByUsername(String username);
+    Optional<UserEntity> findUserByUsername(String username);
 
-    UserEntity findUserByEmail(String email);
+    Optional<UserEntity> findUserByEmail(String email);
 }

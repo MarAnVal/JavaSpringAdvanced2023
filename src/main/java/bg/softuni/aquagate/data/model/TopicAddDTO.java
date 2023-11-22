@@ -1,5 +1,6 @@
 package bg.softuni.aquagate.data.model;
 
+import bg.softuni.aquagate.vallidation.anotation.IsPictureFile;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class TopicAddDTO {
     @NotBlank
     private String description;
 
+    @IsPictureFile
     private MultipartFile pictureFile;
 
     private String videoUrl;

@@ -15,8 +15,8 @@
 
         <div class="row g-3 align-items-center">
             <form
-                    th:action="/identity/login"
-                    th:method="Post"
+                    th:action="@{/identity/login}"
+                    th:method="POST"
                     th:object="${UserLoginDTO}">
                 <div>
                     <div class="col-auto">

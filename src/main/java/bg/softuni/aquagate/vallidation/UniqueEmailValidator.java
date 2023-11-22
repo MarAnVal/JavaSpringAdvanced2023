@@ -1,20 +1,24 @@
 package bg.softuni.aquagate.vallidation;
 
-import bg.softuni.aquagate.service.AuthService;
+import bg.softuni.aquagate.repository.UserRepo;
 import bg.softuni.aquagate.vallidation.anotation.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
-    private final AuthService authService;
+    private final UserRepo userRepo;
 
-    public UniqueEmailValidator(AuthService userService) {
-        this.authService = userService;
+    @Autowired
+    public UniqueEmailValidator(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return authService.findUserByEmail(value)  == null;
+        return userRepo.findUserByEmail(value).isEmpty();
     }
 }

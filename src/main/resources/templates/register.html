@@ -4,11 +4,8 @@
 
 <head th:replace="~{fragments/head}">
     <title>Register</title></head>
-
-
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
-
     <!-- Navigation -->
     <header th:replace="~{fragments/header}"></header>
 
@@ -17,7 +14,7 @@
         <div class="row g-3">
             <form
                     class="registration-form"
-                    th:action="@{/users/register}"
+                    th:action="@{/identity/register}"
                     th:method="POST"
                     th:object="${userRegistrationDTO}">
 
