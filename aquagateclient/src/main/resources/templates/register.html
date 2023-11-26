@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head}">
+    <title>Register</title></head>
+<body>
+<main class="p-5 align-content-center bg-blur my-register-div">
+    <!-- Navigation -->
+    <header th:replace="~{fragments/header}"></header>
+
+    <h1 class="border-bottom">Register</h1>
+    <div class="d-flex justify-content-center ">
+        <div class="row g-3">
+            <form
+                    class="registration-form"
+                    th:action="@{/identity/register}"
+                    th:method="POST"
+                    th:object="${userRegistrationDTO}">
+
+                <div>
+                    <div class="col-auto">
+                        <label for="inputUsername" class="col-form-label ">Username</label>
+                    </div>
+
+                    <div class="col-auto">
+                        <input name="username"
+                               th:field="*{username}"
+                               th:value="*{username}"
+                               th:errorclass="is-invalid"
+                               required
+                               minlength="5" maxlength="20"
+                               type="text"
+                               id="inputUsername"
+                               class="form-control"
+                               aria-describedby="usernameHelpInline"/>
+                        <small id="usernameUniqueError"
+                               class="invalid-feedback bg-danger rounded">
+                            Username is already occupied</small>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="col-auto">
+                        <label for="inputEmail" class="col-form-label ">Email</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="email"
+                               th:field="*{email}"
+                               th:errorclass="is-invalid"
+                               type="email"
+                               id="inputEmail"
+                               class="form-control"
+                               aria-describedby="emailHelpInline">
+                        <small id="emailUniqueError"
+                               class="invalid-feedback bg-danger rounded">
+                            Email is already occupied or invalid</small>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="col-auto">
+                        <label for="inputPassword" class="col-form-label ">Password</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="password"
+                               th:field="*{password}"
+                               required minlength="5" maxlength="20"
+                               type="password"
+                               id="inputPassword"
+                               class="form-control"
+                               aria-describedby="passwordHelpInline">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="col-auto">
+                        <label for="inputConfirmPassword" class="col-form-label ">Confirm Password</label>
+                    </div>
+                    <div class="col-auto">
+                        <input name="confirmPassword"
+                               th:field="*{confirmPassword}"
+                               th:errorclass="is-invalid"
+                               required minlength="5" maxlength="20"
+                               type="password"
+                               id="inputConfirmPassword"
+                               class="form-control"
+                               aria-describedby="confirmPasswordHelpInline">
+                        <small id="confirmPasswordError"
+                               class="invalid-feedback  form-text bg-danger rounded">
+                            Do not match password.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-primary btn-block w-50" type="submit">Register</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments/footer}"></footer>
+</body>
+</html>

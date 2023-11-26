@@ -1,0 +1,46 @@
+<nav class="main-nav" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <ul>
+        <li>
+            <a th:href="@{/static}">Home</a>
+        </li>
+        <th:block sec:authorize="isAnonymous()">
+            <li>
+                <a th:href="@{/identity/login}">Login</a>
+            </li>
+            <li>
+                <a th:href="@{/identity/register}">Register</a>
+            </li>
+        </th:block>
+        <li>
+            <a th:href="@{/about}">About</a>
+        </li>
+
+        <th:block sec:authorize="isAuthenticated()">
+            <li>
+                <a th:href="@{/topics/add}">Add new topics</a>
+            </li>
+
+            <li>
+                <a th:href="@{/users/profile}">Profile</a>
+            </li>
+
+            <th:block sec:authorize="hasRole('MODERATOR')">
+                <li>
+                    <a th:href="@{/admin/approve}">Topics to approve</a>
+                </li>
+
+                <div sec:authorize="hasRole('ADMIN')">
+                    <li>
+                        <a th:href="@{/admin/edit-user}">Change role and level</a>
+                    </li>
+                </div>
+
+            </th:block>
+            <li>
+                <a th:href="@{/identity/logout}">Logout</a>
+            </li>
+
+        </th:block>
+    </ul>
+
+</nav>

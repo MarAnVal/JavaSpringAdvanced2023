@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org" >
+
+<head th:replace="~{fragments/head}">
+
+<body>
+<div class="wrapper">
+    <!-- Navigation -->
+    <header th:replace="~{fragments/header}"></header>
+    <form
+            th:action="@{/identity/logout}"
+            th:method="POST">
+
+        <section class="topic">
+            <img src="/images/error-icon.png" th:width="300" th:height="300" alt="Title image">
+            <div>
+                <h2>
+                    <span th:text="|You logged out.Visit us soon to check for new topics!|"></span>
+                </h2>
+
+                <div class="d-flex justify-content-center mt-2">
+                    <button class="btn btn-primary btn-block w-50" type="submit">Confirm</button>
+                </div>
+            </div>
+        </section>
+    </form>
+</div>
+<!-- Wrapper Ends -->
+</body>
+<footer th:replace="~{fragments/footer}"></footer>
+</html>

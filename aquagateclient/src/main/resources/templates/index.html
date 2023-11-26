@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/head}"></head>
+
+<body>
+<div class="wrapper">
+    <!-- Navigation -->
+    <th:block>
+        <header th:replace="~{fragments/header}"></header>
+    </th:block>
+    <!-- Top Container -->
+    <section class="top-container">
+        <div class="showcase">
+            <h1 sec:authorize="isAuthenticated()" sec:authentication='name'></h1>
+            <h1>Find amazing topics</h1>
+            <p>
+                Looking for amazing underwater species and how to take care of them?
+                Don't hesitate to ask and share your experience!
+                Find out one hidden world and enjoy nature!
+            </p>
+            <a th:href="@{/topics/}" class="btn">To topics</a>
+        </div>
+        <a th:href="@{/topics/my-topics}" class="main-btn">
+            <div class="box">
+                <img src="/images/my-topics-icon.png" height="150px" alt="">
+                <h3>My topics</h3>
+                <p>What topics I started?</p>
+            </div>
+        </a>
+        <a th:href="@{/topics/latest}" class="main-btn">
+            <div class="box">
+                <img src="/images/latest-topic-icon.png" height="150px" alt="">
+                <h3>Latest topic</h3>
+                <p>What is new?</p>
+            </div>
+        </a>
+    </section>
+
+    <!-- Boxes Section -->
+    <section class="boxes">
+        <a th:href="@{/habitats/freshwater}" class="main-btn">
+            <div class="box">
+                <img src="/images/freshwater-icon.png" height="150px" alt="">
+                <h3>Freshwater setup</h3>
+                <p>You love the classic setup?</p>
+            </div>
+        </a>
+        <a th:href="@{/habitats/blackwater}" class="main-btn">
+            <div class="box">
+                <img src="/images/blackwater-icon.png" height="150px" alt="">
+                <h3>Blackwater setup</h3>
+                <p>When you want mimic the nature.</p>
+            </div>
+        </a>
+        <a th:href="@{/habitats/brackish-water}" class="main-btn">
+            <div class="box">
+                <img src="/images/brackish-water-icon.png" height="150px" alt="">
+                <h3>Brackish water setup</h3>
+                <p>Challenging meeting of river end sea?</p>
+            </div>
+        </a>
+        <a th:href="@{/habitats/reef}" class="main-btn">
+            <div class="box">
+                <img src="/images/reef-icon.png" height="150px" alt="">
+                <h3>Reef setup</h3>
+                <p>Welcome the deep sea at home!</p>
+            </div>
+        </a>
+    </section>
+
+    <!-- Info Section -->
+    <section class="topic">
+        <!--        Most commented allApprovedTopics first picture -->
+        <img th:src="|${mostCommented.getPictureUrl()}|" alt="">
+        <div>
+            <h2>The most commented topics:
+                <span th:text="${mostCommented.name}"></span>
+            </h2>
+            <p>Read more about the most commented topics and do not miss the
+                chance to give your opinion and to help other users.</p>
+            <!--            Generate link to allApprovedTopics -->
+
+            <a th:unless="mostCommented.id != null" th:href="@{/topic/details/id(id = ${mostCommented.id})}"
+               class="btn">
+                Learn More</a>
+        </div>
+    </section>
+
+    <section class="gallery">
+        <img th:src="/images/galery1.webp" width="200px"
+             height="150px" alt="">
+        <img th:src="/images/galery2.jpg" width="200px"
+             height="150px" alt="">
+    </section>
+
+</div>
+<!-- Wrapper Ends -->'
+
+<footer th:replace="~{fragments/footer}"></footer>
+</body>
+</html>

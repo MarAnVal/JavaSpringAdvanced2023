@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:replace="~{fragments/head}">
+    <title>Topics</title></head>
+
+<body>
+<div class="wrapper">
+    <!-- Navigation -->
+    <header th:replace="~{fragments/header}"></header>
+
+    <section th:each="topic:${topics}" class="topic">
+
+        <img th:if="${topic.id}!=null || ${topic.pictureUrl}!=null" th:src="${topic.pictureUrl}" alt="Title image">
+        <img th:unless="${topic.id}!=null || ${topic.pictureUrl}!=null" th:src="/images/galery2.jpg" alt="Title image">
+
+        <div>
+            <h2 th:text="${topic.name}"></h2>
+
+            <th:block th:if="${topic.id}!=null">
+                <p th:text="${topic.description}"></p>
+
+                <a th:href="|/topics/details/${topic.id}|" class="btn">Learn More</a>
+
+                <a th:unless="${topic.approved}" sec:authorize="hasAnyRole('MODERATOR')"
+                   th:href="|/admin/remove/${topic.id}|" class="btn">Remove</a>
+
+                <a th:unless="${topic.approved}" sec:authorize="hasAnyRole('MODERATOR')"
+                   th:href="|/admin/approve/${topic.id}|" class="btn">Approve</a>
+            </th:block>
+        </div>
+    </section>
+</div>
+<!-- Wrapper Ends -->
+</body>
+<footer th:replace="~{fragments/footer}"></footer>
+</html>

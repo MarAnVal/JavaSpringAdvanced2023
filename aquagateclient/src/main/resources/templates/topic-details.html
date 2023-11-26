@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head}"></head>
+
+<body>
+<div class="wrapper">
+    <header th:replace="~{fragments/header}"></header>
+
+<!--TODO add the topicView data-->
+    <input type="hidden" name="topicId" id="topicId">
+
+    <div class="details-main">
+        <section class="topic-info text-center">
+            <h4 id="track-name"></h4>
+<!--            TODO add fileds values habitat ana author-->
+            <p>Habitat: <span id="habitat"></span></p>
+            <p>Author name: <span id="authorName"></span></p>
+<!--            TODO add field level value-->
+            <h4>Difficulty Level:</h4>
+            <div class="level">
+<!--                TODO difficulty lvl pics with th:if-->
+<!--                <p><img class="level-img" src="...TODO" alt=""></p>-->
+<!--                <p><img class="level-img" src="...TODO" alt=""></p>-->
+<!--                <p><img class="level-img" src="...TODO" alt=""></p>-->
+            </div>
+
+        </section>
+<!--        TODO check if needed and replace with habitat pic-->
+<!--        <section id="map"></section> -->
+        <section id="video">
+            <iframe th:if="${topicsDetailsView.videoUrl!=null}" id="frame"
+                    th:src="|https://www.youtube.com/embed/${topicDetailsView.videoUrl}|">
+            </iframe>
+            <iframe th:if="${topicsDetailsView.videoUrl==null}" id="frameDefault"
+                    th:src="|https://www.youtube.com/embed/MebHynnz0FY?si|">
+            </iframe>
+        </section>
+        <section class="topic-description text-center">
+            <h4>Description: </h4>
+            <p id="topic-description" th:text="${topicDetailsView.description}"></p>
+        </section>
+
+        <section class="comments">
+            <h1>Comments</h1>
+            <div>
+                <!-- Comments submission -->
+<!--                TODO add action and fix the <textarea> content-->
+                <form id="commentForm"
+                      method="POST"
+                      action="/static">
+                    <div class="form-group">
+                        <h4>Leave a comment</h4>
+                        <label for="message">Message</label>
+                        <textarea name="message"
+                                  id="message"
+                                  cols="30"
+                                  rows="5"
+                                  class="form-control"
+                                  style="background-color: white;"></textarea>
+                        <small id="messageError" class="invalid-feedback">
+                            Message should be at least 10 characters.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit"
+                               class="btn"
+                               id="postComment"
+                               value="Post Comment"/>
+                    </div>
+                </form>
+                <!-- Comments submission -->
+            </div>
+
+            <!-- All comments section -->
+            <div>
+                <span id="commentCtnr"><!-- Comments section, filled in by script --></span>
+            </div>
+            <!-- EO: All comments section -->
+        </section>
+    </div>
+</div>
+<footer th:replace="~{fragments/footer}"></footer>
+</body>
+</html>
