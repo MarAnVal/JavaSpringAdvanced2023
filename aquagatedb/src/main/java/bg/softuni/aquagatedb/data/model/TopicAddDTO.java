@@ -1,7 +1,6 @@
 package bg.softuni.aquagatedb.data.model;
 
-import bg.softuni.aquagatedb.vallidation.anotation.IsPictureFile;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,26 +11,24 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class TopicAddDTO {
 
-    @NotBlank
+    @NotNull
     @Length(min = 5, max = 20)
     private String name;
 
-    @NotBlank
+    @NotNull
     private String habitat;
 
-    @NotBlank
+    @NotNull
     private String level;
 
-    @NotBlank
+    @NotNull
     @Length(min = 5)
     private String description;
 
-    @IsPictureFile
     private String pictureUrl;
 
-    @Length(min = 11, max = 11)
     private String videoUrl;
 
-    @NotBlank
-    private Long userId;
+    @NotNull
+    private Long author;
 }

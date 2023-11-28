@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface HabitatRepo extends JpaRepository<Habitat, Long> {
+
     Optional<Habitat> findHabitatByName(HabitatEnum value);
 }

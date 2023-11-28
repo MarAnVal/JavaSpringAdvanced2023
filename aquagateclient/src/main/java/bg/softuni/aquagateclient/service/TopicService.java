@@ -73,4 +73,14 @@ public class TopicService {
         //TODO
         return null;
     }
+
+    private TopicView getEmptyTopicEntity() {
+        TopicView topicView = new TopicView();
+        topicView.setName("No topics");
+        topicView.setApproved(true);
+        topicView.setId(null);
+        topicView.setDescription(null);
+        topicView.setPictureUrl("/images/picture-not-found.jpg");
+        return topicView;
+    }
 }

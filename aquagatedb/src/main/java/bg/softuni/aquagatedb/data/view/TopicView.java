@@ -13,7 +13,7 @@ public class TopicView {
 
     private String name;
 
-    private Long authorId;
+    private Long author;
 
     private String description;
 

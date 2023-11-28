@@ -1,78 +1,88 @@
 package bg.softuni.aquagatedb.web.controller.impl;
 
-import bg.softuni.aquagatedb.data.entity.Topic;
 import bg.softuni.aquagatedb.data.model.TopicAddDTO;
 import bg.softuni.aquagatedb.data.view.TopicDetailsView;
 import bg.softuni.aquagatedb.data.view.TopicView;
+import bg.softuni.aquagatedb.service.CommentService;
 import bg.softuni.aquagatedb.service.TopicService;
 import bg.softuni.aquagatedb.web.controller.TopicsController;
 import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
+import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
 import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 public class TopicsControllerImpl implements TopicsController {
 
     private final TopicService topicService;
+    private final CommentService commentService;
 
     @Autowired
-    public TopicsControllerImpl(TopicService topicService) {
+    public TopicsControllerImpl(TopicService topicService, CommentService commentService) {
         this.topicService = topicService;
+        this.commentService = commentService;
     }
 
     @Override
     public ResponseEntity<List<TopicView>> getAllTopics() {
-        //TODO
-        List<Topic> allTopics = topicService.findAllTopics();
-        return null;
+        List<TopicView> allTopics = topicService.findAllTopics();
+        if (allTopics.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(topicService.findAllTopics());
+        }
     }
 
     @Override
     public ResponseEntity<TopicDetailsView> getTopicDetails(Long id) {
-        //TODO add the comments too
         try {
-            topicService.findTopicById(id)
+            return ResponseEntity.ok(topicService.findTopicById(id));
         } catch (TopicNotFoundException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.notFound().build();
         }
-        return null;
     }
 
     @Override
     public ResponseEntity<TopicView> doRemove(Long id) {
-        //TODO exception handling
         try {
-            topicService.remove(id);
+            commentService.removeCommentsByTopicId(id);
+            topicService.removeTopic(id);
+            return ResponseEntity.ok().build();
+
         } catch (TopicNotFoundException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.notFound().build();
         }
-        return null;
     }
 
     @Override
-    public ResponseEntity<TopicView> doApprove(Long id) {
-        //TODO exception handling
+    public ResponseEntity<TopicDetailsView> doApprove(Long id) {
         try {
-            topicService.approve(id);
-        } catch (TopicNotFoundException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.ok(topicService.approveTopic(id));
+        } catch (TopicNotFoundException | PictureNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
-        return null;
     }
 
     @Override
-    public ResponseEntity<TopicView> doTopicAdd(TopicAddDTO topicAddDTO, BindingResult bindingResult) {
-        //TODO validate topicAddDTO
-        try {
-            topicService.addTopic(topicAddDTO);
-        } catch (HabitatNotFoundException e) {
-            throw new RuntimeException(e);
+    public ResponseEntity<TopicView> doTopicAdd(@RequestBody TopicAddDTO topicAddDTO, BindingResult bindingResult) {
+        Pattern pattern = Pattern.compile(".jpeg$|.jpg$|.bnp$|.png$");
+        Matcher matcher = pattern.matcher(topicAddDTO.getPictureUrl());
+
+        if (bindingResult.hasErrors() || !matcher.find()) {
+            return ResponseEntity.unprocessableEntity().build();
         }
-        return null;
+        try {
+            return ResponseEntity.ok(topicService.addTopic(topicAddDTO));
+        } catch (HabitatNotFoundException | TopicNotFoundException | PictureNotFoundException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

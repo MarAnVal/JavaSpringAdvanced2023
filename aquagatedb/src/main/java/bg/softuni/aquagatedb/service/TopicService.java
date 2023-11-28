@@ -1,76 +1,123 @@
 package bg.softuni.aquagatedb.service;
 
+import bg.softuni.aquagatedb.data.entity.Comment;
+import bg.softuni.aquagatedb.data.entity.Picture;
 import bg.softuni.aquagatedb.data.entity.Topic;
-import bg.softuni.aquagatedb.data.entity.enumeration.LevelEnum;
 import bg.softuni.aquagatedb.data.model.TopicAddDTO;
+import bg.softuni.aquagatedb.data.view.CommentView;
+import bg.softuni.aquagatedb.data.view.TopicDetailsView;
+import bg.softuni.aquagatedb.data.view.TopicView;
 import bg.softuni.aquagatedb.repository.TopicRepo;
 import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
+import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
 import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
+
     private final TopicRepo topicRepo;
     private final HabitatService habitatService;
     private final PictureService pictureService;
-    private final CommentService commentService;
     private final ModelMapper modelMapper;
 
 
     @Autowired
     public TopicService(TopicRepo topicRepo, HabitatService habitatService,
-                        PictureService pictureService,
-                        CommentService commentService, ModelMapper modelMapper) {
+                        PictureService pictureService,ModelMapper modelMapper) {
         this.topicRepo = topicRepo;
         this.habitatService = habitatService;
         this.pictureService = pictureService;
-        this.commentService = commentService;
         this.modelMapper = modelMapper;
     }
 
-    public void addTopic(TopicAddDTO topicAddDTO) throws HabitatNotFoundException {
+    public TopicView addTopic(TopicAddDTO topicAddDTO) throws HabitatNotFoundException, TopicNotFoundException,
+            PictureNotFoundException {
         Topic topic = modelMapper.map(topicAddDTO, Topic.class);
         topic.setApproved(false);
         topic.setHabitat(habitatService.findHabitatByName(topicAddDTO.getHabitat()));
-        topic.setLevel(LevelEnum.valueOf(topicAddDTO.getLevel()));
 
-        pictureService.add(topicAddDTO.getPictureUrl());
+        Picture picture = pictureService.addPicture(topicAddDTO.getPictureUrl());
+        topic.setPicture(picture);
 
-        topic.setAuthorId(topicAddDTO.getUserId());
+        List<Comment> comments = new ArrayList<>();
+        topic.setComments(comments);
 
-        topicRepo.save(topic);
+        topicRepo.saveAndFlush(topic);
+
+        return mapTopicView(topicRepo
+                .findTopicByDescriptionAndName(topicAddDTO.getDescription(), topicAddDTO.getName())
+                .get(0));
     }
 
-    public void approve(Long id) throws TopicNotFoundException {
+    public TopicDetailsView approveTopic(Long id) throws TopicNotFoundException, PictureNotFoundException {
         Topic topic = topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
 
         topic.setApproved(true);
         topicRepo.save(topic);
+
+        return mapTopicDetailView(topicRepo.findById(id).orElseThrow(TopicNotFoundException::new));
     }
 
-    public void remove(Long id) throws TopicNotFoundException {
+    public void removeTopic(Long id) throws TopicNotFoundException {
         Topic topic = topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
-
-        commentService.removeByTopicId(topic.getId());
-
-        pictureService.removeByTopicId(topic.getId());
 
         topicRepo.delete(topic);
     }
 
-    public void save(Topic topic) {
-        topicRepo.save(topic);
+    public List<TopicView> findAllTopics() {
+        return topicRepo.findAll().stream()
+                .map(this::mapTopicView)
+                .collect(Collectors.toList());
     }
 
-    public List<Topic> findAllTopics() {
-        return topicRepo.findAll();
+    private TopicView mapTopicView(Topic topic) {
+        TopicView topicView = modelMapper.map(topic, TopicView.class);
+
+        topicView.setPictureUrl(topic.getPicture().getPictureUrl());
+
+        return topicView;
     }
 
-    public Topic findTopicById(Long id) throws TopicNotFoundException {
+    public TopicDetailsView findTopicById(Long id) throws TopicNotFoundException {
+        return mapTopicDetailView(topicRepo.findById(id).orElseThrow(TopicNotFoundException::new));
+    }
+
+    private TopicDetailsView mapTopicDetailView(Topic topic) {
+        TopicDetailsView topicDetailsView = modelMapper.map(topic, TopicDetailsView.class);
+
+        topicDetailsView.setHabitat(topic.getHabitat().getName().toString());
+        topicDetailsView.setComments(topic.getComments()
+                .stream()
+                .map(e -> modelMapper.map(e, CommentView.class))
+                .collect(Collectors.toList())
+        );
+        topicDetailsView.setPicture(topic.getPicture().getPictureUrl());
+
+        return topicDetailsView;
+    }
+
+    public void initTestData() throws TopicNotFoundException, HabitatNotFoundException, PictureNotFoundException{
+        if (topicRepo.count() < 1) {
+            TopicAddDTO topicAddDTO = new TopicAddDTO();
+            topicAddDTO.setName("Test");
+            topicAddDTO.setDescription("To do test");
+            topicAddDTO.setLevel("BEGINNER");
+            topicAddDTO.setHabitat("BLACK_WATER");
+            topicAddDTO.setVideoUrl("MebHynnz0FY?si");
+            topicAddDTO.setPictureUrl("/images/picture-not-found-icon.png");
+            topicAddDTO.setAuthor(1L);
+            this.addTopic(topicAddDTO);
+        }
+    }
+
+    public Topic findTopicToAddComment(Long id) throws TopicNotFoundException {
         return topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
     }
 }

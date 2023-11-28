@@ -2,13 +2,13 @@ package bg.softuni.aquagatedb.service;
 
 import bg.softuni.aquagatedb.data.entity.Picture;
 import bg.softuni.aquagatedb.repository.PictureRepo;
+import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class PictureService {
+
     private final PictureRepo pictureRepo;
 
     @Autowired
@@ -16,21 +16,17 @@ public class PictureService {
         this.pictureRepo = pictureRepo;
     }
 
-    public void add(String pictureUrl) {
+    public Picture addPicture(String pictureUrl) throws PictureNotFoundException {
         if (pictureUrl == null) {
             pictureUrl = "/images/picture-not-found.jpg";
         }
-        Picture picture = new Picture();
-        picture.setPictureUrl(pictureUrl);
-        pictureRepo.save(picture);
-    }
-
-    public void remove(Picture picture) {
-        pictureRepo.delete(picture);
-    }
-
-    public void removeByTopicId(Long id) {
-        List<Picture> picturesByTopicId = pictureRepo.findPicturesByTopicId(id);
-        pictureRepo.deleteAll(picturesByTopicId);
+        if (pictureRepo.findByPictureUrl(pictureUrl).isPresent()) {
+            return pictureRepo.findByPictureUrl(pictureUrl).get();
+        } else {
+            Picture picture = new Picture();
+            picture.setPictureUrl(pictureUrl);
+            pictureRepo.save(picture);
+            return pictureRepo.findByPictureUrl(pictureUrl).orElseThrow(PictureNotFoundException::new);
+        }
     }
 }

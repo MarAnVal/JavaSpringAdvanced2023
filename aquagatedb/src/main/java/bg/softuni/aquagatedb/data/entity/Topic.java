@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -22,14 +24,22 @@ public class Topic extends BaseEntity {
     private Habitat habitat;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private LevelEnum level;
 
     @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
-    private Long authorId;
+    private Long author;
 
     @Column(nullable = false)
     private String videoUrl;
+
+    @ManyToOne
+    private Picture picture;
+
+    @OneToMany(mappedBy = "topic")
+    private List<Comment> comments;
+
 }

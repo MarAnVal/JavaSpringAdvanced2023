@@ -17,7 +17,7 @@ public class TopicDetailsView {
 
     private String name;
 
-    private Long authorId;
+    private Long author;
 
     private String habitat;
 
@@ -25,11 +25,9 @@ public class TopicDetailsView {
 
     private String description;
 
-    private String author;
-
     private String videoUrl;
 
-    private String pictures;
+    private String picture;
 
     private List<CommentView> comments;
 }

@@ -1,6 +1,6 @@
 package bg.softuni.aquagatedb.data.model;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,13 +11,13 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class CommentAddDTO {
 
-    @NotBlank
+    @NotNull
     @Length(min = 5, max = 250)
     private String context;
 
-    @NotBlank
+    @NotNull
     private Long authorId;
 
-    @NotBlank
+    @NotNull
     private Long topicId;
 }

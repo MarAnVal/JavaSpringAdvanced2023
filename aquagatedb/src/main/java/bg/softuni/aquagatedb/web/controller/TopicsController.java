@@ -24,9 +24,9 @@ public interface TopicsController {
     ResponseEntity<TopicView> doRemove(@PathVariable Long id);
 
     @PostMapping("/approve/{id}")
-    ResponseEntity<TopicView> doApprove(@PathVariable Long id);
+    ResponseEntity<TopicDetailsView> doApprove(@PathVariable Long id);
 
     @PostMapping("/add")
-    ResponseEntity<TopicView> doTopicAdd(@RequestBody @Valid TopicAddDTO topicAddDTO, BindingResult bindingResult);
+    ResponseEntity<TopicView> doTopicAdd(@Valid TopicAddDTO topicAddDTO, BindingResult bindingResult);
 
 }
