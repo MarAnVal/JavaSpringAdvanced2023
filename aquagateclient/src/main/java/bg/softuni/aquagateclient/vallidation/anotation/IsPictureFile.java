@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IsPictureFile {
-    String message() default "Picture file have to be jpeg, jpg or bnp";
+    String message() default "Picture file have to be jpeg, jpg, bnp or png";
 
     Class<?>[] groups() default {};
 

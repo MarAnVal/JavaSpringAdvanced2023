@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.web.controller;
 
-import bg.softuni.aquagateclient.data.model.CommentAddDTO;
+import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;

@@ -15,7 +15,7 @@ public class IsPictureFileValidator implements ConstraintValidator<IsPictureFile
     @Override
     public boolean isValid(MultipartFile value, ConstraintValidatorContext context) {
         String name = value.getName();
-        Pattern pattern = Pattern.compile(".jpeg$|.jpg$|.bnp$");
+        Pattern pattern = Pattern.compile(".jpeg$|.jpg$|.bnp$|.png$");
         Matcher matcher = pattern.matcher(name);
         return matcher.find();
     }

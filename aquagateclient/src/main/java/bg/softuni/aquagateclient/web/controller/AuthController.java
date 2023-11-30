@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.web.controller;
 
-import bg.softuni.aquagateclient.data.model.UserRegistrationDTO;
+import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
 import bg.softuni.aquagateclient.web.interceptor.annotation.PageTitle;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;

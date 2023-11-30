@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.web.controller;
 
-import bg.softuni.aquagateclient.data.model.UserEditDTO;
+import bg.softuni.aquagateclient.model.dto.binding.UserEditDTO;
 import bg.softuni.aquagateclient.web.interceptor.annotation.PageTitle;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,11 +22,11 @@ public interface AdminController {
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     ModelAndView pendingDetails(@PathVariable Long id);
 
-    @PostMapping("pending/remove/{id}")
+    @GetMapping("pending/remove/{id}")
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     ModelAndView remove(@PathVariable Long id);
 
-    @PostMapping("pending/approve/{id}")
+    @GetMapping("pending/approve/{id}")
     @PreAuthorize("hasRole('ROLE_MODERATOR')")
     ModelAndView approve(@PathVariable Long id);
 

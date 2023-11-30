@@ -1,12 +1,11 @@
 package bg.softuni.aquagatedb.service;
 
-import bg.softuni.aquagatedb.data.entity.Comment;
-import bg.softuni.aquagatedb.data.entity.Picture;
-import bg.softuni.aquagatedb.data.entity.Topic;
-import bg.softuni.aquagatedb.data.model.TopicAddDTO;
-import bg.softuni.aquagatedb.data.view.CommentView;
-import bg.softuni.aquagatedb.data.view.TopicDetailsView;
-import bg.softuni.aquagatedb.data.view.TopicView;
+import bg.softuni.aquagatedb.model.dto.binding.TopicAddDTO;
+import bg.softuni.aquagatedb.model.dto.view.CommentView;
+import bg.softuni.aquagatedb.model.dto.view.TopicDetailsView;
+import bg.softuni.aquagatedb.model.dto.view.TopicView;
+import bg.softuni.aquagatedb.model.entity.Picture;
+import bg.softuni.aquagatedb.model.entity.Topic;
 import bg.softuni.aquagatedb.repository.TopicRepo;
 import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
 import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
@@ -39,6 +38,11 @@ public class TopicService {
 
     public TopicView addTopic(TopicAddDTO topicAddDTO) throws HabitatNotFoundException, TopicNotFoundException,
             PictureNotFoundException {
+
+        if (topicAddDTO.getVideoUrl() == null) {
+            topicAddDTO.setVideoUrl("MebHynnz0FY");
+        }
+
         Topic topic = modelMapper.map(topicAddDTO, Topic.class);
         topic.setApproved(false);
         topic.setHabitat(habitatService.findHabitatByName(topicAddDTO.getHabitat()));
@@ -46,10 +50,9 @@ public class TopicService {
         Picture picture = pictureService.addPicture(topicAddDTO.getPictureUrl());
         topic.setPicture(picture);
 
-        List<Comment> comments = new ArrayList<>();
-        topic.setComments(comments);
+        topic.setComments(new ArrayList<>());
 
-        topicRepo.saveAndFlush(topic);
+        topicRepo.save(topic);
 
         return mapTopicView(topicRepo
                 .findTopicByDescriptionAndName(topicAddDTO.getDescription(), topicAddDTO.getName())
@@ -81,6 +84,7 @@ public class TopicService {
         TopicView topicView = modelMapper.map(topic, TopicView.class);
 
         topicView.setPictureUrl(topic.getPicture().getPictureUrl());
+        topicView.setCommentCount(topic.getComments().size());
 
         return topicView;
     }

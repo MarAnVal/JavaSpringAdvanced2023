@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.repository;
 
-import bg.softuni.aquagateclient.data.entity.UserEntity;
+import bg.softuni.aquagateclient.model.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

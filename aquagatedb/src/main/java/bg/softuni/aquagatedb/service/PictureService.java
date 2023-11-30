@@ -1,6 +1,6 @@
 package bg.softuni.aquagatedb.service;
 
-import bg.softuni.aquagatedb.data.entity.Picture;
+import bg.softuni.aquagatedb.model.entity.Picture;
 import bg.softuni.aquagatedb.repository.PictureRepo;
 import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -82,19 +82,19 @@
                 chance to give your opinion and to help other users.</p>
             <!--            Generate link to allApprovedTopics -->
 
-            <a th:unless="mostCommented.id != null" th:href="@{/topic/details/id(id = ${mostCommented.id})}"
-               class="btn">
+            <a th:unless="${mostCommented.id} == null " th:href="|@{/topic/details/${mostCommented.id}}|"
+               class="btn" >
                 Learn More</a>
         </div>
     </section>
 
     <section class="gallery">
-        <img th:src="/images/galery1.webp" width="200px"
+        <img src="/images/galery1.webp" width="200px"
              height="150px" alt="">
-        <img th:src="/images/galery2.jpg" width="200px"
+        <img src="/images/galery2.jpg" width="200px"
              height="150px" alt="">
     </section>
-
+    <h1 class="border-bottom"></h1>
 </div>
 <!-- Wrapper Ends -->'
 

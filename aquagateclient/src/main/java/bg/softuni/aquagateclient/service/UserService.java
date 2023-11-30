@@ -1,10 +1,10 @@
 package bg.softuni.aquagateclient.service;
 
-import bg.softuni.aquagateclient.data.entity.UserEntity;
-import bg.softuni.aquagateclient.data.entity.enumeration.LevelEnum;
-import bg.softuni.aquagateclient.data.entity.enumeration.RoleEnum;
-import bg.softuni.aquagateclient.data.model.UserEditDTO;
-import bg.softuni.aquagateclient.data.model.UserRegistrationDTO;
+import bg.softuni.aquagateclient.model.dto.binding.UserEditDTO;
+import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
+import bg.softuni.aquagateclient.model.entity.UserEntity;
+import bg.softuni.aquagateclient.model.entity.enumeration.LevelEnum;
+import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
 import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.web.error.UserNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,8 +24,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-    public void edit(UserEditDTO userEditDTO) throws UserNotFoundException, RoleNotFoundException {
+    public void editUser(UserEditDTO userEditDTO) throws UserNotFoundException, RoleNotFoundException {
         UserEntity userEntity = userRepo.findUserByUsername(userEditDTO.getUsername())
                 .orElseThrow(UserNotFoundException::new);
         userEntity.setLevel(LevelEnum.valueOf(userEditDTO.getLevel()));
@@ -37,7 +36,7 @@ public class UserService {
         return userRepo.findUserByUsername(name).orElseThrow(UserNotFoundException::new);
     }
 
-    public void register(UserRegistrationDTO userRegistrationDTO) throws RoleNotFoundException {
+    public void registerUser(UserRegistrationDTO userRegistrationDTO) throws RoleNotFoundException {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userRegistrationDTO.getUsername());
         userEntity.setEmail(userRegistrationDTO.getEmail());
@@ -48,23 +47,31 @@ public class UserService {
     }
 
     public void initAdmin() throws RoleNotFoundException {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("admin");
-        userEntity.setEmail("admin@email.exp");
-        userEntity.setLevel(LevelEnum.ADVANCED);
-        userEntity.setRoles(roleService.getRolesByName(RoleEnum.ADMIN));
-        userEntity.setPassword(passwordEncoder.encode("admin"));
-        userRepo.save(userEntity);
+        if (userRepo.findUserByUsername("admin").isEmpty() &&
+                userRepo.findUserByEmail("admin@email.exp").isEmpty()) {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUsername("admin");
+            userEntity.setEmail("admin@email.exp");
+            userEntity.setLevel(LevelEnum.ADVANCED);
+            userEntity.setRoles(roleService.getRolesByName(RoleEnum.ADMIN));
+            userEntity.setPassword(passwordEncoder.encode("admin"));
+            userRepo.save(userEntity);
+        }
     }
 
     public void initModerator() throws RoleNotFoundException {
+        if (userRepo.findUserByUsername("moderator").isEmpty() &&
+                userRepo.findUserByEmail("moderator@email.exp").isEmpty()) {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("moderator");
         userEntity.setEmail("moderator@email.exp");
         userEntity.setLevel(LevelEnum.ADVANCED);
         userEntity.setRoles(roleService.getRolesByName(RoleEnum.MODERATOR));
         userEntity.setPassword(passwordEncoder.encode("moderator"));
-        userRepo.save(userEntity);
+        userRepo.save(userEntity);}
     }
 
+    public UserEntity findUserId(Long id) throws UserNotFoundException {
+        return userRepo.findById(id).orElseThrow(UserNotFoundException::new);
+    }
 }

@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.vallidation;
 
-import bg.softuni.aquagateclient.data.model.UserRegistrationDTO;
+import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
 import bg.softuni.aquagateclient.vallidation.anotation.PasswordConfirmed;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

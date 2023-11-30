@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
-import bg.softuni.aquagateclient.data.model.CommentAddDTO;
+import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
 import bg.softuni.aquagateclient.service.CommentService;
 import bg.softuni.aquagateclient.web.controller.CommentsController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,6 @@ public class CommentsControllerImpl implements CommentsController {
             return "redirect:allApprovedTopics/" + id;
         }
 
-        commentAddDTO.setAuthorUsername(principal.getName());
         commentAddDTO.setTopicId(id);
         //TODO ExceptionHandler
         commentService.addComment(commentAddDTO);

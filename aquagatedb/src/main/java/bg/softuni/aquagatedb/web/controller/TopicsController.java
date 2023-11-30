@@ -1,8 +1,8 @@
 package bg.softuni.aquagatedb.web.controller;
 
-import bg.softuni.aquagatedb.data.model.TopicAddDTO;
-import bg.softuni.aquagatedb.data.view.TopicDetailsView;
-import bg.softuni.aquagatedb.data.view.TopicView;
+import bg.softuni.aquagatedb.model.dto.binding.TopicAddDTO;
+import bg.softuni.aquagatedb.model.dto.view.TopicDetailsView;
+import bg.softuni.aquagatedb.model.dto.view.TopicView;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequestMapping("/api/topics")
-@CrossOrigin("*") //???
+@CrossOrigin("*")
+//TODO add corsOrigins only localhost:8080
 public interface TopicsController {
 
     @GetMapping("/all")
@@ -26,7 +27,7 @@ public interface TopicsController {
     @PostMapping("/approve/{id}")
     ResponseEntity<TopicDetailsView> doApprove(@PathVariable Long id);
 
-    @PostMapping("/add")
+    @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
     ResponseEntity<TopicView> doTopicAdd(@Valid TopicAddDTO topicAddDTO, BindingResult bindingResult);
 
 }

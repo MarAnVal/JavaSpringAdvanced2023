@@ -6,26 +6,29 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationTopicsConfiguration {
 
-    @Value("${}")
+    @Value("${api.configuration.host}")
     private String host;
 
-    @Value("${}")
+    @Value("${api.configuration.topics-schema}")
     private String topicsShema;
 
-    @Value("${}")
+    @Value("${api.configuration.topics-all-path}")
+    private String topicsAllPath;
+
+    @Value("${api.configuration.topics-add-path}")
     private String topicsAddPath;
 
-    @Value("${}")
+    @Value("${api.configuration.topics-details-path}")
     private String topicsDetailsPath;
 
-    @Value("${}")
+    @Value("${api.configuration.topics-remove-path}")
     private String topicsRemovePath;
 
-    @Value("${}")
+    @Value("${api.configuration.topics-approve-path}")
     private String topicsApprovePath;
 
     public String topicsAllUrlSource(){
-        return host+topicsShema;
+        return host+topicsShema+topicsAllPath;
     }
 
     public String topicAddUrlSource(){

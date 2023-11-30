@@ -1,13 +1,16 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
-import bg.softuni.aquagateclient.data.model.UserEditDTO;
-import bg.softuni.aquagateclient.data.view.TopicDetailsView;
-import bg.softuni.aquagateclient.data.view.TopicView;
+import bg.softuni.aquagateclient.model.dto.binding.UserEditDTO;
+import bg.softuni.aquagateclient.model.dto.view.TopicDetailsRequestView;
+import bg.softuni.aquagateclient.model.dto.view.TopicDetailsView;
+import bg.softuni.aquagateclient.model.dto.view.TopicView;
 import bg.softuni.aquagateclient.service.TopicService;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.AdminController;
+import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
 import bg.softuni.aquagateclient.web.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,36 +32,65 @@ public class AdminControllerImpl implements AdminController {
 
     @Override
     public ModelAndView pending() {
-        List<TopicView> allNotApprovedTopicsViews = topicService.getAllPendingTopics();
-        //TODO ExceptionHandler
-        ModelAndView model = new ModelAndView("topics");
-        model.addObject("topics", allNotApprovedTopicsViews);
+        try {
+            List<TopicView> allNotApprovedTopicsViews = topicService.getAllNotApprovedTopics();
 
-        return model;
+            ModelAndView model = new ModelAndView("topics");
+            model.addObject("topics", allNotApprovedTopicsViews);
+
+            return model;
+
+        } catch (TopicNotFoundException e) {
+            //TODO ExceptionHandler
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public ModelAndView pendingDetails(Long id) {
-        TopicDetailsView topicDetailsView = topicService.getTopicDetails(id);
-        //TODO ExceptionHandler
-        ModelAndView model = new ModelAndView("topic-detail" + id);
-        model.addObject("topicsDetailsView", topicDetailsView);
+        try {
+            ResponseEntity<TopicDetailsRequestView> topicDetails = topicService.getTopicDetails(id);
+            TopicDetailsView topicDetailsView = topicService
+                    .mapTopicDetailsView(topicDetails.getBody(),
+                            userService.findUserId(topicDetails.getBody().getAuthor()).getUsername());
+            ModelAndView model = new ModelAndView("topic-detail" + id);
+            model.addObject("topicsDetailsView", topicDetailsView);
 
-        return model;
+            return model;
+
+        } catch (TopicNotFoundException e) {
+            //TODO ExceptionHandler
+            throw new RuntimeException(e);
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public ModelAndView remove(Long id) {
-        topicService.remove(id);
-        //TODO ExceptionHandler
-        return new ModelAndView("redirect:/admin/approve");
+        try {
+            topicService.removeTopic(id);
+            return new ModelAndView("redirect:/admin/pending");
+
+        } catch (TopicNotFoundException e) {
+            //TODO ExceptionHandler handling
+            ModelAndView model = new  ModelAndView("error");
+            model.addObject("statusCode", e.getStatusCode());
+            model.addObject("message", e.getMessage());
+            return model;
+        }
     }
 
     @Override
     public ModelAndView approve(Long id) {
-        topicService.approve(id);
-        //TODO ExceptionHandler
-        return new ModelAndView("redirect:/admin/approve");
+        try {
+            topicService.approveTopic(id);
+
+            return new ModelAndView("redirect:/admin/pending");
+        } catch (TopicNotFoundException e) {
+            //TODO ExceptionHandler
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -80,11 +112,11 @@ public class AdminControllerImpl implements AdminController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.userEditDTO",
                             bindingResult);
 
-            return "redirect:admin/users-edit";
+            return "redirect:admin/users-editUser";
         }
         //TODO ExceptionHandler
         try {
-            this.userService.edit(userEditDTO);
+            this.userService.editUser(userEditDTO);
         } catch (UserNotFoundException | RoleNotFoundException e) {
             throw new RuntimeException(e);
         }

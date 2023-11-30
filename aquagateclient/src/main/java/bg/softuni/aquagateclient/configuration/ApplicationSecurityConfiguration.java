@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class ApplicationSecurityConfiguration {
@@ -28,14 +27,14 @@ public class ApplicationSecurityConfiguration {
                                         "/identity/login", "/identity/login-error", "/habitats/**", "/error")
                                 .permitAll()
 
-                                .requestMatchers("/logout", "/profile", "/topics/**", "/comments/**")
+                                .requestMatchers("/logout", "/profile", "/topics/**", "/comments/**",
+                                        "/admin/**")
                                 .authenticated()
 
-                                .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("MODERATOR")
-
-
-                                .requestMatchers(new AntPathRequestMatcher("/admin/user-edit/**")).hasRole("ADMIN")
+                                .requestMatchers("/admin/**").hasRole("MODERATOR")
+                                .requestMatchers("/admin/user-edit/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
+
                 ).formLogin(
                         formLogin -> formLogin
                                 .loginPage("/identity/login")
@@ -43,17 +42,20 @@ public class ApplicationSecurityConfiguration {
                                 .passwordParameter("password")
                                 .defaultSuccessUrl("/")
                                 .failureForwardUrl("/identity/login-error")
+
                 ).logout(
-                        logout ->
-                                logout.logoutUrl("/identity/logout")
-                                        .logoutSuccessUrl("/")
-                                        .clearAuthentication(true)
-                                        .invalidateHttpSession(true)
+                        logout -> logout
+                                .logoutUrl("/identity/logout")
+                                .logoutSuccessUrl("/")
+                                .clearAuthentication(true)
+                                .invalidateHttpSession(true)
 
                 ).exceptionHandling(
-                        exceptionHandling ->
-                                exceptionHandling.accessDeniedPage("/login")
+                        exceptionHandling -> exceptionHandling
+                                .accessDeniedPage("/login")
+
                 );
+
         return httpSecurity.build();
     }
 }

@@ -1,7 +1,7 @@
 package bg.softuni.aquagatedb.service;
 
-import bg.softuni.aquagatedb.data.entity.Habitat;
-import bg.softuni.aquagatedb.data.entity.enumeration.HabitatEnum;
+import bg.softuni.aquagatedb.model.entity.Habitat;
+import bg.softuni.aquagatedb.model.entity.enumeration.HabitatEnum;
 import bg.softuni.aquagatedb.repository.HabitatRepo;
 import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

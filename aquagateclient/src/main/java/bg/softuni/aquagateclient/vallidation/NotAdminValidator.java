@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.vallidation;
 
-import bg.softuni.aquagateclient.data.entity.Role;
+import bg.softuni.aquagateclient.model.entity.Role;
 import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.vallidation.anotation.NotAdmin;
 import jakarta.validation.ConstraintValidator;

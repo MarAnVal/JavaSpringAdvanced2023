@@ -1,7 +1,7 @@
 <nav class="main-nav" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <ul>
         <li>
-            <a th:href="@{/static}">Home</a>
+            <a th:href="@{/}">Home</a>
         </li>
         <th:block sec:authorize="isAnonymous()">
             <li>
@@ -26,7 +26,7 @@
 
             <th:block sec:authorize="hasRole('MODERATOR')">
                 <li>
-                    <a th:href="@{/admin/approve}">Topics to approve</a>
+                    <a th:href="@{/admin/pending}">Topics to approve</a>
                 </li>
 
                 <div sec:authorize="hasRole('ADMIN')">

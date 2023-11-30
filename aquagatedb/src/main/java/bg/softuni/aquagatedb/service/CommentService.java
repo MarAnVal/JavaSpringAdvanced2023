@@ -1,9 +1,9 @@
 package bg.softuni.aquagatedb.service;
 
-import bg.softuni.aquagatedb.data.entity.Comment;
-import bg.softuni.aquagatedb.data.entity.Topic;
-import bg.softuni.aquagatedb.data.model.CommentAddDTO;
-import bg.softuni.aquagatedb.data.view.CommentView;
+import bg.softuni.aquagatedb.model.entity.Comment;
+import bg.softuni.aquagatedb.model.entity.Topic;
+import bg.softuni.aquagatedb.model.dto.binding.CommentAddDTO;
+import bg.softuni.aquagatedb.model.dto.view.CommentView;
 import bg.softuni.aquagatedb.repository.CommentRepo;
 import bg.softuni.aquagatedb.web.error.CommentNotFoundException;
 import bg.softuni.aquagatedb.web.error.TopicNotFoundException;

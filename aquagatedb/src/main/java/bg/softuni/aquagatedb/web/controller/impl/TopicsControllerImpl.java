@@ -1,8 +1,8 @@
 package bg.softuni.aquagatedb.web.controller.impl;
 
-import bg.softuni.aquagatedb.data.model.TopicAddDTO;
-import bg.softuni.aquagatedb.data.view.TopicDetailsView;
-import bg.softuni.aquagatedb.data.view.TopicView;
+import bg.softuni.aquagatedb.model.dto.binding.TopicAddDTO;
+import bg.softuni.aquagatedb.model.dto.view.TopicDetailsView;
+import bg.softuni.aquagatedb.model.dto.view.TopicView;
 import bg.softuni.aquagatedb.service.CommentService;
 import bg.softuni.aquagatedb.service.TopicService;
 import bg.softuni.aquagatedb.web.controller.TopicsController;

@@ -1,7 +1,7 @@
 package bg.softuni.aquagatedb.web.controller.impl;
 
-import bg.softuni.aquagatedb.data.model.CommentAddDTO;
-import bg.softuni.aquagatedb.data.view.CommentView;
+import bg.softuni.aquagatedb.model.dto.binding.CommentAddDTO;
+import bg.softuni.aquagatedb.model.dto.view.CommentView;
 import bg.softuni.aquagatedb.service.CommentService;
 import bg.softuni.aquagatedb.web.controller.CommentsController;
 import bg.softuni.aquagatedb.web.error.CommentNotFoundException;

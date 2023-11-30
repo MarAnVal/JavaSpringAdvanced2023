@@ -1,6 +1,6 @@
 package bg.softuni.aquagatedb.repository;
 
-import bg.softuni.aquagatedb.data.entity.Comment;
+import bg.softuni.aquagatedb.model.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

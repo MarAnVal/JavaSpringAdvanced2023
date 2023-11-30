@@ -1,7 +1,7 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
-import bg.softuni.aquagateclient.data.entity.UserEntity;
-import bg.softuni.aquagateclient.data.view.UserProfileView;
+import bg.softuni.aquagateclient.model.entity.UserEntity;
+import bg.softuni.aquagateclient.model.dto.view.UserProfileView;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.UsersController;
 import bg.softuni.aquagateclient.web.error.UserNotFoundException;

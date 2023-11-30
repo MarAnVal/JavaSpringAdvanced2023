@@ -1,7 +1,7 @@
 package bg.softuni.aquagateclient.service;
 
-import bg.softuni.aquagateclient.data.entity.Role;
-import bg.softuni.aquagateclient.data.entity.UserEntity;
+import bg.softuni.aquagateclient.model.entity.Role;
+import bg.softuni.aquagateclient.model.entity.UserEntity;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

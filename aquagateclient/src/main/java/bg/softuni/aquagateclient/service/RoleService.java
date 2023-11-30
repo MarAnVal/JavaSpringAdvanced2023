@@ -1,7 +1,7 @@
 package bg.softuni.aquagateclient.service;
 
-import bg.softuni.aquagateclient.data.entity.Role;
-import bg.softuni.aquagateclient.data.entity.enumeration.RoleEnum;
+import bg.softuni.aquagateclient.model.entity.Role;
+import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
 import bg.softuni.aquagateclient.repository.RoleRepo;
 import org.springframework.stereotype.Service;
 

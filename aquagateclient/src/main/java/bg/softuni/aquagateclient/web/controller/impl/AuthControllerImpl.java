@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
-import bg.softuni.aquagateclient.data.model.UserRegistrationDTO;
+import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.AuthController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class AuthControllerImpl implements AuthController {
 
         //TODO ExceptionHandler
         try {
-            this.userService.register(userRegistrationDTO);
+            this.userService.registerUser(userRegistrationDTO);
         } catch (RoleNotFoundException e) {
             throw new RuntimeException(e);
         }
