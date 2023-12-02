@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface TopicRepo extends JpaRepository<Topic, Long> {
 
-    List<Topic> findTopicByDescriptionAndName(String description, String name);
+    List<Topic> findTopicByDescriptionAndNameOrderByIdDesc(String description, String name);
 }

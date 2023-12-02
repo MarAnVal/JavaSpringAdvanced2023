@@ -3,11 +3,13 @@ package bg.softuni.aquagateclient.web.controller.impl;
 import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
 import bg.softuni.aquagateclient.service.CommentService;
 import bg.softuni.aquagateclient.web.controller.CommentsController;
-import bg.softuni.aquagateclient.web.error.CommentNotFoundException;
-import bg.softuni.aquagateclient.web.error.UserNotFoundException;
+import bg.softuni.aquagateclient.web.error.BaseApplicationException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -30,10 +32,11 @@ public class CommentsControllerImpl implements CommentsController {
 
     @Override
     public ModelAndView doCommentAdd(CommentAddDTO commentAddDTO, BindingResult bindingResult,
-                                     RedirectAttributes redirectAttributes, Principal principal) {
+                                     RedirectAttributes redirectAttributes, Principal principal,
+                                     Long id) throws BadRequestException, ObjectNotFoundException {
 
         ModelAndView modelAndView = new ModelAndView();
-
+        commentAddDTO.setTopicId(id);
         commentAddDTO.setAuthor(principal.getName());
 
         if (bindingResult.hasErrors()) {
@@ -43,16 +46,19 @@ public class CommentsControllerImpl implements CommentsController {
                             bindingResult);
 
         } else {
-
-            try {
-
-                commentService.addComment(commentAddDTO);
-            } catch (UserNotFoundException | CommentNotFoundException e) {
-                //TODO ExceptionHandler
-                throw new RuntimeException(e);
-            }
+            commentService.addComment(commentAddDTO);
         }
-        modelAndView.setViewName("redirect:/topics/details/" + commentAddDTO.getTopicId());
+        modelAndView.setViewName("redirect:/topics/details/" + id);
         return modelAndView;
     }
+
+    @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
+    public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", e.getMessage());
+        modelAndView.addObject("statusCode", e.getStatusCode());
+
+        return modelAndView;
+    }
+
 }

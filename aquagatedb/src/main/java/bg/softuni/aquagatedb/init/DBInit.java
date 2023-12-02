@@ -3,10 +3,7 @@ package bg.softuni.aquagatedb.init;
 import bg.softuni.aquagatedb.service.CommentService;
 import bg.softuni.aquagatedb.service.HabitatService;
 import bg.softuni.aquagatedb.service.TopicService;
-import bg.softuni.aquagatedb.web.error.CommentNotFoundException;
-import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
-import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
-import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
+import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -24,17 +21,12 @@ public class DBInit implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args){
+    public void run(String... args) {
         habitatService.init();
         try {
             topicService.initTestData();
             commentService.initTestData();
-
-        } catch (HabitatNotFoundException |
-                 PictureNotFoundException |
-                 TopicNotFoundException |
-                 CommentNotFoundException e) {
-
+        } catch (ObjectNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

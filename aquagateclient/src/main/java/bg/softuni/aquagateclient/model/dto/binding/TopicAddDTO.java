@@ -27,7 +27,7 @@ public class TopicAddDTO {
     @Size(min = 5, message = "The length must be at least 5 symbols!")
     private String description;
 
-    @IsPictureFile(contentTypes = {".jpeg/.jpg/.bnp/.png"})
+    @IsPictureFile(contentTypes = {"image/jpeg", "image/jpg", "image/bnp", "image/png"})
     private MultipartFile pictureFile;
 
     private String videoUrl;

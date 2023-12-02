@@ -4,10 +4,10 @@ import bg.softuni.aquagatedb.model.dto.binding.CommentAddDTO;
 import bg.softuni.aquagatedb.model.dto.view.CommentView;
 import bg.softuni.aquagatedb.service.CommentService;
 import bg.softuni.aquagatedb.web.controller.CommentsController;
-import bg.softuni.aquagatedb.web.error.CommentNotFoundException;
-import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
+import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,16 +22,17 @@ public class CommentsControllerImpl implements CommentsController {
 
     @Override
     public ResponseEntity<CommentView> doCommentAdd(@RequestBody CommentAddDTO commentAddDTO,
-                                                    BindingResult bindingResult) {
+                                                    BindingResult bindingResult) throws ObjectNotFoundException {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.unprocessableEntity().build();
         } else {
-            try {
                 return ResponseEntity.ok(commentService.addComment(commentAddDTO));
-
-            } catch (CommentNotFoundException | TopicNotFoundException e) {
-                return ResponseEntity.badRequest().build();
-            }
         }
+    }
+
+    @ExceptionHandler({ObjectNotFoundException.class})
+    public ResponseEntity<CommentView> handleApplicationExceptions() {
+
+        return ResponseEntity.notFound().build();
     }
 }

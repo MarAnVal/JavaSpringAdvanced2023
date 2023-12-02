@@ -1,6 +1,8 @@
 package bg.softuni.aquagateclient.web.controller;
 
 import bg.softuni.aquagateclient.model.dto.binding.TopicAddDTO;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import bg.softuni.aquagateclient.web.interceptor.annotation.PageTitle;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +20,7 @@ public interface TopicController {
     @GetMapping("/")
     @PageTitle("Topics")
     @PreAuthorize("isAuthenticated()")
-    ModelAndView allApprovedTopics();
+    ModelAndView allApprovedTopics() throws BadRequestException;
 
     @ModelAttribute("topicAddDTO")
     TopicAddDTO initAddTopicForm();
@@ -32,21 +34,21 @@ public interface TopicController {
     ModelAndView doAddTopic(@Valid TopicAddDTO topicAddDTO,
                       BindingResult bindingResult,
                       RedirectAttributes redirectAttributes,
-                      Principal principal) throws IOException;
+                      Principal principal) throws IOException, BadRequestException, ObjectNotFoundException;
 
     @GetMapping("/details/{id}")
     @PageTitle("Topic detail")
     @PreAuthorize("isAuthenticated()")
-    ModelAndView topicDetails(@PathVariable Long id);
+    ModelAndView topicDetails(@PathVariable Long id) throws BadRequestException, ObjectNotFoundException;
 
     @GetMapping("/latest")
     @PageTitle("Latest topic")
     @PreAuthorize("isAuthenticated()")
-    ModelAndView latestTopicDetails();
+    ModelAndView latestTopicDetails() throws ObjectNotFoundException, BadRequestException;
 
     @GetMapping("/my-topics")
     @PageTitle("My allApprovedTopics")
     @PreAuthorize("isAuthenticated()")
-    ModelAndView myTopics(Principal principal);
+    ModelAndView myTopics(Principal principal) throws BadRequestException, ObjectNotFoundException;
 
 }

@@ -53,7 +53,6 @@ public class ApplicationSecurityConfiguration {
                 ).exceptionHandling(
                         exceptionHandling -> exceptionHandling
                                 .accessDeniedPage("/login")
-
                 );
 
         return httpSecurity.build();

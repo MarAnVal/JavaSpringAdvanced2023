@@ -1,5 +1,6 @@
 package bg.softuni.aquagateclient.web.controller;
 
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import bg.softuni.aquagateclient.web.interceptor.annotation.PageTitle;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,5 +15,5 @@ public interface UsersController {
     @GetMapping("/profile")
     @PageTitle("Profile")
     @PreAuthorize("isAuthenticated()")
-    ModelAndView profile(Principal principal);
+    ModelAndView profile(Principal principal) throws ObjectNotFoundException;
 }

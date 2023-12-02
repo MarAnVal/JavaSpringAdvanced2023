@@ -1,17 +1,17 @@
 package bg.softuni.aquagatedb.web.controller.impl;
 
 import bg.softuni.aquagatedb.model.dto.binding.TopicAddDTO;
+import bg.softuni.aquagatedb.model.dto.view.CommentView;
 import bg.softuni.aquagatedb.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagatedb.model.dto.view.TopicView;
 import bg.softuni.aquagatedb.service.CommentService;
 import bg.softuni.aquagatedb.service.TopicService;
 import bg.softuni.aquagatedb.web.controller.TopicsController;
-import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
-import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
-import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
+import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,56 +33,46 @@ public class TopicsControllerImpl implements TopicsController {
 
     @Override
     public ResponseEntity<List<TopicView>> getAllTopics() {
+
         List<TopicView> allTopics = topicService.findAllTopics();
-        if (allTopics.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(topicService.findAllTopics());
-        }
+        return ResponseEntity.ok(allTopics);
     }
 
     @Override
-    public ResponseEntity<TopicDetailsView> getTopicDetails(Long id) {
-        try {
+    public ResponseEntity<TopicDetailsView> getTopicDetails(Long id) throws ObjectNotFoundException {
+
             return ResponseEntity.ok(topicService.findTopicById(id));
-        } catch (TopicNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @Override
-    public ResponseEntity<TopicView> doRemove(Long id) {
-        try {
-            commentService.removeCommentsByTopicId(id);
-            topicService.removeTopic(id);
-            return ResponseEntity.ok().build();
+    public ResponseEntity<TopicView> doRemove(Long id) throws ObjectNotFoundException {
 
-        } catch (TopicNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        commentService.removeCommentsByTopicId(id);
+        topicService.removeTopic(id);
+        return ResponseEntity.ok(new TopicView());
     }
 
     @Override
-    public ResponseEntity<TopicDetailsView> doApprove(Long id) {
-        try {
-            return ResponseEntity.ok(topicService.approveTopic(id));
-        } catch (TopicNotFoundException | PictureNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<TopicDetailsView> doApprove(Long id) throws ObjectNotFoundException {
+
+        return ResponseEntity.ok(topicService.approveTopic(id));
     }
 
     @Override
-    public ResponseEntity<TopicView> doTopicAdd(@RequestBody TopicAddDTO topicAddDTO, BindingResult bindingResult) {
+    public ResponseEntity<TopicView> doTopicAdd(@RequestBody TopicAddDTO topicAddDTO, BindingResult bindingResult)
+            throws ObjectNotFoundException {
         Pattern pattern = Pattern.compile(".jpeg$|.jpg$|.bnp$|.png$");
         Matcher matcher = pattern.matcher(topicAddDTO.getPictureUrl());
 
         if (bindingResult.hasErrors() || !matcher.find()) {
             return ResponseEntity.unprocessableEntity().build();
         }
-        try {
-            return ResponseEntity.ok(topicService.addTopic(topicAddDTO));
-        } catch (HabitatNotFoundException | TopicNotFoundException | PictureNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(topicService.addTopic(topicAddDTO));
+    }
+
+    @ExceptionHandler({ObjectNotFoundException.class})
+    public ResponseEntity<CommentView> handleApplicationExceptions() {
+
+        return ResponseEntity.notFound().build();
     }
 }

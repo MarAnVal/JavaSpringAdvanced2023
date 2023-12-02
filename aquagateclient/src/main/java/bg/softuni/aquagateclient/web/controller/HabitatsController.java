@@ -1,5 +1,6 @@
 package bg.softuni.aquagateclient.web.controller;
 
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import bg.softuni.aquagateclient.web.interceptor.annotation.PageTitle;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,5 +14,5 @@ public interface HabitatsController {
     @GetMapping("/{habitatName}")
     @PageTitle("Habitats")
     @PreAuthorize("isAnonymous()")
-    ModelAndView habitatsInfo(@PathVariable String habitatName);
+    ModelAndView habitatsInfo(@PathVariable String habitatName) throws ObjectNotFoundException;
 }

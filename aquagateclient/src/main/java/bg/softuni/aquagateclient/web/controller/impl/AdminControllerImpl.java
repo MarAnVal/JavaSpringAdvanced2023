@@ -6,15 +6,16 @@ import bg.softuni.aquagateclient.model.dto.view.TopicView;
 import bg.softuni.aquagateclient.service.TopicService;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.AdminController;
-import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
-import bg.softuni.aquagateclient.web.error.UserNotFoundException;
+import bg.softuni.aquagateclient.web.error.BaseApplicationException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.management.relation.RoleNotFoundException;
 import java.util.List;
 
 @Controller
@@ -29,63 +30,37 @@ public class AdminControllerImpl implements AdminController {
     }
 
     @Override
-    public ModelAndView pending() {
-        try {
+    public ModelAndView pending() throws BadRequestException {
+
             List<TopicView> allNotApprovedTopicsViews = topicService.getAllNotApprovedTopics();
 
             ModelAndView model = new ModelAndView("topics");
             model.addObject("topics", allNotApprovedTopicsViews);
 
             return model;
-
-        } catch (TopicNotFoundException e) {
-            //TODO ExceptionHandler
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
-    public ModelAndView pendingDetails(Long id) {
-        try {
+    public ModelAndView pendingDetails(Long id) throws BadRequestException, ObjectNotFoundException {
             TopicDetailsView topicDetails = topicService.getTopicDetails(id);
+
             ModelAndView model = new ModelAndView("topic-detail" + id);
             model.addObject("topicsDetailsView", topicDetails);
 
             return model;
-
-        } catch (TopicNotFoundException e) {
-            //TODO ExceptionHandler
-            throw new RuntimeException(e);
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
-    public ModelAndView remove(Long id) {
-        try {
+    public ModelAndView remove(Long id) throws BadRequestException {
             topicService.removeTopic(id);
             return new ModelAndView("redirect:/admin/pending");
-
-        } catch (TopicNotFoundException e) {
-            //TODO ExceptionHandler handling
-            ModelAndView model = new  ModelAndView("error");
-            model.addObject("statusCode", e.getStatusCode());
-            model.addObject("message", e.getMessage());
-            return model;
-        }
     }
 
     @Override
-    public ModelAndView approve(Long id) {
-        try {
+    public ModelAndView approve(Long id) throws BadRequestException {
             topicService.approveTopic(id);
 
             return new ModelAndView("redirect:/admin/pending");
-        } catch (TopicNotFoundException e) {
-            //TODO ExceptionHandler
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -100,7 +75,7 @@ public class AdminControllerImpl implements AdminController {
 
     @Override
     public ModelAndView doEditUser(UserEditDTO userEditDTO, BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes) throws ObjectNotFoundException {
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -112,15 +87,18 @@ public class AdminControllerImpl implements AdminController {
 
             modelAndView.setViewName("redirect:admin/users-editUser");
         } else {
-            //TODO ExceptionHandler
-            try {
                 this.userService.editUser(userEditDTO);
                 modelAndView.setViewName("redirect:/");
-
-            } catch (UserNotFoundException | RoleNotFoundException e) {
-                throw new RuntimeException(e);
-            }
         }
+
+        return modelAndView;
+    }
+
+    @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
+    public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", e.getMessage());
+        modelAndView.addObject("statusCode", e.getStatusCode());
 
         return modelAndView;
     }

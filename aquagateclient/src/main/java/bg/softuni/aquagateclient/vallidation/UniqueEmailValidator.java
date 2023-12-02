@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.vallidation;
 
-import bg.softuni.aquagateclient.service.UserService;
+import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.vallidation.anotation.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
     private String message;
-    private final UserService userService;
+    private final UserRepo userRepo;
 
-    public UniqueEmailValidator (UserService userService) {
+    public UniqueEmailValidator (UserRepo userRepo) {
 
-        this.userService = userService;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
 
         } else {
 
-            final boolean isUnique = userService.findUserByEmail(value).isEmpty();
+            final boolean isUnique = userRepo.findUserByEmail(value).isEmpty();
 
             if (!isUnique) replaceDefaultConstraintViolation(context, this.message);
 

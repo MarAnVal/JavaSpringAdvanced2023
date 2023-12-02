@@ -3,8 +3,11 @@ package bg.softuni.aquagateclient.web.controller.impl;
 import bg.softuni.aquagateclient.model.dto.view.TopicView;
 import bg.softuni.aquagateclient.service.TopicService;
 import bg.softuni.aquagateclient.web.controller.HomeController;
-import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
+import bg.softuni.aquagateclient.web.error.BaseApplicationException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
@@ -18,21 +21,13 @@ public class HomeControllerImpl implements HomeController {
     }
 
     @Override
-    public ModelAndView index(Principal principal) {
-        try {
+    public ModelAndView index(Principal principal) throws BadRequestException {
+
             TopicView mostCommented = topicService.getMostCommentedTopic();
 
             ModelAndView model = new ModelAndView("index");
             model.addObject("mostCommented", mostCommented);
             return model;
-        } catch (TopicNotFoundException e) {
-            ModelAndView model = new ModelAndView("index");
-            model.addObject("mostCommented", topicService.getEmptyTopicView());
-            return model;
-        } catch (RuntimeException e){
-            //TODO error handler
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -40,4 +35,13 @@ public class HomeControllerImpl implements HomeController {
         return new ModelAndView("about");
     }
 
+
+    @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
+    public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", e.getMessage());
+        modelAndView.addObject("statusCode", e.getStatusCode());
+
+        return modelAndView;
+    }
 }

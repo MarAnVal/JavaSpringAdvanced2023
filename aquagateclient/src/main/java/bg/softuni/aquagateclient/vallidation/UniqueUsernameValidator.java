@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.vallidation;
 
-import bg.softuni.aquagateclient.service.UserService;
+import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.vallidation.anotation.UniqueUsername;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {
-    private final UserService userService;
+    private final UserRepo userRepo;
     private String message;
 
-    public UniqueUsernameValidator (UserService userService) {
+    public UniqueUsernameValidator (UserRepo userRepo) {
 
-        this.userService = userService;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class UniqueUsernameValidator implements ConstraintValidator<UniqueUserna
 
         } else {
 
-            final boolean isUnique = userService.findUserByUsername(value).isEmpty();
+            final boolean isUnique = userRepo.findUserByUsername(value).isEmpty();
 
             if (!isUnique) replaceDefaultConstraintViolation(context, this.message);
 

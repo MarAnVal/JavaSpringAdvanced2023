@@ -1,6 +1,6 @@
 package bg.softuni.aquagateclient.vallidation;
 
-import bg.softuni.aquagateclient.service.UserService;
+import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.vallidation.anotation.ExistingUsername;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ExistingUsernameValidator implements ConstraintValidator<ExistingUsername, String> {
-    private final UserService userService;
+    private final UserRepo userRepo;
     private String message;
 
-    public ExistingUsernameValidator (UserService userService) {
+    public ExistingUsernameValidator (UserRepo userRepo) {
 
-        this.userService = userService;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ExistingUsernameValidator implements ConstraintValidator<ExistingUs
 
         } else {
 
-            final boolean isPresent = userService.findUserByUsername(value).isPresent();
+            final boolean isPresent = userRepo.findUserByUsername(value).isPresent();
 
             if (!isPresent) replaceDefaultConstraintViolation(context, this.message);
 

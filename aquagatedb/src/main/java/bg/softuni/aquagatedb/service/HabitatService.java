@@ -3,7 +3,7 @@ package bg.softuni.aquagatedb.service;
 import bg.softuni.aquagatedb.model.entity.Habitat;
 import bg.softuni.aquagatedb.model.entity.enumeration.HabitatEnum;
 import bg.softuni.aquagatedb.repository.HabitatRepo;
-import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
+import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +17,12 @@ public class HabitatService {
         this.habitatRepo = habitatRepo;
     }
 
-    public Habitat findHabitatByName(String habitat) throws HabitatNotFoundException {
-        return habitatRepo.findHabitatByName(HabitatEnum.valueOf(habitat)).orElseThrow(HabitatNotFoundException::new);
+    public Habitat findHabitatByName(String habitat) throws ObjectNotFoundException {
+        Habitat habitatEntity = habitatRepo.findHabitatByName(HabitatEnum.valueOf(habitat)).orElse(null);
+        if(habitatEntity == null){
+            throw new ObjectNotFoundException("Habitat not Found!");
+        }
+        return habitatEntity;
     }
 
     public void init() {

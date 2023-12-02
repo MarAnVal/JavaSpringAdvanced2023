@@ -7,9 +7,7 @@ import bg.softuni.aquagatedb.model.dto.view.TopicView;
 import bg.softuni.aquagatedb.model.entity.Picture;
 import bg.softuni.aquagatedb.model.entity.Topic;
 import bg.softuni.aquagatedb.repository.TopicRepo;
-import bg.softuni.aquagatedb.web.error.HabitatNotFoundException;
-import bg.softuni.aquagatedb.web.error.PictureNotFoundException;
-import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
+import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,15 +27,14 @@ public class TopicService {
 
     @Autowired
     public TopicService(TopicRepo topicRepo, HabitatService habitatService,
-                        PictureService pictureService,ModelMapper modelMapper) {
+                        PictureService pictureService, ModelMapper modelMapper) {
         this.topicRepo = topicRepo;
         this.habitatService = habitatService;
         this.pictureService = pictureService;
         this.modelMapper = modelMapper;
     }
 
-    public TopicView addTopic(TopicAddDTO topicAddDTO) throws HabitatNotFoundException, TopicNotFoundException,
-            PictureNotFoundException {
+    public TopicView addTopic(TopicAddDTO topicAddDTO) throws ObjectNotFoundException {
 
         if (topicAddDTO.getVideoUrl() == null) {
             topicAddDTO.setVideoUrl("MebHynnz0FY");
@@ -53,29 +50,48 @@ public class TopicService {
         topic.setComments(new ArrayList<>());
 
         topicRepo.save(topic);
-
-        return mapTopicView(topicRepo
-                .findTopicByDescriptionAndName(topicAddDTO.getDescription(), topicAddDTO.getName())
-                .get(0));
+        List<Topic> savedTopics = topicRepo
+                .findTopicByDescriptionAndNameOrderByIdDesc(topicAddDTO.getDescription(), topicAddDTO.getName());
+        if (savedTopics.isEmpty()) {
+            throw new ObjectNotFoundException("Problem with saving the topic! Please try again!");
+        }
+        return mapTopicView(savedTopics.get(0));
     }
 
-    public TopicDetailsView approveTopic(Long id) throws TopicNotFoundException, PictureNotFoundException {
-        Topic topic = topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
+    public TopicDetailsView approveTopic(Long id) throws ObjectNotFoundException {
+        Topic topic = topicRepo.findById(id).orElse(null);
+
+        if (topic == null) {
+            throw new ObjectNotFoundException("Topic not found!");
+        }
 
         topic.setApproved(true);
         topicRepo.save(topic);
 
-        return mapTopicDetailView(topicRepo.findById(id).orElseThrow(TopicNotFoundException::new));
+        Topic updatedTopic = topicRepo.findById(id).orElse(null);
+
+        if (updatedTopic == null) {
+            throw new ObjectNotFoundException("Topic not found!");
+        }
+
+        return mapTopicDetailView(updatedTopic);
     }
 
-    public void removeTopic(Long id) throws TopicNotFoundException {
-        Topic topic = topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
+    public void removeTopic(Long id) throws ObjectNotFoundException {
+        Topic topic = topicRepo.findById(id).orElse(null);
+        if (topic == null) {
+            throw new ObjectNotFoundException("Topic not found!");
+        }
 
         topicRepo.delete(topic);
     }
 
     public List<TopicView> findAllTopics() {
-        return topicRepo.findAll().stream()
+        List<Topic> all = topicRepo.findAll();
+        if (all.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return all.stream()
                 .map(this::mapTopicView)
                 .collect(Collectors.toList());
     }
@@ -89,8 +105,12 @@ public class TopicService {
         return topicView;
     }
 
-    public TopicDetailsView findTopicById(Long id) throws TopicNotFoundException {
-        return mapTopicDetailView(topicRepo.findById(id).orElseThrow(TopicNotFoundException::new));
+    public TopicDetailsView findTopicById(Long id) throws ObjectNotFoundException {
+        Topic topic = topicRepo.findById(id).orElse(null);
+        if (topic == null) {
+            throw new ObjectNotFoundException("Topic not found!");
+        }
+        return mapTopicDetailView(topic);
     }
 
     private TopicDetailsView mapTopicDetailView(Topic topic) {
@@ -107,7 +127,7 @@ public class TopicService {
         return topicDetailsView;
     }
 
-    public void initTestData() throws TopicNotFoundException, HabitatNotFoundException, PictureNotFoundException{
+    public void initTestData() throws ObjectNotFoundException {
         if (topicRepo.count() < 1) {
             TopicAddDTO topicAddDTO = new TopicAddDTO();
             topicAddDTO.setName("Test");
@@ -121,7 +141,11 @@ public class TopicService {
         }
     }
 
-    public Topic findTopicToAddComment(Long id) throws TopicNotFoundException {
-        return topicRepo.findById(id).orElseThrow(TopicNotFoundException::new);
+    public Topic findTopicToAddComment(Long id) throws ObjectNotFoundException {
+        Topic topic = topicRepo.findById(id).orElse(null);
+        if (topic == null) {
+            throw new ObjectNotFoundException("Topic not found!");
+        }
+        return topic;
     }
 }

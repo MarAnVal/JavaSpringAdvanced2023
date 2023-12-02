@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userService.getUserByUsername(username);
+        UserEntity user = userService.findUserByUsername(username);
 
         return User
                 .withUsername(user.getUsername())

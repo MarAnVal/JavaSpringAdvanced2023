@@ -1,6 +1,7 @@
 package bg.softuni.aquagateclient.web.controller;
 
 import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import bg.softuni.aquagateclient.web.interceptor.annotation.PageTitle;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +29,7 @@ public interface AuthController {
     @PreAuthorize("isAnonymous()")
     ModelAndView doRegister(@Valid UserRegistrationDTO userRegistrationDTO,
                             BindingResult bindingResult,
-                            RedirectAttributes redirectAttributes);
+                            RedirectAttributes redirectAttributes) throws ObjectNotFoundException;
 
     @GetMapping("/login")
     @PageTitle("Login")

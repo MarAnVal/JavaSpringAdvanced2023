@@ -3,13 +3,15 @@ package bg.softuni.aquagateclient.web.controller.impl;
 import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.AuthController;
+import bg.softuni.aquagateclient.web.error.BaseApplicationException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.management.relation.RoleNotFoundException;
 
 @Controller
 public class AuthControllerImpl implements AuthController {
@@ -33,8 +35,8 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public ModelAndView doRegister(UserRegistrationDTO userRegistrationDTO,
-                             BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
+                                   BindingResult bindingResult,
+                                   RedirectAttributes redirectAttributes) throws ObjectNotFoundException {
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -47,12 +49,7 @@ public class AuthControllerImpl implements AuthController {
             modelAndView.setViewName("redirect:/identity/register");
         } else {
 
-            //TODO ExceptionHandler
-            try {
-                this.userService.registerUser(userRegistrationDTO);
-            } catch (RoleNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            this.userService.registerUser(userRegistrationDTO);
 
             modelAndView.setViewName("redirect:/identity/login");
         }
@@ -75,5 +72,14 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public ModelAndView logout() {
         return new ModelAndView("logout");
+    }
+
+    @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
+    public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", e.getMessage());
+        modelAndView.addObject("statusCode", e.getStatusCode());
+
+        return modelAndView;
     }
 }

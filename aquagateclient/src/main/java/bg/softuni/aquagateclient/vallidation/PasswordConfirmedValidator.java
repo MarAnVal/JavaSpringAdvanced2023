@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 public class PasswordConfirmedValidator implements ConstraintValidator<PasswordConfirmed, UserRegistrationDTO> {
     private String message;
 
-
     @Override
     public boolean isValid(UserRegistrationDTO value, ConstraintValidatorContext context) {
 

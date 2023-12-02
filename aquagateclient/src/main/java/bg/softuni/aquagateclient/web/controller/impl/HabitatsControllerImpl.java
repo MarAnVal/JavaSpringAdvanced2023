@@ -1,15 +1,18 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
 import bg.softuni.aquagateclient.web.controller.HabitatsController;
-import bg.softuni.aquagateclient.web.error.HabitatNotFoundException;
+import bg.softuni.aquagateclient.web.error.BaseApplicationException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class HabitatsControllerImpl implements HabitatsController {
 
     @Override
-    public ModelAndView habitatsInfo(String habitatName) {
+    public ModelAndView habitatsInfo(String habitatName) throws ObjectNotFoundException {
         switch (habitatName){
             case "freshwater":
             case "blackwater":
@@ -19,9 +22,16 @@ public class HabitatsControllerImpl implements HabitatsController {
                 model.addObject("habitatView", habitatName);
                 return model;
             default:
-             ModelAndView modelError = new ModelAndView("error");
-             modelError.addObject(new HabitatNotFoundException());
-             return modelError;
+                throw new ObjectNotFoundException("Habitat not found!");
         }
+    }
+
+    @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
+    public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", e.getMessage());
+        modelAndView.addObject("statusCode", e.getStatusCode());
+
+        return modelAndView;
     }
 }

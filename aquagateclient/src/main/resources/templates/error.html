@@ -10,7 +10,7 @@
     <header th:replace="~{fragments/header}"></header>
 
     <section class="topic">
-        <img th:src="'https://http.cat/' + ${statusCode}" th:width="500" th:height="450" alt="Title image">
+        <img th:src="|https://http.cat/${statusCode}|" th:width="500" th:height="450" alt="Title image">
         <div>
             <h2>Something Went Wrong:
                 <span th:text="${message}" style="color: red"></span>

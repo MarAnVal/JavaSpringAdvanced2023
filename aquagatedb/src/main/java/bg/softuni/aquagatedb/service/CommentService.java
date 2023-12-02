@@ -1,12 +1,11 @@
 package bg.softuni.aquagatedb.service;
 
-import bg.softuni.aquagatedb.model.entity.Comment;
-import bg.softuni.aquagatedb.model.entity.Topic;
 import bg.softuni.aquagatedb.model.dto.binding.CommentAddDTO;
 import bg.softuni.aquagatedb.model.dto.view.CommentView;
+import bg.softuni.aquagatedb.model.entity.Comment;
+import bg.softuni.aquagatedb.model.entity.Topic;
 import bg.softuni.aquagatedb.repository.CommentRepo;
-import bg.softuni.aquagatedb.web.error.CommentNotFoundException;
-import bg.softuni.aquagatedb.web.error.TopicNotFoundException;
+import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ public class CommentService {
         this.topicService = topicService;
     }
 
-    public CommentView addComment(CommentAddDTO commentAddDTO) throws CommentNotFoundException, TopicNotFoundException {
+    public CommentView addComment(CommentAddDTO commentAddDTO) throws ObjectNotFoundException {
         Comment comment = new Comment();
         comment.setContext(commentAddDTO.getContext());
         comment.setAuthorId(commentAddDTO.getAuthorId());
@@ -44,10 +43,11 @@ public class CommentService {
         CommentView commentView = new CommentView();
         commentView.setContext(comment.getContext());
         commentView.setAuthorId(comment.getAuthorId());
+        commentView.setTopicId(comment.getTopic().getId());
         return commentView;
     }
 
-    public void initTestData() throws TopicNotFoundException, CommentNotFoundException {
+    public void initTestData() throws ObjectNotFoundException {
         if (commentRepo.count() < 1) {
             CommentAddDTO commentAddDTO = new CommentAddDTO();
             commentAddDTO.setTopicId(1L);

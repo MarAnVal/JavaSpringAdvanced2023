@@ -1,10 +1,13 @@
 package bg.softuni.aquagateclient.web.controller;
 
 import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,5 +25,5 @@ public interface CommentsController {
     ModelAndView doCommentAdd(@Valid CommentAddDTO commentAddDTO,
                               BindingResult bindingResult,
                               RedirectAttributes redirectAttributes,
-                              Principal principal);
+                              Principal principal, @PathVariable Long id) throws BadRequestException, ObjectNotFoundException;
 }

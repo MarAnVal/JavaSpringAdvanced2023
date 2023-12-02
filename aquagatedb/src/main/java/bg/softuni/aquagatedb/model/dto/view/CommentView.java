@@ -12,4 +12,6 @@ public class CommentView {
     private String context;
 
     private Long authorId;
+
+    private Long topicId;
 }

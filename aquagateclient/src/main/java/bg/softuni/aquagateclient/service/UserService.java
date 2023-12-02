@@ -6,12 +6,9 @@ import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.model.entity.enumeration.LevelEnum;
 import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
 import bg.softuni.aquagateclient.repository.UserRepo;
-import bg.softuni.aquagateclient.web.error.UserNotFoundException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.management.relation.RoleNotFoundException;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -25,19 +22,26 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void editUser(UserEditDTO userEditDTO) throws UserNotFoundException, RoleNotFoundException {
+    public void editUser(UserEditDTO userEditDTO) throws ObjectNotFoundException {
         UserEntity userEntity = userRepo.findUserByUsername(userEditDTO.getUsername())
-                .orElseThrow(UserNotFoundException::new);
+                .orElse(null);
+        if(userEntity==null){
+            throw new ObjectNotFoundException("User not found!");
+        }
         userEntity.setLevel(LevelEnum.valueOf(userEditDTO.getLevel()));
         userEntity.setRoles(roleService.getRolesByName(RoleEnum.valueOf(userEditDTO.getRole())));
         userRepo.save(userEntity);
     }
 
-    public UserEntity getUserByUsername(String name) throws UserNotFoundException {
-        return userRepo.findUserByUsername(name).orElseThrow(UserNotFoundException::new);
+    public UserEntity findUserByUsername(String name) throws ObjectNotFoundException {
+        UserEntity userEntity = userRepo.findUserByUsername(name).orElse(null);
+        if(userEntity == null){
+            throw new ObjectNotFoundException("User not found!");
+        }
+        return userEntity;
     }
 
-    public void registerUser(UserRegistrationDTO userRegistrationDTO) throws RoleNotFoundException {
+    public void registerUser(UserRegistrationDTO userRegistrationDTO) throws ObjectNotFoundException {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userRegistrationDTO.getUsername());
         userEntity.setEmail(userRegistrationDTO.getEmail());
@@ -47,7 +51,7 @@ public class UserService {
         userRepo.save(userEntity);
     }
 
-    public void initAdmin() throws RoleNotFoundException {
+    public void initAdmin() throws ObjectNotFoundException {
         if (userRepo.findUserByUsername("admin").isEmpty() &&
                 userRepo.findUserByEmail("admin@email.exp").isEmpty()) {
             UserEntity userEntity = new UserEntity();
@@ -60,7 +64,7 @@ public class UserService {
         }
     }
 
-    public void initModerator() throws RoleNotFoundException {
+    public void initModerator() throws ObjectNotFoundException {
         if (userRepo.findUserByUsername("moderator").isEmpty() &&
                 userRepo.findUserByEmail("moderator@email.exp").isEmpty()) {
         UserEntity userEntity = new UserEntity();
@@ -72,15 +76,11 @@ public class UserService {
         userRepo.save(userEntity);}
     }
 
-    public UserEntity getUserById(Long id) throws UserNotFoundException {
-        return userRepo.findById(id).orElseThrow(UserNotFoundException::new);
-    }
-
-    public Optional<UserEntity> findUserByEmail(String email) {
-        return userRepo.findUserByEmail(email);
-    }
-
-    public Optional<UserEntity> findUserByUsername(String username) {
-        return userRepo.findUserByUsername(username);
+    public UserEntity getUserById(Long id) throws ObjectNotFoundException {
+        UserEntity userEntity = userRepo.findById(id).orElse(null);
+        if(userEntity == null){
+            throw new ObjectNotFoundException("User not found!");
+        }
+        return userEntity;
     }
 }

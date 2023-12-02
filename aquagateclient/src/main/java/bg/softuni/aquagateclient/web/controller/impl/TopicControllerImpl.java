@@ -7,11 +7,13 @@ import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.service.TopicService;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.TopicController;
-import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
-import bg.softuni.aquagateclient.web.error.UserNotFoundException;
+import bg.softuni.aquagateclient.web.error.BaseApplicationException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -32,17 +34,12 @@ public class TopicControllerImpl implements TopicController {
     }
 
     @Override
-    public ModelAndView allApprovedTopics() {
-        try {
+    public ModelAndView allApprovedTopics() throws BadRequestException {
             List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
 
             ModelAndView model = new ModelAndView("topics");
             model.addObject("topics", allApprovedTopics);
             return model;
-        } catch (TopicNotFoundException e) {
-            //TODO error Handler
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -59,7 +56,7 @@ public class TopicControllerImpl implements TopicController {
     public ModelAndView doAddTopic(TopicAddDTO topicAddDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
-                             Principal principal) {
+                             Principal principal) throws IOException, BadRequestException, ObjectNotFoundException {
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -73,65 +70,59 @@ public class TopicControllerImpl implements TopicController {
             modelAndView.setViewName("redirect:/topics/add");
         } else {
 
-            try {
-                UserEntity userByUsername = userService.getUserByUsername(principal.getName());
+                UserEntity userByUsername = userService.findUserByUsername(principal.getName());
                 topicAddDTO.setAuthor(userByUsername.getId());
                 this.topicService.addTopic(topicAddDTO);
 
                 modelAndView.setViewName("redirect:/");
-
-            } catch (UserNotFoundException e) {
-                //TODO ExceptionHandler
-                return null;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
         return modelAndView;
     }
 
     @Override
-    public ModelAndView topicDetails(Long id) {
-        try {
+    public ModelAndView topicDetails(Long id) throws BadRequestException, ObjectNotFoundException {
+
             TopicDetailsView topicDetails = topicService.getTopicDetails(id);
 
             ModelAndView model = new ModelAndView("topic-details");
             model.addObject("topicsDetailsView", topicDetails);
 
             return model;
-        } catch (TopicNotFoundException e) {
-            //TODO ExceptionHandler
-            throw new RuntimeException(e);
-        } catch (UserNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
-    public ModelAndView latestTopicDetails() {
-        try {
-            TopicView topicView = topicService.getLatestTopic();
+    public ModelAndView latestTopicDetails() throws ObjectNotFoundException, BadRequestException {
+
+            TopicDetailsView topicView = topicService.getLatestTopic();
             return new ModelAndView("redirect:/topics/details/" + topicView.getId());
-        } catch (TopicNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
-    public ModelAndView myTopics(Principal principal) {
-        try {
-            UserEntity userByUsername = userService.getUserByUsername(principal.getName());
+    public ModelAndView myTopics(Principal principal) throws BadRequestException, ObjectNotFoundException {
+            UserEntity userByUsername = userService.findUserByUsername(principal.getName());
             List<TopicView> allMyApprovedTopicViews = topicService.getAllTopicsByUserId(userByUsername.getId());
 
             ModelAndView model = new ModelAndView("topics");
             model.addObject("topics", allMyApprovedTopicViews);
             return model;
-
-        } catch (UserNotFoundException e) {
-            //TODO ExceptionHandler
-            throw new RuntimeException(e);
-        } catch (TopicNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
+
+    @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
+    public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", e.getMessage());
+        modelAndView.addObject("statusCode", e.getStatusCode());
+
+        return modelAndView;
+    }
+
+    @ExceptionHandler({IOException.class})
+    public ModelAndView handleUserNotFound() {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("message", "Picture failed to upload!");
+        modelAndView.addObject("statusCode", 400);
+
+        return modelAndView;
+    }
+
 }
