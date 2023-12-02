@@ -24,6 +24,7 @@ public class UserEntity extends BaseEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private LevelEnum level;
 
     @ManyToMany(fetch = FetchType.EAGER)

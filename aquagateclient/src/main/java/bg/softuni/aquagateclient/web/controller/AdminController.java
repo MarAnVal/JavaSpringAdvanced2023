@@ -40,7 +40,7 @@ public interface AdminController {
 
     @PostMapping("/edit-user")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    String doEditUser(@Valid UserEditDTO userEditDTO,
+    ModelAndView doEditUser(@Valid UserEditDTO userEditDTO,
                       BindingResult bindingResult,
                       RedirectAttributes redirectAttributes);
 }

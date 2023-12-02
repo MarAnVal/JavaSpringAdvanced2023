@@ -25,23 +25,23 @@ public class UsersControllerImpl implements UsersController {
 
     @Override
     public ModelAndView profile(Principal principal) {
-        String username = principal.getName();
-        UserEntity userByUsername;
         //TODO ExceptionHandler
         try {
-            userByUsername = userService.findUserByUsername(username);
+            UserEntity userByUsername = userService.getUserByUsername(principal.getName());
+            UserProfileView userProfileView = modelMapper
+                    .map(userByUsername, UserProfileView.class);
+
+            ModelAndView model = new ModelAndView("profile");
+            model.addObject("user", userProfileView);
+
+            return model;
+
         } catch (UserNotFoundException e) {
             ModelAndView error = new ModelAndView("/error");
             error.addObject("statusCode", 404);
             error.addObject("message", e.getMessage());
             return error;
         }
-        UserProfileView userProfileView = modelMapper
-                .map(userByUsername, UserProfileView.class);
 
-        ModelAndView model = new ModelAndView("profile");
-        model.addObject("user", userProfileView);
-
-        return model;
     }
 }

@@ -2,13 +2,12 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head}"><title>Edit user level and authority</title></head>
+<head th:replace="~{fragments/head}"></head>
 
 
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
 
-    <!-- Navigation -->
     <header th:replace="~{fragments/header}"></header>
 
     <h1 class="border-bottom">Change user level and role</h1>
@@ -35,12 +34,8 @@
                                id="inputUsername"
                                class="form-control"
                                aria-describedby="usernameHelpInline"/>
-                        <small id="usernameError"
-                               class="invalid-feedback bg-danger rounded">Username length must be more than 3
-                            characters</small>
-
-                        <small id="usernameExistError"
-                               class="invalid-feedback bg-danger rounded">Username do not exist</small>
+                        <small th:errors="*{username}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 
@@ -57,9 +52,8 @@
                             <option value="INTERMEDIATE">Intermediate</option>
                             <option value="ADVANCED">Advanced</option>
                         </select>
-                        <small th:if="${#fields.hasErrors('level')}"
-                               id="levelError"
-                               class="invalid-feedback  form-text bg-danger rounded">Must be not empty</small>
+                        <small th:errors="*{level}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 
@@ -75,9 +69,8 @@
                             <option value="USER">User</option>
                             <option value="MODERATOR">Moderator</option>
                         </select>
-                        <small th:if="${#fields.hasErrors('role')}"
-                               id="roleError"
-                               class="invalid-feedback  form-text bg-danger rounded">Must be not empty</small>
+                        <small th:errors="*{role}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.management.relation.RoleNotFoundException;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -32,7 +33,7 @@ public class UserService {
         userRepo.save(userEntity);
     }
 
-    public UserEntity findUserByUsername(String name) throws UserNotFoundException {
+    public UserEntity getUserByUsername(String name) throws UserNotFoundException {
         return userRepo.findUserByUsername(name).orElseThrow(UserNotFoundException::new);
     }
 
@@ -71,7 +72,15 @@ public class UserService {
         userRepo.save(userEntity);}
     }
 
-    public UserEntity findUserId(Long id) throws UserNotFoundException {
+    public UserEntity getUserById(Long id) throws UserNotFoundException {
         return userRepo.findById(id).orElseThrow(UserNotFoundException::new);
+    }
+
+    public Optional<UserEntity> findUserByEmail(String email) {
+        return userRepo.findUserByEmail(email);
+    }
+
+    public Optional<UserEntity> findUserByUsername(String username) {
+        return userRepo.findUserByUsername(username);
     }
 }

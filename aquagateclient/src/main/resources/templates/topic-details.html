@@ -20,10 +20,10 @@
 
             <div class="align-content-center">
                 <h4>Difficulty level:
-                <div th:replace="~{|fragments/level/${topicsDetailsView.level.toLowerCase()}|}"></div>
+                    <div th:replace="~{|fragments/level/${topicsDetailsView.level.toLowerCase()}|}"></div>
                 </h4>
                 <h4>Habitat:
-                <div th:replace="~{|fragments/habitat/${topicsDetailsView.habitat.toLowerCase()}|}"></div>
+                    <div th:replace="~{|fragments/habitat/${topicsDetailsView.habitat.toLowerCase()}|}"></div>
                 </h4>
             </div>
 
@@ -42,45 +42,54 @@
             <p id="topic-description" th:text="${topicsDetailsView.description}"></p>
         </section>
 
-<!--TODO comments section-->
-                <section class="comments">
-                    <h1>Comments</h1>
-                    <div>
-                        <!-- Comments submission -->
-                        <!--                TODO add action and fix the <textarea> content-->
-                        <form id="commentForm"
-                              method="POST"
-                              action="/TODO">
-                            <div class="form-group">
-                                <h4>Leave a comment</h4>
-                                <label for="message">Message</label>
-                                <textarea name="message"
-                                          id="message"
-                                          cols="30"
-                                          rows="5"
-                                          class="form-control"
-                                          style="background-color: white;"></textarea>
-                                <small id="messageError" class="invalid-feedback">
-                                    Message should be at least 10 characters.
-                                </small>
-                            </div>
+        <!--TODO comments section-->
+        <section class="comments">
+            <h1>Comments</h1>
+            <div class="comments">
+                <div class="form-group" th:each="comment:${topicsDetailsView.comments}">
+                    <h5 th:text="|${comment.author}:|">Leave a comment:</h5>
+                    <label th:text="${comment.context}">Massage:</label>
+                </div>
+            </div>
 
-                            <div class="form-group">
-                                <input type="submit"
-                                       class="btn"
-                                       id="postComment"
-                                       value="Post Comment"/>
-                            </div>
-                        </form>
-                        <!-- Comments submission -->
+            <div>
+                <!-- Comments submission -->
+                <!--                TODO add action and fix the <textarea> content-->
+                <form id="commentForm"
+                      th:action="@{|/topics/details/${topicsDetailsView.id}/comments/add|}"
+                      th:method="POST">
+
+                    <input type="hidden" name="topicId" th:value="${topicsDetailsView.id}">
+                    <div class="form-group">
+                        <h4>Leave a comment</h4>
+                        <label for="context">Message</label>
+                        <textarea name="context"
+                                  id="context"
+                                  cols="30"
+                                  rows="5"
+                                  class="form-control"
+                                  style="background-color: white;"></textarea>
+                        <small id="contextError" class="invalid-feedback">
+                            Message should be at least 10 characters.
+                        </small>
                     </div>
 
-                    <!-- All comments section -->
-                    <div>
-                        <span id="commentCtnr"><!-- Comments section, filled in by script --></span>
+                    <div class="form-group">
+                        <input type="submit"
+                               class="btn"
+                               id="postComment"
+                               value="Post Comment"/>
                     </div>
-                    <!--  All comments section -->
-                </section>
+                </form>
+                <!-- Comments submission -->
+            </div>
+
+            <!-- All comments section -->
+            <div>
+                <span id="commentCtnr"></span>
+            </div>
+            <!--  All comments section -->
+        </section>
 
     </div>
     <h1 class="border-bottom"></h1>

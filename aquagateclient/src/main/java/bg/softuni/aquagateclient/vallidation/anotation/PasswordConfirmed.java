@@ -8,10 +8,10 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = PasswordConfirmedValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordConfirmed {
-    String message() default "Can not be changed roles of the user!";
+    String message() default "Re-typed password does not match password!";
 
     Class<?>[] groups() default {};
 

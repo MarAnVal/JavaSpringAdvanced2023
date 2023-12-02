@@ -29,7 +29,7 @@ public interface TopicController {
     ModelAndView addTopic();
 
     @PostMapping("/add")
-    String doAddTopic(@Valid TopicAddDTO topicAddDTO,
+    ModelAndView doAddTopic(@Valid TopicAddDTO topicAddDTO,
                       BindingResult bindingResult,
                       RedirectAttributes redirectAttributes,
                       Principal principal) throws IOException;

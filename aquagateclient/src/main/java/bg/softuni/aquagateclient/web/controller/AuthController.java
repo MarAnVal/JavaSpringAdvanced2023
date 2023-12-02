@@ -26,14 +26,14 @@ public interface AuthController {
     @PostMapping("/register")
     @PageTitle("Register")
     @PreAuthorize("isAnonymous()")
-    String doRegister(@Valid UserRegistrationDTO userRegistrationDTO,
+    ModelAndView doRegister(@Valid UserRegistrationDTO userRegistrationDTO,
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes);
 
     @GetMapping("/login")
     @PageTitle("Login")
     @PreAuthorize("isAnonymous()")
-    String login();
+    ModelAndView login();
 
     @PostMapping("/login-error")
     @PageTitle("Login")
@@ -43,5 +43,5 @@ public interface AuthController {
     @GetMapping("/logout")
     @PageTitle("Logout")
     @PreAuthorize("isAuthenticated()")
-    String logout();
+    ModelAndView logout();
 }

@@ -1,23 +1,21 @@
 package bg.softuni.aquagateclient.model.dto.binding;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class CommentAddDTO {
 
-    @NotNull
-    @Length(min = 5, max = 250)
+    @NotNull(message = "Field must be filled!")
+    @Size(min = 5, max = 250, message = "The length must be between 5 and 250 symbols!")
     private String context;
 
-    @NotNull
-    private Long authorId;
+    private String author;
 
-    @NotNull
     private Long topicId;
 }

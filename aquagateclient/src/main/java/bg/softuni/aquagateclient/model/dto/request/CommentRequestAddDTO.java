@@ -1,4 +1,4 @@
-package bg.softuni.aquagateclient.model.dto.view;
+package bg.softuni.aquagateclient.model.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,9 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommentView {
+public class CommentRequestAddDTO {
 
     private String context;
 
-    private String author;
+    private Long authorId;
+
+    private Long topicId;
 }

@@ -366,7 +366,6 @@ footer {
 .comments {
     grid-column: 1/4;
     grid-row: 4;
-
 }
 
 /* addTopic topic */

@@ -8,12 +8,17 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = IsPictureFileValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IsPictureFile {
-    String message() default "Picture file have to be jpeg, jpg, bnp or png";
 
-    Class<?>[] groups() default {};
+    long size() default 5 * 1024 * 1024;
 
-    Class<? extends Payload>[] payload() default {};
+    String[] contentTypes();
+
+    String message() default "File must be of type .jpg, .jpeg, .bnp or .png!";
+
+    Class<?>[] groups() default { };
+
+    Class<? extends Payload>[] payload() default { };
 }

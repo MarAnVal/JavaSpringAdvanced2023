@@ -8,10 +8,10 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = UniqueEmailValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UniqueEmail {
-    String message() default "Email already exist";
+    String message() default "Username not available!";
 
     Class<?>[] groups() default {};
 

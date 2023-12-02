@@ -1,4 +1,4 @@
-package bg.softuni.aquagateclient.model.dto.view;
+package bg.softuni.aquagateclient.model.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TopicDetailsRequestView {
+public class TopicDetailsRequestDTO {
 
     private Long id;
 
@@ -29,5 +29,5 @@ public class TopicDetailsRequestView {
 
     private String picture;
 
-    private List<CommentView> comments;
+    private List<CommentRequestAddDTO> comments;
 }

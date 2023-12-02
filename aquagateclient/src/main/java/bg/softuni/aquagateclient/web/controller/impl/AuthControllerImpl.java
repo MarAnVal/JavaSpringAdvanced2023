@@ -32,31 +32,37 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
-    public String doRegister(UserRegistrationDTO userRegistrationDTO,
+    public ModelAndView doRegister(UserRegistrationDTO userRegistrationDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
+
+        ModelAndView modelAndView = new ModelAndView();
+
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userRegistrationDTO", userRegistrationDTO);
             redirectAttributes
                     .addFlashAttribute("org.springframework.validation.BindingResult.userRegistrationDTO",
                             bindingResult);
 
-            return "redirect:/identity/register";
+            modelAndView.setViewName("redirect:/identity/register");
+        } else {
+
+            //TODO ExceptionHandler
+            try {
+                this.userService.registerUser(userRegistrationDTO);
+            } catch (RoleNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+            modelAndView.setViewName("redirect:/identity/login");
         }
 
-        //TODO ExceptionHandler
-        try {
-            this.userService.registerUser(userRegistrationDTO);
-        } catch (RoleNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        return "redirect:/identity/login";
+        return modelAndView;
     }
 
     @Override
-    public String login() {
-        return "login";
+    public ModelAndView login() {
+        return new ModelAndView("login");
     }
 
     @Override
@@ -67,7 +73,7 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
-    public String logout() {
-        return "logout";
+    public ModelAndView logout() {
+        return new ModelAndView("logout");
     }
 }

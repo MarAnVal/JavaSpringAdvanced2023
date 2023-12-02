@@ -1,7 +1,6 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
 import bg.softuni.aquagateclient.model.dto.binding.UserEditDTO;
-import bg.softuni.aquagateclient.model.dto.view.TopicDetailsRequestView;
 import bg.softuni.aquagateclient.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagateclient.model.dto.view.TopicView;
 import bg.softuni.aquagateclient.service.TopicService;
@@ -10,7 +9,6 @@ import bg.softuni.aquagateclient.web.controller.AdminController;
 import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
 import bg.softuni.aquagateclient.web.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,12 +47,9 @@ public class AdminControllerImpl implements AdminController {
     @Override
     public ModelAndView pendingDetails(Long id) {
         try {
-            ResponseEntity<TopicDetailsRequestView> topicDetails = topicService.getTopicDetails(id);
-            TopicDetailsView topicDetailsView = topicService
-                    .mapTopicDetailsView(topicDetails.getBody(),
-                            userService.findUserId(topicDetails.getBody().getAuthor()).getUsername());
+            TopicDetailsView topicDetails = topicService.getTopicDetails(id);
             ModelAndView model = new ModelAndView("topic-detail" + id);
-            model.addObject("topicsDetailsView", topicDetailsView);
+            model.addObject("topicsDetailsView", topicDetails);
 
             return model;
 
@@ -104,23 +99,29 @@ public class AdminControllerImpl implements AdminController {
     }
 
     @Override
-    public String doEditUser(UserEditDTO userEditDTO, BindingResult bindingResult,
+    public ModelAndView doEditUser(UserEditDTO userEditDTO, BindingResult bindingResult,
                              RedirectAttributes redirectAttributes) {
+
+        ModelAndView modelAndView = new ModelAndView();
+
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute("userEditDTO", userEditDTO);
             redirectAttributes
                     .addFlashAttribute("org.springframework.validation.BindingResult.userEditDTO",
                             bindingResult);
 
-            return "redirect:admin/users-editUser";
-        }
-        //TODO ExceptionHandler
-        try {
-            this.userService.editUser(userEditDTO);
-        } catch (UserNotFoundException | RoleNotFoundException e) {
-            throw new RuntimeException(e);
+            modelAndView.setViewName("redirect:admin/users-editUser");
+        } else {
+            //TODO ExceptionHandler
+            try {
+                this.userService.editUser(userEditDTO);
+                modelAndView.setViewName("redirect:/");
+
+            } catch (UserNotFoundException | RoleNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-        return "redirect:/";
+        return modelAndView;
     }
 }

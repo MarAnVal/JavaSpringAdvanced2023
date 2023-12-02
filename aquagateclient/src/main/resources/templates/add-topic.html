@@ -6,10 +6,9 @@
 
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
-    <!--<div class="wrapper">-->
-    <!-- Navigation -->
+
     <header th:replace="~{fragments/header}"></header>
-    <!-- Top Container -->
+
     <h1 class="border-bottom mb-5">Add new topic</h1>
     <div class="row justify-content-center">
 
@@ -33,9 +32,8 @@
                                id="inputName"
                                class="form-control"
                                aria-describedby="inputNameHelpInline">
-                        <small id="inputNameError"
-                               class="invalid-feedback bg-danger rounded">
-                            Name length must be more than 5 characters</small>
+                        <small th:errors="*{name}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
                 <div>
@@ -47,14 +45,14 @@
                               th:field="*{description}"
                               th:value="*{description}"
                               th:errorclass="is-invalid"
-                              required minlength="5"
+                              required
+                              minlength="5"
                               maxlength="250"
                               id="inputDescription"
                               class="form-control"
                               aria-describedby="inputDescriptionHelpInline"></textarea>
-                        <small id="inputDescriptionError"
-                               class="invalid-feedback bg-danger rounded">
-                            Description length must be between 5 and 250 characters</small>
+                        <small th:errors="*{description}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
                 <div>
@@ -69,9 +67,8 @@
                                id="inputPicture"
                                class="form-control-file"
                                aria-describedby="inputPictureHelpInline">
-                        <small th:if="*{pictureError}"
-                               class="bg-danger rounded">
-                            Must be valid picture format (.jpeg, .bnp, .jpg, .png)</small>
+                        <small th:errors="*{pictureFile}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
                 <div>
@@ -91,9 +88,8 @@
                             <option value="BRACKISH_WATER">Brackish water</option>
                             <option value="REEF">Reef</option>
                         </select>
-                        <small id="inputHabitatError"
-                               class="invalid-feedback bg-danger rounded">
-                            Must not be empty</small>
+                        <small th:errors="*{habitat}"
+                               th:class="'invalid-feedback rounded'">error message</small>
 
                     </div>
                 </div>
@@ -113,15 +109,14 @@
                             <option value="INTERMEDIATE">Intermediate</option>
                             <option value="ADVANCED">Advanced</option>
                         </select>
-                        <small id="inputLevelError"
-                               class="invalid-feedback bg-danger rounded">
-                            Must not be empty</small>
+                        <small th:errors="*{level}"
+                               th:class="'invalid-feedback rounded'">error message</small>
 
                     </div>
                 </div>
                 <div>
                     <div class="form-group">
-                        <label for="inputVideoUrl">Video Url (only last eleven characters from Youtube)</label>
+                        <label for="inputVideoUrl">Video Url (only last eleven characters from YouTube)</label>
                         <input id="inputVideoUrl"
                                name="videoUrl"
                                th:field="*{videoUrl}"

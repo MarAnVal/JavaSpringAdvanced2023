@@ -2,11 +2,12 @@ package bg.softuni.aquagateclient.service;
 
 import bg.softuni.aquagateclient.configuration.ApplicationTopicsConfiguration;
 import bg.softuni.aquagateclient.model.dto.binding.TopicAddDTO;
-import bg.softuni.aquagateclient.model.dto.binding.TopicRequestAddDTO;
-import bg.softuni.aquagateclient.model.dto.view.TopicDetailsRequestView;
-import bg.softuni.aquagateclient.model.dto.view.TopicDetailsView;
-import bg.softuni.aquagateclient.model.dto.view.TopicView;
+import bg.softuni.aquagateclient.model.dto.request.TopicRequestAddDTO;
+import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
+import bg.softuni.aquagateclient.model.dto.request.TopicDetailsRequestDTO;
+import bg.softuni.aquagateclient.model.dto.view.*;
 import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
+import bg.softuni.aquagateclient.web.error.UserNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -25,20 +26,23 @@ public class TopicService {
     private final RestTemplate restTemplate;
     private final ModelMapper modelMapper;
     private final CloudService cloudService;
+    private final UserService userService;
 
     public TopicService(ApplicationTopicsConfiguration applicationTopicsConfiguration,
-                        RestTemplate restTemplate, ModelMapper modelMapper, CloudService cloudService) {
+                        RestTemplate restTemplate, ModelMapper modelMapper,
+                        CloudService cloudService, UserService userService) {
         this.applicationTopicsConfiguration = applicationTopicsConfiguration;
         this.restTemplate = restTemplate;
         this.modelMapper = modelMapper;
         this.cloudService = cloudService;
+        this.userService = userService;
     }
 
 
     private ResponseEntity<List<TopicView>> getAllTopics() {
         String url = applicationTopicsConfiguration.topicsAllUrlSource();
         return restTemplate
-                .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+                .exchange(url, HttpMethod.GET, null, new ParameterizedTypeReference<List<TopicView>>() {
                 });
     }
 
@@ -89,18 +93,7 @@ public class TopicService {
     }
 
     public void addTopic(TopicAddDTO topicAddDTO) throws IOException {
-        TopicRequestAddDTO topicRequestAddDTO = modelMapper.map(topicAddDTO, TopicRequestAddDTO.class);
-
-        if (topicAddDTO.getPictureFile().isEmpty()) {
-            topicRequestAddDTO.setPictureUrl("/images/picture-not-found.jpg");
-
-        } else {
-            topicRequestAddDTO.setPictureUrl(cloudService.uploadImage(topicAddDTO.getPictureFile()));
-        }
-
-        if (topicRequestAddDTO.getVideoUrl() == null) {
-            topicRequestAddDTO.setVideoUrl("MebHynnz0FY");
-        }
+        TopicRequestAddDTO topicRequestAddDTO = mapTopicRequestAddDTO(topicAddDTO);
 
         String url = applicationTopicsConfiguration.topicAddUrlSource();
         HttpEntity<TopicRequestAddDTO> http = new HttpEntity<>(topicRequestAddDTO);
@@ -112,16 +105,31 @@ public class TopicService {
         }
     }
 
-    public ResponseEntity<TopicDetailsRequestView> getTopicDetails(Long id) throws TopicNotFoundException {
+    private TopicRequestAddDTO mapTopicRequestAddDTO(TopicAddDTO topicAddDTO) throws IOException {
+        TopicRequestAddDTO topicRequestAddDTO = modelMapper.map(topicAddDTO, TopicRequestAddDTO.class);
+        if (topicAddDTO.getPictureFile().isEmpty()) {
+            topicRequestAddDTO.setPictureUrl("/images/picture-not-found.jpg");
+
+        } else {
+            topicRequestAddDTO.setPictureUrl(cloudService.uploadImage(topicAddDTO.getPictureFile()));
+        }
+
+        if (topicRequestAddDTO.getVideoUrl() == null) {
+            topicRequestAddDTO.setVideoUrl("MebHynnz0FY");
+        }
+        return topicRequestAddDTO;
+    }
+
+    public TopicDetailsView getTopicDetails(Long id) throws TopicNotFoundException, UserNotFoundException {
         String url = applicationTopicsConfiguration.topicDetailsUrlSource() + "/" + id;
-        ResponseEntity<TopicDetailsRequestView> topicDetailsRequest = restTemplate
-                .exchange(url, HttpMethod.GET, null, TopicDetailsRequestView.class);
+        ResponseEntity<TopicDetailsRequestDTO> topicDetailsRequest = restTemplate
+                .exchange(url, HttpMethod.GET, null, TopicDetailsRequestDTO.class);
 
         if (topicDetailsRequest.getStatusCode().value() != 200 || topicDetailsRequest.getBody() == null) {
             //TODO throw proper errors
             throw new TopicNotFoundException();
         } else {
-            return topicDetailsRequest;
+            return mapTopicDetailsView(topicDetailsRequest.getBody());
         }
     }
 
@@ -163,7 +171,6 @@ public class TopicService {
         }
     }
 
-
     public List<TopicView> getAllTopicsByUserId(Long id) throws TopicNotFoundException {
         ResponseEntity<List<TopicView>> allTopics = getAllTopics();
         if (allTopics.getStatusCode().value() != 200 || allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
@@ -186,9 +193,25 @@ public class TopicService {
         return topicView;
     }
 
-    public TopicDetailsView mapTopicDetailsView(TopicDetailsRequestView topicDetailsRequestView, String username) {
-        TopicDetailsView topicDetailsView = modelMapper.map(topicDetailsRequestView, TopicDetailsView.class);
-        topicDetailsView.setAuthor(username);
+    public TopicDetailsView mapTopicDetailsView(TopicDetailsRequestDTO topicDetailsRequestDTO) throws UserNotFoundException {
+        TopicDetailsView topicDetailsView = modelMapper.map(topicDetailsRequestDTO, TopicDetailsView.class);
+        topicDetailsView.setComments(topicDetailsRequestDTO.getComments()
+                .stream().map(e -> {
+                    try {
+                        return mapCommentView(e);
+                    } catch (UserNotFoundException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                })
+                .collect(Collectors.toList()));
+        topicDetailsView.setAuthor(userService.getUserById(topicDetailsRequestDTO.getAuthor()).getUsername());
         return topicDetailsView;
+    }
+
+    private CommentView mapCommentView(CommentRequestAddDTO commentRequestAddDTO) throws UserNotFoundException {
+        CommentView commentView = new CommentView();
+        commentView.setContext(commentRequestAddDTO.getContext());
+        commentView.setAuthor(userService.getUserById(commentRequestAddDTO.getAuthorId()).getUsername());
+        return commentView;
     }
 }

@@ -82,7 +82,7 @@
                 chance to give your opinion and to help other users.</p>
             <!--            Generate link to allApprovedTopics -->
 
-            <a th:unless="${mostCommented.id} == null " th:href="|@{/topic/details/${mostCommented.id}}|"
+            <a th:unless="${mostCommented.id} == null " th:href="@{|/topics/details/${mostCommented.id}|}"
                class="btn" >
                 Learn More</a>
         </div>

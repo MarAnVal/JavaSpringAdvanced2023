@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/comments")
+@RequestMapping("/api/comments")
 @CrossOrigin("*")
 //TODO add corsOrigins only localhost:8080
 public interface CommentsController {

@@ -5,7 +5,7 @@
 <head th:replace="~{fragments/head}"></head>
 <body>
 <main class="p-5 align-content-center bg-blur my-register-div">
-    <!-- Navigation -->
+
     <header th:replace="~{fragments/header}"></header>
 
     <h1 class="border-bottom">Register</h1>
@@ -33,9 +33,8 @@
                                id="inputUsername"
                                class="form-control"
                                aria-describedby="usernameHelpInline"/>
-                        <small id="usernameUniqueError"
-                               class="invalid-feedback bg-danger rounded">
-                            Username is already occupied</small>
+                        <small th:errors="*{username}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 
@@ -51,9 +50,8 @@
                                id="inputEmail"
                                class="form-control"
                                aria-describedby="emailHelpInline">
-                        <small id="emailUniqueError"
-                               class="invalid-feedback bg-danger rounded">
-                            Email is already occupied or invalid</small>
+                        <small th:errors="*{email}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 
@@ -69,6 +67,8 @@
                                id="inputPassword"
                                class="form-control"
                                aria-describedby="passwordHelpInline">
+                        <small th:errors="*{password}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 
@@ -85,10 +85,8 @@
                                id="inputConfirmPassword"
                                class="form-control"
                                aria-describedby="confirmPasswordHelpInline">
-                        <small id="confirmPasswordError"
-                               class="invalid-feedback  form-text bg-danger rounded">
-                            Do not match password.
-                        </small>
+                        <small th:errors="*{confirmPassword}"
+                               th:class="'invalid-feedback rounded'">error message</small>
                     </div>
                 </div>
 

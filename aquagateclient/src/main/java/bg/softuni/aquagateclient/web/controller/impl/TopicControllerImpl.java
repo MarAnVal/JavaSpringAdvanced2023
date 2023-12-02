@@ -1,17 +1,15 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
-import bg.softuni.aquagateclient.model.dto.view.TopicDetailsRequestView;
-import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.model.dto.binding.TopicAddDTO;
 import bg.softuni.aquagateclient.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagateclient.model.dto.view.TopicView;
+import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.service.TopicService;
 import bg.softuni.aquagateclient.service.UserService;
 import bg.softuni.aquagateclient.web.controller.TopicController;
 import bg.softuni.aquagateclient.web.error.TopicNotFoundException;
 import bg.softuni.aquagateclient.web.error.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,11 +56,13 @@ public class TopicControllerImpl implements TopicController {
     }
 
     @Override
-    public String doAddTopic(TopicAddDTO topicAddDTO,
+    public ModelAndView doAddTopic(TopicAddDTO topicAddDTO,
                              BindingResult bindingResult,
                              RedirectAttributes redirectAttributes,
                              Principal principal) {
-        topicAddDTO.setPictureError(bindingResult.hasFieldErrors("pictureFile"));
+
+        ModelAndView modelAndView = new ModelAndView();
+
         if (bindingResult.hasErrors()) {
 
             redirectAttributes.addFlashAttribute("topicAddDTO", topicAddDTO);
@@ -70,34 +70,33 @@ public class TopicControllerImpl implements TopicController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.topicAddDTO",
                             bindingResult);
 
-            return "redirect:/topics/add";
+            modelAndView.setViewName("redirect:/topics/add");
+        } else {
+
+            try {
+                UserEntity userByUsername = userService.getUserByUsername(principal.getName());
+                topicAddDTO.setAuthor(userByUsername.getId());
+                this.topicService.addTopic(topicAddDTO);
+
+                modelAndView.setViewName("redirect:/");
+
+            } catch (UserNotFoundException e) {
+                //TODO ExceptionHandler
+                return null;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-
-        try {
-            UserEntity userByUsername = userService.findUserByUsername(principal.getName());
-            topicAddDTO.setAuthor(userByUsername.getId());
-            this.topicService.addTopic(topicAddDTO);
-
-            return "redirect:/";
-
-        } catch (UserNotFoundException e) {
-            //TODO ExceptionHandler
-            return null;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return modelAndView;
     }
 
     @Override
     public ModelAndView topicDetails(Long id) {
         try {
-            ResponseEntity<TopicDetailsRequestView> topicDetails = topicService.getTopicDetails(id);
-            TopicDetailsView topicDetailsView = topicService
-                    .mapTopicDetailsView(topicDetails.getBody(),
-                            userService.findUserId(topicDetails.getBody().getAuthor()).getUsername());
+            TopicDetailsView topicDetails = topicService.getTopicDetails(id);
 
             ModelAndView model = new ModelAndView("topic-details");
-            model.addObject("topicsDetailsView", topicDetailsView);
+            model.addObject("topicsDetailsView", topicDetails);
 
             return model;
         } catch (TopicNotFoundException e) {
@@ -121,7 +120,7 @@ public class TopicControllerImpl implements TopicController {
     @Override
     public ModelAndView myTopics(Principal principal) {
         try {
-            UserEntity userByUsername = userService.findUserByUsername(principal.getName());
+            UserEntity userByUsername = userService.getUserByUsername(principal.getName());
             List<TopicView> allMyApprovedTopicViews = topicService.getAllTopicsByUserId(userByUsername.getId());
 
             ModelAndView model = new ModelAndView("topics");
