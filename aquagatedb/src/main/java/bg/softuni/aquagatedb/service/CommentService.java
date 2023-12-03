@@ -41,6 +41,7 @@ public class CommentService {
 
     private CommentView mapCommentView(Comment comment) {
         CommentView commentView = new CommentView();
+        commentView.setId(comment.getId());
         commentView.setContext(comment.getContext());
         commentView.setAuthorId(comment.getAuthorId());
         commentView.setTopicId(comment.getTopic().getId());

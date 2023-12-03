@@ -22,26 +22,29 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void editUser(UserEditDTO userEditDTO) throws ObjectNotFoundException {
+    public UserEntity editUser(UserEditDTO userEditDTO) throws ObjectNotFoundException {
         UserEntity userEntity = userRepo.findUserByUsername(userEditDTO.getUsername())
                 .orElse(null);
-        if(userEntity==null){
+        if (userEntity == null) {
             throw new ObjectNotFoundException("User not found!");
+        } else {
+            userEntity.setLevel(LevelEnum.valueOf(userEditDTO.getLevel()));
+            userEntity.setRoles(roleService.getRolesByName(RoleEnum.valueOf(userEditDTO.getRole())));
+            userRepo.save(userEntity);
+
+            return userEntity;
         }
-        userEntity.setLevel(LevelEnum.valueOf(userEditDTO.getLevel()));
-        userEntity.setRoles(roleService.getRolesByName(RoleEnum.valueOf(userEditDTO.getRole())));
-        userRepo.save(userEntity);
     }
 
     public UserEntity findUserByUsername(String name) throws ObjectNotFoundException {
         UserEntity userEntity = userRepo.findUserByUsername(name).orElse(null);
-        if(userEntity == null){
+        if (userEntity == null) {
             throw new ObjectNotFoundException("User not found!");
         }
         return userEntity;
     }
 
-    public void registerUser(UserRegistrationDTO userRegistrationDTO) throws ObjectNotFoundException {
+    public UserEntity registerUser(UserRegistrationDTO userRegistrationDTO) throws ObjectNotFoundException {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userRegistrationDTO.getUsername());
         userEntity.setEmail(userRegistrationDTO.getEmail());
@@ -49,11 +52,18 @@ public class UserService {
         userEntity.setRoles(roleService.getRolesByName(RoleEnum.USER));
         userEntity.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
         userRepo.save(userEntity);
+
+        UserEntity registeredUser = userRepo.findUserByUsername(userEntity.getUsername()).orElse(null);
+        if(registeredUser==null){
+            throw new ObjectNotFoundException("There was problem with registration the user. Please try again!");
+        }
+        userEntity.setId(registeredUser.getId());
+
+        return userEntity;
     }
 
-    public void initAdmin() throws ObjectNotFoundException {
-        if (userRepo.findUserByUsername("admin").isEmpty() &&
-                userRepo.findUserByEmail("admin@email.exp").isEmpty()) {
+    public boolean initAdmin() throws ObjectNotFoundException {
+        if (userRepo.count()<1) {
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("admin");
             userEntity.setEmail("admin@email.exp");
@@ -61,24 +71,28 @@ public class UserService {
             userEntity.setRoles(roleService.getRolesByName(RoleEnum.ADMIN));
             userEntity.setPassword(passwordEncoder.encode("admin"));
             userRepo.save(userEntity);
+            return true;
         }
+        return false;
     }
 
-    public void initModerator() throws ObjectNotFoundException {
-        if (userRepo.findUserByUsername("moderator").isEmpty() &&
-                userRepo.findUserByEmail("moderator@email.exp").isEmpty()) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("moderator");
-        userEntity.setEmail("moderator@email.exp");
-        userEntity.setLevel(LevelEnum.ADVANCED);
-        userEntity.setRoles(roleService.getRolesByName(RoleEnum.MODERATOR));
-        userEntity.setPassword(passwordEncoder.encode("moderator"));
-        userRepo.save(userEntity);}
+    public boolean initModerator() throws ObjectNotFoundException {
+        if (userRepo.count()<2) {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUsername("moderator");
+            userEntity.setEmail("moderator@email.exp");
+            userEntity.setLevel(LevelEnum.ADVANCED);
+            userEntity.setRoles(roleService.getRolesByName(RoleEnum.MODERATOR));
+            userEntity.setPassword(passwordEncoder.encode("moderator"));
+            userRepo.save(userEntity);
+            return true;
+        }
+        return false;
     }
 
     public UserEntity getUserById(Long id) throws ObjectNotFoundException {
         UserEntity userEntity = userRepo.findById(id).orElse(null);
-        if(userEntity == null){
+        if (userEntity == null) {
             throw new ObjectNotFoundException("User not found!");
         }
         return userEntity;

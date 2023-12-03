@@ -3,8 +3,9 @@ package bg.softuni.aquagateclient.service;
 import bg.softuni.aquagateclient.configuration.ApplicationCommentConfiguration;
 import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
 import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
-import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
+import bg.softuni.aquagateclient.model.dto.view.CommentView;
 import bg.softuni.aquagateclient.web.error.BadRequestException;
+import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +26,15 @@ public class CommentService {
         this.userService = userService;
     }
 
-    public void addComment(CommentAddDTO commentAddDTO) throws BadRequestException, ObjectNotFoundException {
+    public ResponseEntity<CommentView> addComment(CommentAddDTO commentAddDTO) throws BadRequestException,
+            ObjectNotFoundException {
         try {
             String url = applicationCommentConfiguration.commentAddUrlSource();
             CommentRequestAddDTO commentRequestAddDTO = mapCommentRequestAddDTO(commentAddDTO);
 
             HttpEntity<CommentRequestAddDTO> http = new HttpEntity<>(commentRequestAddDTO);
-            ResponseEntity<CommentRequestAddDTO> exchange = restTemplate
-                    .exchange(url, HttpMethod.POST, http, CommentRequestAddDTO.class);
+
+            return restTemplate.exchange(url, HttpMethod.POST, http, CommentView.class);
 
         } catch (RestClientException e) {
             throw new BadRequestException("Please try again later!");

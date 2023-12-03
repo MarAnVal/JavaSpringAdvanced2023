@@ -9,6 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CommentView {
 
+    private Long id;
+
     private String context;
 
     private Long authorId;

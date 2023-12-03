@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ApplicationCommentConfiguration {
-    //TODO add values
+
     @Value("${api.configuration.host}")
     private String host;
 

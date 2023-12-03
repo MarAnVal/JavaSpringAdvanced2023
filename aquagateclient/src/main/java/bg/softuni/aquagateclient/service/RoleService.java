@@ -16,14 +16,17 @@ public class RoleService {
         this.roleRepo = roleRepo;
     }
 
-    public void init() {
+    public boolean init() {
+        boolean doneInit = false;
         for (RoleEnum value : RoleEnum.values()) {
             if (roleRepo.findRoleByName(value) == null) {
                 Role role = new Role();
                 role.setName(value);
                 roleRepo.save(role);
+                doneInit = true;
             }
         }
+        return doneInit;
     }
 
     public List<Role> getRolesByName(RoleEnum roleEnum) throws ObjectNotFoundException {
@@ -40,7 +43,7 @@ public class RoleService {
                         roleRepo.findRoleByName(RoleEnum.MODERATOR),
                         roleRepo.findRoleByName(RoleEnum.ADMIN));
             }
-            default -> throw new ObjectNotFoundException("Role not found!");
+            default -> throw new ObjectNotFoundException("Not existing role!");
         }
     }
 }
