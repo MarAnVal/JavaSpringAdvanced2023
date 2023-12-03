@@ -12,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ public class TopicService {
         }
 
         Topic topic = modelMapper.map(topicAddDTO, Topic.class);
+        topic.setDate(LocalDate.now(ZoneOffset.UTC));
         topic.setApproved(false);
         topic.setHabitat(habitatService.findHabitatByName(topicAddDTO.getHabitat()));
 
@@ -147,5 +150,17 @@ public class TopicService {
             throw new ObjectNotFoundException("Topic not found!");
         }
         return topic;
+    }
+
+    public void removeAllNotApprovedTopicsBeforeDate(LocalDate localDate) {
+        List<Topic> all = topicRepo.findAll();
+        if (!all.isEmpty()) {
+            List<Topic> list = all.stream()
+                    .filter(e -> !e.getApproved() && e.getDate().isBefore(localDate))
+                    .toList();
+            if (!list.isEmpty()) {
+                topicRepo.deleteAll(list);
+            }
+        }
     }
 }
