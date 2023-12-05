@@ -17,7 +17,6 @@ public class NotApprovedTopicsCleanUpScheduler {
 
     @Scheduled(cron = "0 59 23 * * *")
     private void notApprovedTopicsCleanUp() {
-        LocalDate now = LocalDate.now(ZoneOffset.UTC);
-        topicService.removeAllNotApprovedTopicsBeforeDate(now);
+        topicService.removeAllNotApprovedTopicsBeforeDate(LocalDate.now(ZoneOffset.UTC));
     }
 }

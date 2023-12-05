@@ -1,7 +1,6 @@
 package bg.softuni.aquagatedb.web.controller.impl;
 
 import bg.softuni.aquagatedb.model.dto.binding.TopicAddDTO;
-import bg.softuni.aquagatedb.model.dto.view.CommentView;
 import bg.softuni.aquagatedb.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagatedb.model.dto.view.TopicView;
 import bg.softuni.aquagatedb.service.CommentService;
@@ -41,15 +40,17 @@ public class TopicsControllerImpl implements TopicsController {
     @Override
     public ResponseEntity<TopicDetailsView> getTopicDetails(Long id) throws ObjectNotFoundException {
 
-            return ResponseEntity.ok(topicService.findTopicById(id));
+        return ResponseEntity.ok(topicService.findTopicById(id));
     }
 
     @Override
     public ResponseEntity<TopicView> doRemove(Long id) throws ObjectNotFoundException {
 
-        commentService.removeCommentsByTopicId(id);
-        topicService.removeTopic(id);
-        return ResponseEntity.ok(new TopicView());
+        if (commentService.removeCommentsByTopicId(id) &&
+                topicService.removeTopic(id)) {
+            return ResponseEntity.ok(new TopicView());
+        }
+        return ResponseEntity.internalServerError().build();
     }
 
     @Override
@@ -71,8 +72,8 @@ public class TopicsControllerImpl implements TopicsController {
     }
 
     @ExceptionHandler({ObjectNotFoundException.class})
-    public ResponseEntity<CommentView> handleApplicationExceptions() {
+    public ResponseEntity<TopicView> handleApplicationExceptions() {
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.internalServerError().build();
     }
 }

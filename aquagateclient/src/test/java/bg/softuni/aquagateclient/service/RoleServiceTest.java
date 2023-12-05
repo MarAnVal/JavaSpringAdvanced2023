@@ -4,7 +4,6 @@ import bg.softuni.aquagateclient.model.entity.Role;
 import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
 import bg.softuni.aquagateclient.repository.RoleRepo;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,29 +13,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class RoleServiceTest {
-    private RoleRepo roleRepo;
-    private RoleService roleService;
-    private Role userRole;
-    private Role moderatorRole;
-    private Role adminRole;
+    private final RoleRepo roleRepo;
+    private final RoleService roleService;
+    private final Role userRole;
+    private final Role moderatorRole;
+    private final Role adminRole;
 
-    @BeforeEach
-    public void init() {
-        this.roleRepo = mock(RoleRepo.class);
+    public RoleServiceTest() {
+        roleRepo = mock(RoleRepo.class);
 
-        this.roleService = new RoleService(roleRepo);
+        roleService = new RoleService(roleRepo);
 
-        this.userRole = new Role();
-        this.userRole.setName(RoleEnum.USER);
-        this.userRole.setId(1L);
+        userRole = new Role();
+        userRole.setName(RoleEnum.USER);
+        userRole.setId(1L);
 
-        this.moderatorRole = new Role();
-        this.moderatorRole.setName(RoleEnum.MODERATOR);
-        this.moderatorRole.setId(2L);
+        moderatorRole = new Role();
+        moderatorRole.setName(RoleEnum.MODERATOR);
+        moderatorRole.setId(2L);
 
-        this.adminRole = new Role();
-        this.adminRole.setName(RoleEnum.ADMIN);
-        this.adminRole.setId(2L);
+        adminRole = new Role();
+        adminRole.setName(RoleEnum.ADMIN);
+        adminRole.setId(2L);
     }
 
     @Test

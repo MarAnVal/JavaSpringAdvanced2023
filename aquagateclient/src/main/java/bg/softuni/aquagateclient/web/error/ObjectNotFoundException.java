@@ -9,11 +9,6 @@ public class ObjectNotFoundException extends BaseApplicationException {
 
     private final int statusCode;
 
-    public ObjectNotFoundException() {
-        super("Not found!");
-        this.statusCode = 404;
-    }
-
     public ObjectNotFoundException(String message) {
         super(message);
         this.statusCode = 404;

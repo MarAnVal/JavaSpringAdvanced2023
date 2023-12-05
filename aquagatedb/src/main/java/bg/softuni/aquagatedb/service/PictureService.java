@@ -6,6 +6,8 @@ import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class PictureService {
 
@@ -17,20 +19,29 @@ public class PictureService {
     }
 
     public Picture addPicture(String pictureUrl) throws ObjectNotFoundException {
-        if (pictureUrl == null) {
+        if (pictureUrl == null || pictureUrl.isBlank()) {
             pictureUrl = "/images/picture-not-found.jpg";
         }
-        if (pictureRepo.findByPictureUrl(pictureUrl).isPresent()) {
-            return pictureRepo.findByPictureUrl(pictureUrl).get();
-        } else {
-            Picture picture = new Picture();
-            picture.setPictureUrl(pictureUrl);
-            pictureRepo.save(picture);
-            Picture savedPicture = pictureRepo.findByPictureUrl(pictureUrl).orElse(null);
-            if(savedPicture == null){
-                throw new ObjectNotFoundException("Problem with uploading the picture! Please try again!");
-            }
-            return savedPicture;
+
+        Picture picture = new Picture();
+        picture.setPictureUrl(pictureUrl);
+        pictureRepo.save(picture);
+
+        Picture lastPicture = pictureRepo.findAll()
+                .stream()
+                .max((e1, e2) -> {
+                    Long id1 = e1.getId();
+                    Long id2 = e2.getId();
+                    return id1.compareTo(id2);
+                })
+                .orElse(null);
+
+        if (lastPicture == null ||
+                !Objects.equals(lastPicture.getPictureUrl(), picture.getPictureUrl())) {
+
+            throw new ObjectNotFoundException("Problem with uploading the picture! Please try again!");
         }
+
+        return lastPicture;
     }
 }

@@ -8,7 +8,6 @@ import bg.softuni.aquagateclient.model.entity.enumeration.LevelEnum;
 import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
 import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
@@ -21,15 +20,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class UserServiceTest {
-    private UserRepo userRepo;
-    private RoleService roleService;
-    private PasswordEncoder passwordEncoder;
-    private UserService userService;
-    private Role userRole;
-    private Role moderatorRole;
+    private final UserRepo userRepo;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final Role userRole;
+    private final Role moderatorRole;
 
-    @BeforeEach
-    public void init() {
+    UserServiceTest() {
         this.userRepo = mock(UserRepo.class);
 
         this.roleService = mock(RoleService.class);
@@ -191,14 +189,15 @@ class UserServiceTest {
         // Arrange 
         when(userRepo.count())
                 .thenReturn(0L);
-        
+
         // Act 
         boolean result = userService.initAdmin();
-        
+
         // Assert
         assertTrue(result);
     }
 
+    //TODO it as parameterized test
     @Test
     void testInitAdminFalse() throws ObjectNotFoundException {
         // Arrange
@@ -212,6 +211,7 @@ class UserServiceTest {
         assertFalse(result);
     }
 
+    //TODO it as parameterized test
     @Test
     void testInitModeratorTrue() throws ObjectNotFoundException {
         // Arrange 
@@ -225,6 +225,7 @@ class UserServiceTest {
         assertTrue(result);
     }
 
+    //TODO it as parameterized test
     @Test
     void testInitModeratorFalse() throws ObjectNotFoundException {
         // Arrange

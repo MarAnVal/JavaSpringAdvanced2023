@@ -117,7 +117,7 @@ public class TopicControllerImpl implements TopicController {
     }
 
     @ExceptionHandler({IOException.class})
-    public ModelAndView handleUserNotFound() {
+    public ModelAndView handlePictureUploadFailed() {
         ModelAndView modelAndView = new ModelAndView("error");
         modelAndView.addObject("message", "Picture failed to upload!");
         modelAndView.addObject("statusCode", 400);

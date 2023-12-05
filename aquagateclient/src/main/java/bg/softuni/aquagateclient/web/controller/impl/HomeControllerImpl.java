@@ -10,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.security.Principal;
-
 @Controller
 public class HomeControllerImpl implements HomeController {
     private final TopicService topicService;
@@ -21,7 +19,7 @@ public class HomeControllerImpl implements HomeController {
     }
 
     @Override
-    public ModelAndView index(Principal principal) throws BadRequestException {
+    public ModelAndView index() throws BadRequestException {
 
             TopicView mostCommented = topicService.getMostCommentedTopic();
 

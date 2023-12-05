@@ -4,7 +4,6 @@ import bg.softuni.aquagateclient.model.entity.Role;
 import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,33 +11,33 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class UserDetailsServiceImplTest {
-    private UserService userService;
-    private UserDetailsService userDetailsService;
-    private Role userRole;
-    private Role moderatorRole;
+    private final UserService userService;
+    private final UserDetailsService userDetailsService;
+    private final Role userRole;
+    private final Role moderatorRole;
 
-    @BeforeEach
-    public void init() {
+    UserDetailsServiceImplTest() {
+        userService = mock(UserService.class);
 
-        this.userService = mock(UserService.class);
+        userDetailsService = new UserDetailsServiceImpl(userService);
 
-        this.userDetailsService = new UserDetailsServiceImpl(userService);
+        userRole = new Role();
+        userRole.setName(RoleEnum.USER);
+        userRole.setId(1L);
 
-        this.userRole = new Role();
-        this.userRole.setName(RoleEnum.USER);
-        this.userRole.setId(1L);
-
-        this.moderatorRole = new Role();
-        this.moderatorRole.setName(RoleEnum.MODERATOR);
-        this.moderatorRole.setId(2L);
+        moderatorRole = new Role();
+        moderatorRole.setName(RoleEnum.MODERATOR);
+        moderatorRole.setId(2L);
     }
 
+
     @Test
-    void testLoadUserByUsernameUserNotFound() throws ObjectNotFoundException {
+    void testLoadUserByUsernameUserFound() throws ObjectNotFoundException {
         // Arrange
         UserEntity user = new UserEntity();
         user.setUsername("testUsername");
@@ -54,5 +53,14 @@ class UserDetailsServiceImplTest {
         // Assert
         assertEquals(user.getUsername(), userDetails.getUsername());
         assertEquals(user.getPassword(), userDetails.getPassword());
+    }
+
+    @Test
+    void testLoadUserByUsernameUserNotFound() throws ObjectNotFoundException {
+        // Arrange
+        when(userService.findUserByUsername("testUsername"))
+                .thenThrow(new ObjectNotFoundException("Not Found!"));
+        // Act // Assert
+        assertThrows(ObjectNotFoundException.class, () -> userDetailsService.loadUserByUsername("testUsername"));
     }
 }

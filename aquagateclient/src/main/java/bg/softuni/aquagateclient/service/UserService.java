@@ -54,7 +54,7 @@ public class UserService {
         userRepo.save(userEntity);
 
         UserEntity registeredUser = userRepo.findUserByUsername(userEntity.getUsername()).orElse(null);
-        if(registeredUser==null){
+        if (registeredUser == null) {
             throw new ObjectNotFoundException("There was problem with registration the user. Please try again!");
         }
         userEntity.setId(registeredUser.getId());
@@ -63,7 +63,7 @@ public class UserService {
     }
 
     public boolean initAdmin() throws ObjectNotFoundException {
-        if (userRepo.count()<1) {
+        if (userRepo.count() < 1) {
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("admin");
             userEntity.setEmail("admin@email.exp");
@@ -77,7 +77,7 @@ public class UserService {
     }
 
     public boolean initModerator() throws ObjectNotFoundException {
-        if (userRepo.count()<2) {
+        if (userRepo.count() < 2) {
             UserEntity userEntity = new UserEntity();
             userEntity.setUsername("moderator");
             userEntity.setEmail("moderator@email.exp");

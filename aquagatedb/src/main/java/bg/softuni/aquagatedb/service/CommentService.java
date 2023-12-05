@@ -29,12 +29,16 @@ public class CommentService {
         comment.setContext(commentAddDTO.getContext());
         comment.setAuthorId(commentAddDTO.getAuthorId());
 
-        Topic topic = topicService.findTopicToAddComment(commentAddDTO.getTopicId());
+        Topic topic = topicService.findTopicByIdToAddComment(commentAddDTO.getTopicId());
         comment.setTopic(topic);
         commentRepo.save(comment);
 
-        Comment addedComment = commentRepo.findAllByContextAndTopicIdAndAuthorIdOrderByIdDesc(commentAddDTO.getContext(),
-                commentAddDTO.getTopicId(), commentAddDTO.getAuthorId()).get(0);
+        Comment addedComment = commentRepo
+                .findAllByContextAndTopicIdAndAuthorIdOrderByIdDesc(
+                        commentAddDTO.getContext(),
+                        commentAddDTO.getTopicId(),
+                        commentAddDTO.getAuthorId())
+                .get(0);
 
         return mapCommentView(addedComment);
     }
@@ -48,22 +52,10 @@ public class CommentService {
         return commentView;
     }
 
-    public void initTestData() throws ObjectNotFoundException {
-        if (commentRepo.count() < 1) {
-            CommentAddDTO commentAddDTO = new CommentAddDTO();
-            commentAddDTO.setTopicId(1L);
-            commentAddDTO.setContext("to do first test");
-            commentAddDTO.setAuthorId(1L);
-            this.addComment(commentAddDTO);
-
-            commentAddDTO.setContext("to do second test");
-            commentAddDTO.setAuthorId(2L);
-            this.addComment(commentAddDTO);
-        }
-    }
-
-    public void removeCommentsByTopicId(Long id) {
+    public boolean removeCommentsByTopicId(Long id) {
         List<Comment> comments = commentRepo.findAllByTopicId(id);
         commentRepo.deleteAll(comments);
+
+        return commentRepo.findAllByTopicId(id).isEmpty();
     }
 }

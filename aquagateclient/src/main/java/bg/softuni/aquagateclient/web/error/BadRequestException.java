@@ -10,11 +10,6 @@ public class BadRequestException extends BaseApplicationException {
 
     private final int statusCode;
 
-    public BadRequestException() {
-        super("Bad request");
-        this.statusCode = 400;
-    }
-
     public BadRequestException(String message) {
         super(message);
         this.statusCode = 400;

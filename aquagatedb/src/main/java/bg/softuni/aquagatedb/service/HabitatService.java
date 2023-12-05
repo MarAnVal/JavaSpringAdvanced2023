@@ -25,13 +25,16 @@ public class HabitatService {
         return habitatEntity;
     }
 
-    public void init() {
+    public boolean init() {
+        boolean doneInit = false;
         for (HabitatEnum value : HabitatEnum.values()) {
             if(habitatRepo.findHabitatByName(value).isEmpty()){
                 Habitat habitat = new Habitat();
                 habitat.setName(value);
                 habitatRepo.save(habitat);
+                doneInit = true;
             }
         }
+        return doneInit;
     }
 }
