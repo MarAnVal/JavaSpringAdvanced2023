@@ -6,16 +6,15 @@ import bg.softuni.aquagatedb.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagatedb.model.dto.view.TopicView;
 import bg.softuni.aquagatedb.model.entity.Topic;
 import bg.softuni.aquagatedb.repository.TopicRepo;
+import bg.softuni.aquagatedb.service.util.DateProvider;
 import bg.softuni.aquagatedb.web.error.ObjectNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class TopicService {
@@ -24,15 +23,18 @@ public class TopicService {
     private final HabitatService habitatService;
     private final PictureService pictureService;
     private final ModelMapper modelMapper;
+    private final DateProvider dateProvider;
 
 
     @Autowired
     public TopicService(TopicRepo topicRepo, HabitatService habitatService,
-                        PictureService pictureService, ModelMapper modelMapper) {
+                        PictureService pictureService, ModelMapper modelMapper,
+                        DateProvider dateProvider) {
         this.topicRepo = topicRepo;
         this.habitatService = habitatService;
         this.pictureService = pictureService;
         this.modelMapper = modelMapper;
+        this.dateProvider = dateProvider;
     }
 
     public TopicView addTopic(TopicAddDTO topicAddDTO) throws ObjectNotFoundException {
@@ -42,7 +44,8 @@ public class TopicService {
         }
 
         Topic topic = modelMapper.map(topicAddDTO, Topic.class);
-        topic.setDate(LocalDate.now(ZoneOffset.UTC));
+
+        topic.setDate(dateProvider.getDate());
         topic.setApproved(false);
 
         topic.setHabitat(habitatService.findHabitatByName(topicAddDTO.getHabitat()));
@@ -59,15 +62,6 @@ public class TopicService {
                     Long id2 = e2.getId();
                     return id1.compareTo(id2);
                 }).orElse(null);
-
-        if (savedTopic == null ||
-                savedTopic.getDate().isBefore(LocalDate.now(ZoneOffset.UTC)) ||
-                !Objects.equals(savedTopic.getDescription(), topicAddDTO.getDescription()) ||
-                !Objects.equals(savedTopic.getName(), topicAddDTO.getName()) ||
-                !Objects.equals(savedTopic.getAuthor(), topicAddDTO.getAuthor())) {
-
-            throw new ObjectNotFoundException("Problem with saving the topic! Please try again!");
-        }
 
         return mapTopicView(savedTopic);
     }
@@ -91,7 +85,6 @@ public class TopicService {
         } else {
             Topic topic = topicRepo.findById(id).get();
             topicRepo.delete(topic);
-
             return true;
         }
     }
@@ -104,7 +97,6 @@ public class TopicService {
             return new ArrayList<>();
 
         } else {
-
             return all.stream()
                     .map(this::mapTopicView)
                     .toList();

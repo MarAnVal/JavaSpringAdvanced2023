@@ -39,12 +39,21 @@ class HabitatServiceTest {
     }
 
     @Test
-    void testFindHabitatByNameUnsuccessful(){
+    void testFindHabitatByNameUnsuccessfulWithExistingEnum(){
         // Arrange
         when(habitatRepo.findHabitatByName(HabitatEnum.FRESHWATER)).thenReturn(Optional.empty());
 
         // Act // Assert
         assertThrows(ObjectNotFoundException.class, () -> habitatService.findHabitatByName("FRESHWATER"));
+    }
+
+    @Test
+    void testFindHabitatByNameUnsuccessfulWithoutExistingEnum(){
+        // Arrange
+        when(habitatRepo.findHabitatByName(HabitatEnum.FRESHWATER)).thenReturn(Optional.empty());
+
+        // Act // Assert
+        assertThrows(ObjectNotFoundException.class, () -> habitatService.findHabitatByName("to test"));
     }
 
     @Test

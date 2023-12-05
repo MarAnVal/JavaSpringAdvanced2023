@@ -18,17 +18,24 @@ public class HabitatService {
     }
 
     public Habitat findHabitatByName(String habitat) throws ObjectNotFoundException {
-        Habitat habitatEntity = habitatRepo.findHabitatByName(HabitatEnum.valueOf(habitat)).orElse(null);
-        if(habitatEntity == null){
+        try {
+            HabitatEnum habitatEnum = HabitatEnum.valueOf(habitat);
+            Habitat habitatEntity = habitatRepo.findHabitatByName(habitatEnum).orElse(null);
+            if (habitatEntity == null) {
+                throw new ObjectNotFoundException("Habitat not Found!");
+            }
+
+            return habitatEntity;
+
+        } catch (IllegalArgumentException e) {
             throw new ObjectNotFoundException("Habitat not Found!");
         }
-        return habitatEntity;
     }
 
     public boolean init() {
         boolean doneInit = false;
         for (HabitatEnum value : HabitatEnum.values()) {
-            if(habitatRepo.findHabitatByName(value).isEmpty()){
+            if (habitatRepo.findHabitatByName(value).isEmpty()) {
                 Habitat habitat = new Habitat();
                 habitat.setName(value);
                 habitatRepo.save(habitat);
