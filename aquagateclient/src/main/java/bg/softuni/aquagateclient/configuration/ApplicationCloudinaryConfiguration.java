@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 
 @Configuration
-
 class ApplicationCloudinaryConfiguration {
 
     @Value("${cloudinary.cloud-name}")
@@ -20,7 +19,7 @@ class ApplicationCloudinaryConfiguration {
 
     @Bean
     public Cloudinary cloudinary() {
-        return new Cloudinary(new HashMap<String, Object>(){{
+        return new Cloudinary(new HashMap<String, Object>() {{
             put("cloud_name", cloudApiName);
             put("api_key", cloudApiKey);
             put("api_secret", cloudApiSecret);

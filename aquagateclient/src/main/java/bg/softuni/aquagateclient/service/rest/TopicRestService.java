@@ -8,15 +8,13 @@ import bg.softuni.aquagateclient.service.rest.util.TopicRestUtil;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-@Component
+@Service
 public class TopicRestService {
 
     private final TopicRestUtil topicRestUtil;
@@ -28,13 +26,13 @@ public class TopicRestService {
     }
 
     public ResponseEntity<List<TopicView>> getAllTopics() {
-            String url = topicRestUtil.topicsAllUrlSource();
+        String url = topicRestUtil.topicsAllUrlSource();
 
         ResponseEntity<List<TopicView>> exchange = restTemplate
                 .exchange(url, HttpMethod.GET, null,
                         topicRestUtil.getParameterizedTypeReferenceTopicViewList());
 
-        if(exchange.getStatusCode().value() != 200){
+        if (exchange.getStatusCode().value() != 200) {
             throw new RestClientException("Status code " + exchange.getStatusCode().value());
         }
         return exchange;
@@ -45,7 +43,7 @@ public class TopicRestService {
 
         ResponseEntity<TopicView> exchange = restTemplate
                 .exchange(url, HttpMethod.DELETE, null, TopicView.class);
-        if(exchange.getStatusCode().value() != 200){
+        if (exchange.getStatusCode().value() != 200) {
             throw new RestClientException("Status code " + exchange.getStatusCode().value());
         }
         return exchange;
@@ -55,7 +53,7 @@ public class TopicRestService {
         String url = topicRestUtil.topicApproveUrlSource() + "/" + id;
         ResponseEntity<TopicView> exchange = restTemplate
                 .exchange(url, HttpMethod.POST, null, TopicView.class);
-        if(exchange.getStatusCode().value() != 200){
+        if (exchange.getStatusCode().value() != 200) {
             throw new RestClientException("Status code " + exchange.getStatusCode().value());
         }
         return exchange;
@@ -67,18 +65,18 @@ public class TopicRestService {
 
 
         ResponseEntity<TopicView> exchange = restTemplate.exchange(url, HttpMethod.POST, http, TopicView.class);
-        if(exchange.getStatusCode().value() != 200){
+        if (exchange.getStatusCode().value() != 200) {
             throw new RestClientException("Status code " + exchange.getStatusCode().value());
         }
         return exchange;
     }
 
-    public ResponseEntity<TopicDetailsRequestDTO> getTopicDetails(Long id){
+    public ResponseEntity<TopicDetailsRequestDTO> getTopicDetails(Long id) {
         String url = topicRestUtil.topicDetailsUrlSource() + "/" + id;
 
         ResponseEntity<TopicDetailsRequestDTO> exchange = restTemplate
                 .exchange(url, HttpMethod.GET, null, TopicDetailsRequestDTO.class);
-        if(exchange.getStatusCode().value() != 200){
+        if (exchange.getStatusCode().value() != 200) {
             throw new RestClientException("Status code " + exchange.getStatusCode().value());
         }
         return exchange;

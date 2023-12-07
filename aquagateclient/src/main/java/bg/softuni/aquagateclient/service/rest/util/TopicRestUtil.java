@@ -15,12 +15,12 @@ public record TopicRestUtil(String topicsAllUrlSource, String topicAddUrlSource,
         return new HttpEntity<>(topicRequestAddDTO);
     }
 
-    public ParameterizedTypeReference<List<TopicView>> getParameterizedTypeReferenceTopicViewList(){
-       return new ParameterizedTypeReference<>() {
+    public ParameterizedTypeReference<List<TopicView>> getParameterizedTypeReferenceTopicViewList() {
+        return new ParameterizedTypeReference<>() {
         };
     }
 
-    private TopicRequestAddDTO mapTopicRequestAddDTO(TopicAddDTO topicAddDTO, String pictureUrl){
+    private TopicRequestAddDTO mapTopicRequestAddDTO(TopicAddDTO topicAddDTO, String pictureUrl) {
         TopicRequestAddDTO topicRequestAddDTO = new TopicRequestAddDTO();
         topicRequestAddDTO.setPictureUrl(pictureUrl);
         topicRequestAddDTO.setVideoUrl(topicAddDTO.getVideoUrl());

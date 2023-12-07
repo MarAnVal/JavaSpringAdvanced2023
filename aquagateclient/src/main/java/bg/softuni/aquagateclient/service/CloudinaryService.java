@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.util.HashMap;
 
 @Service
-public class CloudService {
+public class CloudinaryService {
     private final Cloudinary cloudinary;
 
     @Autowired
-    public CloudService(Cloudinary cloudinary) {
+    public CloudinaryService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
     }
 

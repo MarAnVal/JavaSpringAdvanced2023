@@ -21,12 +21,12 @@ import java.util.List;
 public class TopicService {
 
     private final TopicRestService topicRestService;
-    private final CloudService cloudService;
+    private final CloudinaryService cloudinaryService;
     private final UserService userService;
 
-    public TopicService(TopicRestService topicRestService, CloudService cloudService, UserService userService) {
+    public TopicService(TopicRestService topicRestService, CloudinaryService cloudinaryService, UserService userService) {
         this.topicRestService = topicRestService;
-        this.cloudService = cloudService;
+        this.cloudinaryService = cloudinaryService;
         this.userService = userService;
     }
 
@@ -118,7 +118,7 @@ public class TopicService {
         String pictureUrl = "/images/picture-not-found.jpg";
 
         if (topicAddDTO.getPictureFile() != null) {
-            pictureUrl = cloudService.uploadImage(topicAddDTO.getPictureFile());
+            pictureUrl = cloudinaryService.uploadImage(topicAddDTO.getPictureFile());
         }
 
         if (topicAddDTO.getVideoUrl() == null) {

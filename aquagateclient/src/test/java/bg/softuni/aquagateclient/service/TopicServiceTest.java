@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 class TopicServiceTest {
     private final TopicRestService topicRestService;
-    private final CloudService cloudService;
+    private final CloudinaryService cloudinaryService;
     private final UserService userService;
     private final TopicService topicService;
     private final TopicAddDTO topicAddDTO;
@@ -37,10 +37,10 @@ class TopicServiceTest {
 
     TopicServiceTest() {
         topicRestService = mock(TopicRestService.class);
-        cloudService = mock(CloudService.class);
+        cloudinaryService = mock(CloudinaryService.class);
         userService = mock(UserService.class);
 
-        topicService = new TopicService(topicRestService, cloudService, userService);
+        topicService = new TopicService(topicRestService, cloudinaryService, userService);
 
         multipartFile = mock(MultipartFile.class);
 
@@ -184,7 +184,7 @@ class TopicServiceTest {
 
         topicAddDTO.setVideoUrl(null);
 
-        when(cloudService.uploadImage(multipartFile)).thenReturn(pictureUrlFoundFile);
+        when(cloudinaryService.uploadImage(multipartFile)).thenReturn(pictureUrlFoundFile);
         when(topicRestService.doAddTopic(topicAddDTO, pictureUrlFoundFile))
                 .thenReturn(ResponseEntity.ok(topicView));
 
@@ -203,7 +203,7 @@ class TopicServiceTest {
         // Arrange
         String pictureUrlFoundFile = "/images/picture-not-found-test.jpg";
 
-        when(cloudService.uploadImage(multipartFile)).thenReturn(pictureUrlFoundFile);
+        when(cloudinaryService.uploadImage(multipartFile)).thenReturn(pictureUrlFoundFile);
         when(topicRestService.doAddTopic(topicAddDTO, pictureUrlFoundFile))
                 .thenThrow(RestClientException.class);
 
