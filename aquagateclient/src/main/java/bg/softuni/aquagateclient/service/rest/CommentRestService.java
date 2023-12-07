@@ -2,21 +2,40 @@ package bg.softuni.aquagateclient.service.rest;
 
 import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
 import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
+import bg.softuni.aquagateclient.model.dto.view.CommentView;
+import bg.softuni.aquagateclient.service.rest.util.CommentRestUtil;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
-public record CommentRestService(String commentAddUrl) {
+@Component
+public class CommentRestService {
 
-    public HttpEntity<CommentRequestAddDTO> getHttpAddComment(CommentAddDTO commentAddDTO, Long userId) {
-        CommentRequestAddDTO commentRequestAddDTO = mapCommentRequestAddDTO(commentAddDTO, userId);
-        return new HttpEntity<>(commentRequestAddDTO);
+    private final RestTemplate restTemplate;
+    private final CommentRestUtil commentRestUtil;
+
+    public CommentRestService(RestTemplate restTemplate, CommentRestUtil commentRestUtil) {
+        this.restTemplate = restTemplate;
+        this.commentRestUtil = commentRestUtil;
     }
 
-    private CommentRequestAddDTO mapCommentRequestAddDTO(CommentAddDTO commentAddDTO, Long userId) {
-        CommentRequestAddDTO commentRequestAddDTO = new CommentRequestAddDTO();
-        commentRequestAddDTO.setContext(commentAddDTO.getContext());
-        commentRequestAddDTO.setTopicId(commentAddDTO.getTopicId());
-        commentRequestAddDTO.setAuthorId(userId);
+    public ResponseEntity<CommentView> doAddComment(CommentAddDTO commentAddDTO, Long id) {
 
-        return commentRequestAddDTO;
+        String url = commentRestUtil.commentAddUrl();
+
+        HttpEntity<CommentRequestAddDTO> http = commentRestUtil
+                .getHttpAddComment(commentAddDTO, id);
+
+        ResponseEntity<CommentView> exchange = restTemplate.exchange(url, HttpMethod.POST, http, CommentView.class);
+        if(exchange.getStatusCode().value() != 200){
+            throw new RestClientException("Status code " + exchange.getStatusCode().value());
+        }
+        return exchange;
     }
+
 }

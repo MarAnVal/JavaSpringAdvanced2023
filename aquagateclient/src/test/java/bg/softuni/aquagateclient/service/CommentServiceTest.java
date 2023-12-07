@@ -5,6 +5,7 @@ import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
 import bg.softuni.aquagateclient.model.dto.view.CommentView;
 import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.service.rest.CommentRestService;
+import bg.softuni.aquagateclient.service.rest.util.CommentRestUtil;
 import bg.softuni.aquagateclient.web.error.BadRequestException;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -20,37 +21,24 @@ import static org.mockito.Mockito.when;
 
 class CommentServiceTest {
     private final CommentRestService commentRestService;
-    private final RestTemplate restTemplate;
     private final UserService userService;
     private final CommentService commentService;
     private final CommentAddDTO commentAddDTO;
     private final UserEntity userEntity;
-    private final HttpEntity<CommentRequestAddDTO> http;
     private final CommentView commentView;
 
     CommentServiceTest() {
         commentRestService = mock(CommentRestService.class);
-
-        restTemplate = mock(RestTemplate.class);
-
         userService = mock(UserService.class);
-
-        commentService = new CommentService(commentRestService, restTemplate, userService);
+        commentService = new CommentService(commentRestService, userService);
 
         commentAddDTO = new CommentAddDTO();
         commentAddDTO.setTopicId(1L);
         commentAddDTO.setAuthor("testUsername");
         commentAddDTO.setContext("To test");
 
-        CommentRequestAddDTO commentRequestAddDTO = new CommentRequestAddDTO();
-        commentRequestAddDTO.setTopicId(1L);
-        commentRequestAddDTO.setContext("To test");
-        commentRequestAddDTO.setAuthorId(5L);
-
         userEntity = new UserEntity();
         userEntity.setId(5L);
-
-        http = new HttpEntity<>(commentRequestAddDTO);
 
         commentView = new CommentView();
         commentView.setAuthor("testUsername");
@@ -61,18 +49,13 @@ class CommentServiceTest {
     @Test
     void testAddCommentSuccessful() throws ObjectNotFoundException, BadRequestException {
         // Arrange
-        when(commentRestService.commentAddUrl()).thenReturn("testUrl");
 
         when(userService.findUserByUsername("testUsername"))
                 .thenReturn(userEntity);
 
-        when(commentRestService.getHttpAddComment(commentAddDTO, 5L))
-                .thenReturn(http);
+        Long id = userEntity.getId();
 
-        when(restTemplate.exchange("testUrl",
-                HttpMethod.POST, http,
-                CommentView.class))
-                .thenReturn(ResponseEntity.ok(commentView));
+        when(commentRestService.doAddComment(commentAddDTO, id)).thenReturn(ResponseEntity.ok(commentView));
 
         // Act
         ResponseEntity<CommentView> commentViewResponseEntity = commentService.addComment(commentAddDTO);
@@ -87,18 +70,11 @@ class CommentServiceTest {
     @Test
     void testAddCommentUnsuccessful() throws ObjectNotFoundException {
         // Arrange
-        when(commentRestService.commentAddUrl()).thenReturn("testUrl");
-
         when(userService.findUserByUsername("testUsername"))
                 .thenReturn(userEntity);
+        Long id = userEntity.getId();
 
-        when(commentRestService.getHttpAddComment(commentAddDTO, 5L))
-                .thenReturn(http);
-
-        when(restTemplate.exchange("testUrl",
-                HttpMethod.POST, http,
-                CommentView.class))
-                .thenThrow(RestClientException.class);
+        when(commentRestService.doAddComment(commentAddDTO, id)).thenThrow(RestClientException.class);
 
         // Act //Assert
         assertThrows(BadRequestException.class, () -> commentService.addComment(commentAddDTO));

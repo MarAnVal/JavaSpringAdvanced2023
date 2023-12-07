@@ -3,80 +3,109 @@ package bg.softuni.aquagateclient.service;
 import bg.softuni.aquagateclient.model.dto.binding.TopicAddDTO;
 import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
 import bg.softuni.aquagateclient.model.dto.request.TopicDetailsRequestDTO;
-import bg.softuni.aquagateclient.model.dto.request.TopicRequestAddDTO;
 import bg.softuni.aquagateclient.model.dto.view.CommentView;
 import bg.softuni.aquagateclient.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagateclient.model.dto.view.TopicView;
 import bg.softuni.aquagateclient.service.rest.TopicRestService;
 import bg.softuni.aquagateclient.web.error.BadRequestException;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
+
     private final TopicRestService topicRestService;
-    private final RestTemplate restTemplate;
     private final CloudService cloudService;
     private final UserService userService;
 
-    public TopicService(TopicRestService topicRestService, RestTemplate restTemplate,
-                        CloudService cloudService, UserService userService) {
+    public TopicService(TopicRestService topicRestService, CloudService cloudService, UserService userService) {
         this.topicRestService = topicRestService;
-        this.restTemplate = restTemplate;
         this.cloudService = cloudService;
         this.userService = userService;
     }
 
-    private ResponseEntity<List<TopicView>> getAllTopics() throws BadRequestException {
+    public ResponseEntity<TopicView> removeTopic(Long id) throws BadRequestException {
         try {
-            String url = topicRestService.topicsAllUrlSource();
+            return topicRestService.doRemoveTopic(id);
 
-            return restTemplate
-                    .exchange(url, HttpMethod.GET, null,
-                            topicRestService.getParameterizedTypeReferenceTopicViewList());
+        } catch (RestClientException e) {
+            throw new BadRequestException("Please try again later!");
+        }
+
+    }
+
+    private List<TopicView> getAllTopics() throws BadRequestException {
+        try {
+            ResponseEntity<List<TopicView>> allTopics = topicRestService.getAllTopics();
+
+            if (allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
+                return new ArrayList<>();
+
+            } else {
+                List<TopicView> returnedTopics = new ArrayList<>();
+                List<TopicView> topics = allTopics.getBody();
+                for (TopicView topicView : topics) {
+                    try {
+                        userService.getUserById(topicView.getAuthor());
+                        returnedTopics.add(topicView);
+                    } catch (ObjectNotFoundException ignored) {
+
+                    }
+                }
+
+                return returnedTopics;
+            }
 
         } catch (RestClientException e) {
             throw new BadRequestException("Please try again later!");
         }
     }
 
-    public ResponseEntity<TopicView> removeTopic(Long id) throws BadRequestException {
-        try {
-            String url = topicRestService.topicRemoveUrlSource() + "/" + id;
-            return restTemplate.exchange(url, HttpMethod.DELETE, null, TopicView.class);
+    public List<TopicView> getAllApprovedTopics() throws BadRequestException {
+        List<TopicView> allTopics = getAllTopics();
 
-        } catch (RestClientException e) {
-            throw new BadRequestException("Please try again later!");
+        if (allTopics.isEmpty()) {
+
+            return List.of(getEmptyTopicView());
+        } else {
+
+            List<TopicView> approved = allTopics.stream()
+                    .filter(TopicView::getApproved).toList();
+            if (approved.isEmpty()) {
+                return List.of(getEmptyTopicView());
+            }
+
+            return approved;
         }
-
     }
 
     public List<TopicView> getAllNotApprovedTopics() throws BadRequestException {
-        ResponseEntity<List<TopicView>> allTopics = getAllTopics();
+        List<TopicView> allTopics = getAllTopics();
 
-        if (allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
+        if (allTopics.isEmpty()) {
             return List.of(getEmptyTopicView());
         } else {
-            return allTopics.getBody()
-                    .stream()
-                    .filter(e -> !e.getApproved()).collect(Collectors.toList());
+            List<TopicView> notApproved = allTopics.stream()
+                    .filter(e -> !e.getApproved()).toList();
+            if (notApproved.isEmpty()) {
+                TopicView emptyTopicView = getEmptyTopicView();
+                emptyTopicView.setApproved(false);
+                return List.of(emptyTopicView);
+            }
+
+            return notApproved;
         }
     }
 
     public ResponseEntity<TopicView> approveTopic(Long id) throws BadRequestException {
         try {
-            String url = topicRestService.topicApproveUrlSource() + "/" + id;
-            return restTemplate.exchange(url, HttpMethod.POST, null, TopicView.class);
+            return topicRestService.doApproveTopic(id);
 
         } catch (RestClientException e) {
             throw new BadRequestException("Please try again later!");
@@ -84,25 +113,8 @@ public class TopicService {
 
     }
 
-    public List<TopicView> getAllApprovedTopics() throws BadRequestException {
-        ResponseEntity<List<TopicView>> allTopics = getAllTopics();
-
-        if (allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
-            return List.of(getEmptyTopicView());
-
-        } else {
-            List<TopicView> list = allTopics.getBody().stream()
-                    .filter(TopicView::getApproved).toList();
-
-            if (list.isEmpty()) {
-                return List.of(getEmptyTopicView());
-            }
-            return list;
-        }
-    }
-
     public ResponseEntity<TopicView> addTopic(TopicAddDTO topicAddDTO) throws IOException, BadRequestException {
-        String url = topicRestService.topicAddUrlSource();
+
         String pictureUrl = "/images/picture-not-found.jpg";
 
         if (topicAddDTO.getPictureFile() != null) {
@@ -113,10 +125,8 @@ public class TopicService {
             topicAddDTO.setVideoUrl("MebHynnz0FY");
         }
 
-        HttpEntity<TopicRequestAddDTO> http = topicRestService.getHttpAddTopic(topicAddDTO, pictureUrl);
-
         try {
-            return restTemplate.exchange(url, HttpMethod.POST, http, TopicView.class);
+            return topicRestService.doAddTopic(topicAddDTO, pictureUrl);
 
         } catch (RestClientException e) {
             throw new BadRequestException("Please try again later!");
@@ -125,12 +135,9 @@ public class TopicService {
 
     public TopicDetailsView getTopicDetails(Long id) throws BadRequestException, ObjectNotFoundException {
         try {
-            String url = topicRestService.topicDetailsUrlSource() + "/" + id;
-
-            ResponseEntity<TopicDetailsRequestDTO> topicDetailsRequest = restTemplate
-                    .exchange(url, HttpMethod.GET, null, TopicDetailsRequestDTO.class);
-
-            return mapTopicDetailsView(topicDetailsRequest.getBody());
+            ResponseEntity<TopicDetailsRequestDTO> topicDetails = topicRestService.getTopicDetails(id);
+            TopicDetailsRequestDTO body = topicDetails.getBody();
+            return mapTopicDetailsView(body);
 
         } catch (RestClientException e) {
             throw new BadRequestException("Please try again later!");
@@ -138,63 +145,50 @@ public class TopicService {
     }
 
     public TopicDetailsView getLatestTopic() throws ObjectNotFoundException, BadRequestException {
-        ResponseEntity<List<TopicView>> allTopics = getAllTopics();
-        if (allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
+        List<TopicView> allTopics = getAllApprovedTopics();
+        if (allTopics.size() == 1 && allTopics.get(0).getId() == null) {
             throw new ObjectNotFoundException("Topic not found!");
-        } else {
-            Long id = allTopics.getBody().stream()
-                    .map(TopicView::getId)
-                    .max(Long::compareTo)
-                    .orElse(null);
-
-            return getTopicDetails(id);
         }
+        Long id = allTopics.stream()
+                .map(TopicView::getId)
+                .max(Long::compareTo)
+                .orElse(null);
+
+        return getTopicDetails(id);
     }
 
-    public TopicView getMostCommentedTopic() throws BadRequestException {
-
-        ResponseEntity<List<TopicView>> allTopics = getAllTopics();
-
-        if (allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
-            return getEmptyTopicView();
-
-        } else {
-
-            List<TopicView> approved = allTopics.getBody()
-                    .stream()
-                    .filter(TopicView::getApproved)
-                    .toList();
-
-            if (approved.isEmpty()) {
-                return getEmptyTopicView();
-
-            } else {
-                return approved.stream()
-                        .sorted((e1, e2) -> {
-                            Integer count1 = e1.getCommentCount();
-                            Integer count2 = e2.getCommentCount();
-                            return count2.compareTo(count1);
-                        })
-                        .toList()
-                        .get(0);
-            }
+    public TopicView getMostCommentedTopic() throws BadRequestException, ObjectNotFoundException {
+        List<TopicView> allTopics = getAllApprovedTopics();
+        if (allTopics.size() == 1 && allTopics.get(0).getId() == null) {
+            throw new ObjectNotFoundException("Topic not found!");
         }
+
+        return allTopics.stream()
+                .sorted((e1, e2) -> {
+                    Integer count1 = e1.getCommentCount();
+                    Integer count2 = e2.getCommentCount();
+                    return count2.compareTo(count1);
+                })
+                .toList()
+                .get(0);
     }
 
     public List<TopicView> getAllTopicsByUserId(Long id) throws BadRequestException {
-        ResponseEntity<List<TopicView>> allTopics = getAllTopics();
-        if (allTopics.getBody() == null || allTopics.getBody().isEmpty()) {
 
+        List<TopicView> allTopics = getAllApprovedTopics();
+        if (allTopics.size() == 1 && allTopics.get(0).getId() == null) {
             return List.of(getEmptyTopicView());
-        } else {
-            List<TopicView> list = allTopics.getBody().stream()
-                    .filter(e -> e.getAuthor().equals(id))
-                    .toList();
-            if (list.isEmpty()) {
-                return List.of(getEmptyTopicView());
-            }
-            return list;
         }
+
+        List<TopicView> list = allTopics.stream()
+                .filter(e -> e.getAuthor().equals(id))
+                .toList();
+
+        if (list.isEmpty()) {
+            return List.of(getEmptyTopicView());
+        }
+        return list;
+
     }
 
     private TopicView getEmptyTopicView() {
@@ -204,28 +198,27 @@ public class TopicService {
         topicView.setId(null);
         topicView.setDescription(null);
         topicView.setPictureUrl("/images/picture-not-found.jpg");
+        topicView.setCommentCount(0);
+        topicView.setAuthor(null);
         return topicView;
     }
 
     private TopicDetailsView mapTopicDetailsView(TopicDetailsRequestDTO topicDetailsRequestDTO)
-            throws ObjectNotFoundException, BadRequestException {
+            throws BadRequestException, ObjectNotFoundException {
+
         if (topicDetailsRequestDTO == null) {
             throw new BadRequestException("Please try again later!");
+
         } else {
-            TopicDetailsView topicDetailsView = new TopicDetailsView();
-            topicDetailsView.setHabitat(topicDetailsRequestDTO.getHabitat());
-            topicDetailsView.setLevel(topicDetailsRequestDTO.getLevel());
-            topicDetailsView.setApproved(topicDetailsRequestDTO.getApproved());
-            topicDetailsView.setDescription(topicDetailsRequestDTO.getDescription());
-            topicDetailsView.setId(topicDetailsRequestDTO.getId());
-            topicDetailsView.setPicture(topicDetailsRequestDTO.getPicture());
-            topicDetailsView.setName(topicDetailsRequestDTO.getName());
-            topicDetailsView.setVideoUrl(topicDetailsRequestDTO.getVideoUrl());
+
+            TopicDetailsView topicDetailsView = getTopicDetailsView(topicDetailsRequestDTO);
 
             List<CommentView> commentViews = new ArrayList<>();
             for (CommentRequestAddDTO comment : topicDetailsRequestDTO.getComments()) {
                 CommentView commentView = mapCommentView(comment);
-                commentViews.add(commentView);
+                if (commentView != null) {
+                    commentViews.add(commentView);
+                }
             }
             topicDetailsView.setComments(commentViews);
 
@@ -235,10 +228,27 @@ public class TopicService {
         }
     }
 
-    private CommentView mapCommentView(CommentRequestAddDTO commentRequestAddDTO) throws ObjectNotFoundException {
+    private static TopicDetailsView getTopicDetailsView(TopicDetailsRequestDTO topicDetailsRequestDTO) {
+        TopicDetailsView topicDetailsView = new TopicDetailsView();
+        topicDetailsView.setHabitat(topicDetailsRequestDTO.getHabitat());
+        topicDetailsView.setLevel(topicDetailsRequestDTO.getLevel());
+        topicDetailsView.setApproved(topicDetailsRequestDTO.getApproved());
+        topicDetailsView.setDescription(topicDetailsRequestDTO.getDescription());
+        topicDetailsView.setId(topicDetailsRequestDTO.getId());
+        topicDetailsView.setPicture(topicDetailsRequestDTO.getPicture());
+        topicDetailsView.setName(topicDetailsRequestDTO.getName());
+        topicDetailsView.setVideoUrl(topicDetailsRequestDTO.getVideoUrl());
+        return topicDetailsView;
+    }
+
+    private CommentView mapCommentView(CommentRequestAddDTO commentRequestAddDTO) {
         CommentView commentView = new CommentView();
         commentView.setContext(commentRequestAddDTO.getContext());
-        commentView.setAuthor(userService.getUserById(commentRequestAddDTO.getAuthorId()).getUsername());
+        try {
+            commentView.setAuthor(userService.getUserById(commentRequestAddDTO.getAuthorId()).getUsername());
+        } catch (ObjectNotFoundException e) {
+            return null;
+        }
         return commentView;
     }
 }

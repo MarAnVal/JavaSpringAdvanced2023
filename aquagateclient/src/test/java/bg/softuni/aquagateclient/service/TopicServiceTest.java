@@ -3,7 +3,6 @@ package bg.softuni.aquagateclient.service;
 import bg.softuni.aquagateclient.model.dto.binding.TopicAddDTO;
 import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
 import bg.softuni.aquagateclient.model.dto.request.TopicDetailsRequestDTO;
-import bg.softuni.aquagateclient.model.dto.request.TopicRequestAddDTO;
 import bg.softuni.aquagateclient.model.dto.view.TopicDetailsView;
 import bg.softuni.aquagateclient.model.dto.view.TopicView;
 import bg.softuni.aquagateclient.model.entity.UserEntity;
@@ -11,12 +10,8 @@ import bg.softuni.aquagateclient.service.rest.TopicRestService;
 import bg.softuni.aquagateclient.web.error.BadRequestException;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,27 +24,23 @@ import static org.mockito.Mockito.when;
 
 class TopicServiceTest {
     private final TopicRestService topicRestService;
-    private final RestTemplate restTemplate;
     private final CloudService cloudService;
     private final UserService userService;
     private final TopicService topicService;
-    private TopicAddDTO topicAddDTO;
-    private TopicRequestAddDTO topicRequestAddDTO;
-    private HttpEntity<TopicRequestAddDTO> http;
-    private MultipartFile multipartFile;
-    private TopicView topicView;
-    private TopicView topicView1;
-    private TopicView topicView2;
-    private List<TopicView> allTopicViews;
-    private List<TopicView> notApprovedTopicViews;
+    private final TopicAddDTO topicAddDTO;
+    private final MultipartFile multipartFile;
+    private final TopicView topicView;
+    private final TopicView topicView1;
+    private final TopicView topicViewNotApproved;
+    private final TopicDetailsRequestDTO topicDetailsRequestDTO;
+    private final TopicView emptyTopicView;
 
     TopicServiceTest() {
         topicRestService = mock(TopicRestService.class);
-        restTemplate = mock(RestTemplate.class);
         cloudService = mock(CloudService.class);
         userService = mock(UserService.class);
 
-        topicService = new TopicService(topicRestService, restTemplate, cloudService, userService);
+        topicService = new TopicService(topicRestService, cloudService, userService);
 
         multipartFile = mock(MultipartFile.class);
 
@@ -71,10 +62,6 @@ class TopicServiceTest {
         topicView.setAuthor(7L);
         topicView.setCommentCount(3);
 
-        topicRequestAddDTO = new TopicRequestAddDTO();
-
-        http = new HttpEntity<>(topicRequestAddDTO);
-
         topicView1 = new TopicView();
         topicView1.setApproved(true);
         topicView1.setName("testName");
@@ -84,39 +71,46 @@ class TopicServiceTest {
         topicView1.setAuthor(3L);
         topicView1.setCommentCount(1);
 
-        topicView2 = new TopicView();
-        topicView2.setApproved(false);
-        topicView2.setName("testName");
-        topicView2.setId(3L);
-        topicView2.setPictureUrl("testUrl");
-        topicView2.setDescription("testDescription");
-        topicView2.setAuthor(7L);
-        topicView2.setCommentCount(0);
+        topicViewNotApproved = new TopicView();
+        topicViewNotApproved.setApproved(false);
+        topicViewNotApproved.setName("testName");
+        topicViewNotApproved.setId(3L);
+        topicViewNotApproved.setPictureUrl("testUrl");
+        topicViewNotApproved.setDescription("testDescription");
+        topicViewNotApproved.setAuthor(7L);
+        topicViewNotApproved.setCommentCount(0);
 
-        allTopicViews = new ArrayList<>();
-        allTopicViews.add(topicView);
-        allTopicViews.add(topicView1);
-        allTopicViews.add(topicView2);
+        topicDetailsRequestDTO = new TopicDetailsRequestDTO();
+        topicDetailsRequestDTO.setPicture("testPictureUrl");
+        topicDetailsRequestDTO.setName("testName");
+        topicDetailsRequestDTO.setDescription("testDescription");
+        topicDetailsRequestDTO.setHabitat("FRESHWATER");
+        topicDetailsRequestDTO.setLevel("BEGINNER");
+        topicDetailsRequestDTO.setApproved(true);
+        topicDetailsRequestDTO.setAuthor(10L);
+        topicDetailsRequestDTO.setId(1L);
+        topicDetailsRequestDTO.setVideoUrl("testVideoUr");
+        CommentRequestAddDTO commentRequestAddDTO = new CommentRequestAddDTO();
+        commentRequestAddDTO.setAuthorId(11L);
+        commentRequestAddDTO.setTopicId(1L);
+        commentRequestAddDTO.setContext("do test");
+        topicDetailsRequestDTO.setComments(List.of(commentRequestAddDTO));
 
-        notApprovedTopicViews = new ArrayList<>();
-        notApprovedTopicViews.add(topicView2);
+        emptyTopicView = new TopicView();
+        emptyTopicView.setName("No topics");
+        emptyTopicView.setApproved(true);
+        emptyTopicView.setId(null);
+        emptyTopicView.setDescription(null);
+        emptyTopicView.setPictureUrl("/images/picture-not-found.jpg");
+        emptyTopicView.setCommentCount(0);
     }
 
     @Test
     void testRemoveTopicSuccessful() throws BadRequestException {
         //Arrange
         TopicView topicView = new TopicView();
-        ResponseEntity<TopicView> topicViewResponseEntity = ResponseEntity.ok(topicView);
-        String url = "testTopicsAllUrlSource";
-
-        when(topicRestService.topicsAllUrlSource())
-                .thenReturn(url);
-
-        Long id = 1L;
-        String requestUrl = topicRestService.topicRemoveUrlSource() + "/" + id;
-
-        when(restTemplate.exchange(requestUrl, HttpMethod.DELETE, null, TopicView.class))
-                .thenReturn(topicViewResponseEntity);
+        Long id = 5L;
+        when(topicRestService.doRemoveTopic(id)).thenReturn(ResponseEntity.ok(topicView));
 
         // Act
         ResponseEntity<TopicView> result = topicService.removeTopic(id);
@@ -124,28 +118,15 @@ class TopicServiceTest {
 
         // Assert
         assertNotNull(body);
-        assertNull(body.getApproved());
-        assertNull(body.getName());
-        assertNull(body.getId());
-        assertNull(body.getAuthor());
-        assertNull(body.getDescription());
-        assertNull(body.getCommentCount());
-        assertNull(body.getPictureUrl());
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals(topicView, body);
     }
 
     @Test
     void testRemoveTopicUnsuccessful() {
         //Arrange
-        String url = "testTopicsAllUrlSource";
-
-        when(topicRestService.topicsAllUrlSource())
-                .thenReturn(url);
-
-        Long id = 1L;
-        String requestUrl = topicRestService.topicRemoveUrlSource() + "/" + id;
-
-        when(restTemplate.exchange(requestUrl, HttpMethod.DELETE, null, TopicView.class))
-                .thenThrow(RestClientException.class);
+        Long id = 5L;
+        when(topicRestService.doRemoveTopic(id)).thenThrow(RestClientException.class);
 
         // Act // Assert
         assertThrows(BadRequestException.class, () -> topicService.removeTopic(id));
@@ -153,18 +134,9 @@ class TopicServiceTest {
 
     @Test
     void testApproveTopicSuccessful() throws BadRequestException {
-        //Arrange
-        ResponseEntity<TopicView> topicViewResponseEntity = ResponseEntity.ok(topicView);
-        String url = "testTopicsAllUrlSource";
-
-        when(topicRestService.topicsAllUrlSource())
-                .thenReturn(url);
-
-        Long id = 1L;
-        String requestUrl = topicRestService.topicRemoveUrlSource() + "/" + id;
-
-        when(restTemplate.exchange(requestUrl, HttpMethod.POST, null, TopicView.class))
-                .thenReturn(topicViewResponseEntity);
+        TopicView topicView = new TopicView();
+        Long id = 5L;
+        when(topicRestService.doApproveTopic(id)).thenReturn(ResponseEntity.ok(topicView));
 
         // Act
         ResponseEntity<TopicView> result = topicService.approveTopic(id);
@@ -172,27 +144,15 @@ class TopicServiceTest {
 
         // Assert
         assertNotNull(body);
-        assertEquals(topicView.getApproved(), body.getApproved());
-        assertEquals(topicView.getName(), body.getName());
-        assertEquals(topicView.getId(), body.getId());
-        assertEquals(topicView.getPictureUrl(), body.getPictureUrl());
-        assertEquals(topicView.getDescription(), body.getDescription());
-        assertEquals(topicView.getAuthor(), body.getAuthor());
-        assertEquals(topicView.getCommentCount(), body.getCommentCount());
+        assertEquals(200, result.getStatusCode().value());
+        assertEquals(topicView, body);
     }
 
     @Test
     void testApproveTopicUnsuccessful() {
         //Arrange
-        String url = "testTopicsAllUrlSource";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-
-        Long id = 1L;
-        String requestUrl = topicRestService.topicRemoveUrlSource() + "/" + id;
-
-        when(restTemplate.exchange(requestUrl, HttpMethod.POST, null, TopicView.class))
-                .thenThrow(RestClientException.class);
+        Long id = 5L;
+        when(topicRestService.doApproveTopic(id)).thenThrow(RestClientException.class);
 
         // Act // Assert
         assertThrows(BadRequestException.class, () -> topicService.approveTopic(id));
@@ -202,15 +162,9 @@ class TopicServiceTest {
     void testAddTopicSuccessfulWithoutPicture() throws IOException, BadRequestException {
         // Arrange
         String pictureUrlNotFoundFile = "/images/picture-not-found.jpg";
-        String url = "testTopicAddUrl";
-        TopicView topicView = new TopicView();
 
         topicAddDTO.setPictureFile(null);
-
-        when(topicRestService.topicAddUrlSource()).thenReturn(url);
-        when(topicRestService.getHttpAddTopic(topicAddDTO, pictureUrlNotFoundFile))
-                .thenReturn(http);
-        when(restTemplate.exchange(url, HttpMethod.POST, http, TopicView.class))
+        when(topicRestService.doAddTopic(topicAddDTO, pictureUrlNotFoundFile))
                 .thenReturn(ResponseEntity.ok(topicView));
 
         // Act
@@ -227,16 +181,11 @@ class TopicServiceTest {
     void testAddTopicSuccessfulWithPicture() throws IOException, BadRequestException {
         // Arrange
         String pictureUrlFoundFile = "/images/picture-not-found-test.jpg";
-        String url = "testTopicAddUrl";
-        TopicView topicView = new TopicView();
 
         topicAddDTO.setVideoUrl(null);
 
         when(cloudService.uploadImage(multipartFile)).thenReturn(pictureUrlFoundFile);
-        when(topicRestService.topicAddUrlSource()).thenReturn(url);
-        when(topicRestService.getHttpAddTopic(topicAddDTO, pictureUrlFoundFile))
-                .thenReturn(http);
-        when(restTemplate.exchange(url, HttpMethod.POST, http, TopicView.class))
+        when(topicRestService.doAddTopic(topicAddDTO, pictureUrlFoundFile))
                 .thenReturn(ResponseEntity.ok(topicView));
 
         // Act
@@ -253,13 +202,9 @@ class TopicServiceTest {
     void testAddTopicUnsuccessful() throws IOException {
         // Arrange
         String pictureUrlFoundFile = "/images/picture-not-found-test.jpg";
-        String url = "testTopicAddUrl";
 
         when(cloudService.uploadImage(multipartFile)).thenReturn(pictureUrlFoundFile);
-        when(topicRestService.topicAddUrlSource()).thenReturn(url);
-        when(topicRestService.getHttpAddTopic(topicAddDTO, pictureUrlFoundFile))
-                .thenReturn(http);
-        when(restTemplate.exchange(url, HttpMethod.POST, http, TopicView.class))
+        when(topicRestService.doAddTopic(topicAddDTO, pictureUrlFoundFile))
                 .thenThrow(RestClientException.class);
 
         // Act // Assert
@@ -269,18 +214,13 @@ class TopicServiceTest {
     @Test
     void testGetTopicDetailsSuccessful() throws ObjectNotFoundException, BadRequestException {
         // Arrange
-        String url = "testTopicDetailsUrl";
         Long id = 1L;
-        when(topicRestService.topicDetailsUrlSource()).thenReturn(url);
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("testUsername");
 
         when(userService.getUserById(10L)).thenReturn(userEntity);
-
-        TopicDetailsRequestDTO topicDetailsRequestDTO = getTopicDetailsRequestDTO();
-
-        when(restTemplate.exchange(url + "/" + id, HttpMethod.GET, null, TopicDetailsRequestDTO.class))
-                .thenReturn(ResponseEntity.ok(topicDetailsRequestDTO));
+        when(userService.getUserById(11L)).thenReturn(userEntity);
+        when(topicRestService.getTopicDetails(id)).thenReturn(ResponseEntity.ok(topicDetailsRequestDTO));
 
         // Act
         TopicDetailsView topicDetails = topicService.getTopicDetails(id);
@@ -300,71 +240,195 @@ class TopicServiceTest {
                 topicDetails.getComments().get(0).getContext());
     }
 
-    private static TopicDetailsRequestDTO getTopicDetailsRequestDTO() {
-        TopicDetailsRequestDTO topicDetailsRequestDTO = new TopicDetailsRequestDTO();
-        topicDetailsRequestDTO.setAuthor(10L);
-        topicDetailsRequestDTO.setId(1L);
-        topicDetailsRequestDTO.setApproved(true);
-        topicDetailsRequestDTO.setLevel("BEGINNER");
-        topicDetailsRequestDTO.setName("to test");
-        topicDetailsRequestDTO.setDescription("testDescription");
-        topicDetailsRequestDTO.setHabitat("FRESHWATER");
-        topicDetailsRequestDTO.setVideoUrl("MebHynnz0FY");
-        topicDetailsRequestDTO.setPicture("/images/picture-not-found-test.jpg");
-        CommentRequestAddDTO commentRequestAddDTO = new CommentRequestAddDTO();
-        commentRequestAddDTO.setAuthorId(10L);
-        commentRequestAddDTO.setTopicId(1L);
-        commentRequestAddDTO.setContext("do test");
-        topicDetailsRequestDTO.setComments(List.of(commentRequestAddDTO));
-        return topicDetailsRequestDTO;
-    }
-
     @Test
     void testGetTopicDetailsUnsuccessful() throws ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
         Long id = 1L;
-        when(topicRestService.topicDetailsUrlSource()).thenReturn(url);
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("testUsername");
 
         when(userService.getUserById(10L)).thenReturn(userEntity);
-
-        when(restTemplate.exchange(url + "/" + id, HttpMethod.GET, null, TopicDetailsRequestDTO.class))
-                .thenThrow(RestClientException.class);
+        when(topicRestService.getTopicDetails(id)).thenThrow(RestClientException.class);
 
         // Act // Assert
         assertThrows(BadRequestException.class, () -> topicService.getTopicDetails(id));
     }
 
     @Test
-    void testGetLatestTopicSuccessful() throws ObjectNotFoundException, BadRequestException {
+    void testGetTopicDetailsEmptyBody() throws ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(allTopicViews));
-
-        Long id = 3L;
-
-        when(topicRestService.topicDetailsUrlSource()).thenReturn(url);
+        Long id = 1L;
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername("testUsername");
 
         when(userService.getUserById(10L)).thenReturn(userEntity);
+        when(topicRestService.getTopicDetails(id)).thenReturn(ResponseEntity.ok(null));
 
-        TopicDetailsRequestDTO topicDetailsRequestDTO = getTopicDetailsRequestDTO();
+        // Act // Assert
+        assertThrows(BadRequestException.class, () -> topicService.getTopicDetails(id));
+    }
 
-        when(restTemplate.exchange("testTopicDetailsUrl" + "/" + id, HttpMethod.GET, null, TopicDetailsRequestDTO.class))
-                .thenReturn(ResponseEntity.ok(topicDetailsRequestDTO));
+    @Test
+    void testGetTopicDetailsNotFoundCommentAuthorId() throws ObjectNotFoundException, BadRequestException {
+        // Arrange
+        Long id = 1L;
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("testUsername");
+
+        when(userService.getUserById(10L)).thenReturn(userEntity);
+        when(userService.getUserById(11L)).thenThrow(ObjectNotFoundException.class);
+        when(topicRestService.getTopicDetails(id)).thenReturn(ResponseEntity.ok(topicDetailsRequestDTO));
+
+        // Act
+        TopicDetailsView topicDetails = topicService.getTopicDetails(id);
+
+        // Assert
+        assertEquals(topicDetailsRequestDTO.getId(), topicDetails.getId());
+        assertEquals(topicDetailsRequestDTO.getLevel(), topicDetails.getLevel());
+        assertEquals(topicDetailsRequestDTO.getHabitat(), topicDetails.getHabitat());
+        assertEquals(userEntity.getUsername(), topicDetails.getAuthor());
+        assertEquals(topicDetailsRequestDTO.getApproved(), topicDetails.getApproved());
+        assertEquals(topicDetailsRequestDTO.getDescription(), topicDetails.getDescription());
+        assertEquals(topicDetailsRequestDTO.getName(), topicDetails.getName());
+        assertEquals(topicDetailsRequestDTO.getVideoUrl(), topicDetails.getVideoUrl());
+        assertEquals(0, topicDetails.getComments().size());
+    }
+
+    @Test
+    void testGetAllApprovedTopicsGetAllTopicsNullBody() throws BadRequestException {
+        // Arrange
+        when(topicRestService.getAllTopics()).thenReturn(ResponseEntity.ok(null));
+
+        // Act
+        List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
+
+        // Assert
+        assertEquals(1, allApprovedTopics.size());
+        assertEquals(emptyTopicView.getApproved(), allApprovedTopics.get(0).getApproved());
+        assertEquals(emptyTopicView.getCommentCount(), allApprovedTopics.get(0).getCommentCount());
+        assertEquals(emptyTopicView.getAuthor(), allApprovedTopics.get(0).getAuthor());
+        assertEquals(emptyTopicView.getName(), allApprovedTopics.get(0).getName());
+        assertEquals(emptyTopicView.getPictureUrl(), allApprovedTopics.get(0).getPictureUrl());
+        assertEquals(emptyTopicView.getId(), allApprovedTopics.get(0).getId());
+        assertEquals(emptyTopicView.getDescription(), allApprovedTopics.get(0).getDescription());
+    }
+
+    @Test
+    void testGetAllApprovedTopicsGetAllTopicsNotFoundUserId() throws BadRequestException, ObjectNotFoundException {
+        // Arrange
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicView1, topicView, topicViewNotApproved)));
+        when(userService.getUserById(7L)).thenReturn(new UserEntity());
+        when(userService.getUserById(3L)).thenThrow(ObjectNotFoundException.class);
+
+        // Act
+        List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
+
+        // Assert
+        assertEquals(1, allApprovedTopics.size());
+        assertTrue(allApprovedTopics.contains(topicView));
+        assertFalse(allApprovedTopics.contains(topicView1));
+        assertFalse(allApprovedTopics.contains(topicViewNotApproved));
+    }
+
+    @Test
+    void testGetAllTopicsUnsuccessful() {
+        // Arrange
+        when(topicRestService.getAllTopics()).thenThrow(RestClientException.class);
+
+        // Act // Assert
+        assertThrows(BadRequestException.class, topicService::getAllApprovedTopics);
+        assertThrows(BadRequestException.class, topicService::getAllNotApprovedTopics);
+        assertThrows(BadRequestException.class, () -> topicService.getAllTopicsByUserId(1L));
+    }
+
+    @Test
+    void testGetAllApprovedTopicsWithoutApprovedTopics() throws BadRequestException, ObjectNotFoundException {
+        // Arrange
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicViewNotApproved)));
+        when(userService.getUserById(7L)).thenReturn(new UserEntity());
+
+        // Act
+        List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
+
+        // Assert
+        assertEquals(1, allApprovedTopics.size());
+        assertEquals(emptyTopicView.getApproved(), allApprovedTopics.get(0).getApproved());
+        assertEquals(emptyTopicView.getCommentCount(), allApprovedTopics.get(0).getCommentCount());
+        assertEquals(emptyTopicView.getAuthor(), allApprovedTopics.get(0).getAuthor());
+        assertEquals(emptyTopicView.getName(), allApprovedTopics.get(0).getName());
+        assertEquals(emptyTopicView.getPictureUrl(), allApprovedTopics.get(0).getPictureUrl());
+        assertEquals(emptyTopicView.getId(), allApprovedTopics.get(0).getId());
+        assertEquals(emptyTopicView.getDescription(), allApprovedTopics.get(0).getDescription());
+    }
+
+    @Test
+    void testGetAllNotApprovedTopics() throws BadRequestException, ObjectNotFoundException {
+        // Arrange
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicView1, topicView, topicViewNotApproved)));
+        when(userService.getUserById(7L)).thenReturn(new UserEntity());
+        when(userService.getUserById(3L)).thenThrow(ObjectNotFoundException.class);
+
+        // Act
+        List<TopicView> allNotApprovedTopics = topicService.getAllNotApprovedTopics();
+
+        //Assert
+        assertEquals(1, allNotApprovedTopics.size());
+        assertTrue(allNotApprovedTopics.contains(topicViewNotApproved));
+    }
+
+    @Test
+    void testGetAllNotApprovedTopicsWithoutTopics() throws BadRequestException {
+        // Arrange
+        when(topicRestService.getAllTopics()).thenReturn(ResponseEntity.ok(null));
+
+        // Act
+        List<TopicView> allNotApprovedTopics = topicService.getAllNotApprovedTopics();
+
+        //Assert
+        assertEquals(1, allNotApprovedTopics.size());
+        assertEquals(emptyTopicView.getApproved(), allNotApprovedTopics.get(0).getApproved());
+        assertEquals(emptyTopicView.getCommentCount(), allNotApprovedTopics.get(0).getCommentCount());
+        assertEquals(emptyTopicView.getAuthor(), allNotApprovedTopics.get(0).getAuthor());
+        assertEquals(emptyTopicView.getName(), allNotApprovedTopics.get(0).getName());
+        assertEquals(emptyTopicView.getPictureUrl(), allNotApprovedTopics.get(0).getPictureUrl());
+        assertEquals(emptyTopicView.getId(), allNotApprovedTopics.get(0).getId());
+        assertEquals(emptyTopicView.getDescription(), allNotApprovedTopics.get(0).getDescription());
+    }
+
+    @Test
+    void testGetAllNotApprovedTopicsWithoutNotApprovedTopics() throws BadRequestException {
+        // Arrange
+        when(topicRestService.getAllTopics()).thenReturn(ResponseEntity.ok(List.of(topicView1, topicView)));
+
+        // Act
+        List<TopicView> allNotApprovedTopics = topicService.getAllNotApprovedTopics();
+
+        //Assert
+        assertEquals(1, allNotApprovedTopics.size());
+        assertFalse(allNotApprovedTopics.get(0).getApproved());
+        assertEquals(emptyTopicView.getCommentCount(), allNotApprovedTopics.get(0).getCommentCount());
+        assertEquals(emptyTopicView.getAuthor(), allNotApprovedTopics.get(0).getAuthor());
+        assertEquals(emptyTopicView.getName(), allNotApprovedTopics.get(0).getName());
+        assertEquals(emptyTopicView.getPictureUrl(), allNotApprovedTopics.get(0).getPictureUrl());
+        assertEquals(emptyTopicView.getId(), allNotApprovedTopics.get(0).getId());
+        assertEquals(emptyTopicView.getDescription(), allNotApprovedTopics.get(0).getDescription());
+    }
+
+    @Test
+    void testGetLatestTopicSuccessfulWithApprovedTopics() throws ObjectNotFoundException, BadRequestException {
+        // Arrange
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicView1, topicView, topicViewNotApproved)));
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("TestUsername");
+        when(userService.getUserById(7L)).thenReturn(userEntity);
+        when(userService.getUserById(3L)).thenReturn(userEntity);
+        when(userService.getUserById(10L)).thenReturn(userEntity);
+        when(userService.getUserById(11L)).thenReturn(userEntity);
+        when(topicRestService.getTopicDetails(topicView1.getId())).thenReturn(ResponseEntity.ok(topicDetailsRequestDTO));
 
         // Act
         TopicDetailsView latestTopic = topicService.getLatestTopic();
@@ -374,255 +438,56 @@ class TopicServiceTest {
     }
 
     @Test
-    void testGetLatestTopicUnsuccessful() {
+    void testGetLatestTopicWithoutApprovedTopics() {
         // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList()))
-                .thenReturn(ResponseEntity.ok(new ArrayList<>()));
+        when(topicRestService.getAllTopics()).thenReturn(ResponseEntity.ok(List.of(topicViewNotApproved)));
 
         // Act // Assert
         assertThrows(ObjectNotFoundException.class, topicService::getLatestTopic);
     }
 
     @Test
-    void testGetMostCommentedTopicSuccessfulWithApprovedTopics() throws BadRequestException {
+    void testGetMostCommentedTopic() throws BadRequestException, ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(allTopicViews));
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicView, topicView1, topicViewNotApproved)));
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("TestUsername");
+        when(userService.getUserById(7L)).thenReturn(userEntity);
+        when(userService.getUserById(3L)).thenReturn(userEntity);
 
         // Act
         TopicView mostCommentedTopic = topicService.getMostCommentedTopic();
 
         // Assert
-        assertEquals(topicView.getId(), mostCommentedTopic.getId());
+        assertEquals(topicView, mostCommentedTopic);
+
     }
 
     @Test
-    void testGetMostCommentedTopicSuccessfulWithoutApprovedTopics() throws BadRequestException {
+    void testGetMostCommentedTopicGetAllApprovedTopicsUnsuccessful() throws ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicViewNotApproved)));
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername("TestUsername");
+        when(userService.getUserById(7L)).thenReturn(userEntity);
 
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(notApprovedTopicViews));
-
-        // Act
-        TopicView mostCommentedTopic = topicService.getMostCommentedTopic();
-
-        // Assert
-        assertNull(mostCommentedTopic.getId());
-        assertEquals("No topics", mostCommentedTopic.getName());
-        assertEquals(true, mostCommentedTopic.getApproved());
-        assertNull(mostCommentedTopic.getDescription());
-        assertEquals("/images/picture-not-found.jpg", mostCommentedTopic.getPictureUrl());
+        // Act // Assert
+        assertThrows(ObjectNotFoundException.class, topicService::getMostCommentedTopic);
     }
 
     @Test
-    void testGetMostCommentedTopicSuccessfulWithoutTopics() throws BadRequestException {
+    void testGetAllTopicsByUserIdWithTopics() throws BadRequestException, ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(new ArrayList<>()));
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicView1, topicView, topicViewNotApproved)));
+        when(userService.getUserById(7L)).thenReturn(new UserEntity());
+        when(userService.getUserById(3L)).thenReturn(new UserEntity());
+        Long userId = 3L;
 
         // Act
-        TopicView mostCommentedTopic = topicService.getMostCommentedTopic();
-
-        // Assert
-        assertNull(mostCommentedTopic.getId());
-        assertEquals("No topics", mostCommentedTopic.getName());
-        assertEquals(true, mostCommentedTopic.getApproved());
-        assertNull(mostCommentedTopic.getDescription());
-        assertEquals("/images/picture-not-found.jpg", mostCommentedTopic.getPictureUrl());
-    }
-
-    @Test
-    void testGetAllNotApprovedTopics() throws BadRequestException {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(allTopicViews));
-
-        // Act
-        List<TopicView> allNotApprovedTopics = topicService.getAllNotApprovedTopics();
-
-        //Assert
-        assertEquals(1, allNotApprovedTopics.size());
-        assertEquals("testName", allNotApprovedTopics.get(0).getName());
-        assertEquals(3L, allNotApprovedTopics.get(0).getId());
-        assertEquals("testUrl", allNotApprovedTopics.get(0).getPictureUrl());
-        assertEquals("testDescription", allNotApprovedTopics.get(0).getDescription());
-        assertEquals(7L, allNotApprovedTopics.get(0).getAuthor());
-        assertEquals(0, allNotApprovedTopics.get(0).getCommentCount());
-    }
-
-    @Test
-    void testGetAllNotApprovedTopicsWithoutTopics() throws BadRequestException {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(new ArrayList<>()));
-
-        // Act
-        List<TopicView> allNotApprovedTopics = topicService.getAllNotApprovedTopics();
-
-        //Assert
-        assertEquals(1, allNotApprovedTopics.size());
-        assertNull(allNotApprovedTopics.get(0).getId());
-        assertEquals("No topics", allNotApprovedTopics.get(0).getName());
-        assertEquals(true, allNotApprovedTopics.get(0).getApproved());
-        assertNull(allNotApprovedTopics.get(0).getDescription());
-        assertEquals("/images/picture-not-found.jpg", allNotApprovedTopics.get(0).getPictureUrl());
-    }
-
-    @Test
-    void testGetAllApprovedTopics() throws BadRequestException {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(allTopicViews));
-
-        // Act
-        List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
-
-        // Assert
-        assertEquals(2, allApprovedTopics.size());
-        assertTrue(allApprovedTopics.contains(topicView));
-        assertTrue(allApprovedTopics.contains(topicView1));
-    }
-
-    @Test
-    void testGetAllApprovedTopicsWithoutApprovedTopics() throws BadRequestException {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(notApprovedTopicViews));
-
-        // Act
-        List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
-
-        // Assert
-        assertNull(allApprovedTopics.get(0).getId());
-        assertEquals("No topics", allApprovedTopics.get(0).getName());
-        assertEquals(true, allApprovedTopics.get(0).getApproved());
-        assertNull(allApprovedTopics.get(0).getDescription());
-        assertEquals("/images/picture-not-found.jpg", allApprovedTopics.get(0).getPictureUrl());
-    }
-
-    @Test
-    void testGetAllApprovedTopicsWithoutTopics() throws BadRequestException {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(new ArrayList<>()));
-
-        // Act
-        List<TopicView> allApprovedTopics = topicService.getAllApprovedTopics();
-
-        // Assert
-        assertEquals(1, allApprovedTopics.size());
-        assertNull(allApprovedTopics.get(0).getId());
-        assertEquals("No topics", allApprovedTopics.get(0).getName());
-        assertEquals(true, allApprovedTopics.get(0).getApproved());
-        assertNull(allApprovedTopics.get(0).getDescription());
-        assertEquals("/images/picture-not-found.jpg", allApprovedTopics.get(0).getPictureUrl());
-    }
-
-    @Test
-    void testGetAllTopicsByUserId() throws BadRequestException {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(allTopicViews));
-        // Act
-        List<TopicView> allTopicsByUserId = topicService.getAllTopicsByUserId(3L);
+        List<TopicView> allTopicsByUserId = topicService.getAllTopicsByUserId(userId);
 
         // Assert
         assertEquals(1, allTopicsByUserId.size());
@@ -630,79 +495,49 @@ class TopicServiceTest {
     }
 
     @Test
-    void testGetAllTopicsByUserIdWithoutUsersTopics() throws BadRequestException {
+    void testGetAllTopicsByUserIdWithTopicsFromTheUser() throws BadRequestException, ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
+        when(topicRestService.getAllTopics())
+                .thenReturn(ResponseEntity.ok(List.of(topicView1, topicView, topicViewNotApproved)));
+        when(userService.getUserById(7L)).thenReturn(new UserEntity());
+        when(userService.getUserById(3L)).thenReturn(new UserEntity());
+        Long userId = 4L;
 
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenReturn(ResponseEntity.ok(allTopicViews));
         // Act
-        List<TopicView> allTopicsByUserId = topicService.getAllTopicsByUserId(100L);
+        List<TopicView> allTopicsByUserId = topicService.getAllTopicsByUserId(userId);
 
-        //Assert
+        // Assert
         assertEquals(1, allTopicsByUserId.size());
-        assertNull(allTopicsByUserId.get(0).getId());
-        assertEquals("No topics", allTopicsByUserId.get(0).getName());
-        assertEquals(true, allTopicsByUserId.get(0).getApproved());
-        assertNull(allTopicsByUserId.get(0).getDescription());
-        assertEquals("/images/picture-not-found.jpg", allTopicsByUserId.get(0).getPictureUrl());
+        assertTrue(allTopicsByUserId.get(0).getApproved());
+        assertEquals(emptyTopicView.getCommentCount(), allTopicsByUserId.get(0).getCommentCount());
+        assertEquals(emptyTopicView.getAuthor(), allTopicsByUserId.get(0).getAuthor());
+        assertEquals(emptyTopicView.getName(), allTopicsByUserId.get(0).getName());
+        assertEquals(emptyTopicView.getPictureUrl(), allTopicsByUserId.get(0).getPictureUrl());
+        assertEquals(emptyTopicView.getId(), allTopicsByUserId.get(0).getId());
+        assertEquals(emptyTopicView.getDescription(), allTopicsByUserId.get(0).getDescription());
     }
 
+
     @Test
-    void testGetAllTopicsByUserIdWithoutTopics() throws BadRequestException {
+    void testGetAllTopicsByUserIdWithoutTopicsFromTheUser() throws BadRequestException, ObjectNotFoundException {
         // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
+        when(topicRestService.getAllTopics())
                 .thenReturn(ResponseEntity.ok(new ArrayList<>()));
+        when(userService.getUserById(7L)).thenReturn(new UserEntity());
+        when(userService.getUserById(3L)).thenReturn(new UserEntity());
+        Long userId = 4L;
+
         // Act
-        List<TopicView> allTopicsByUserId = topicService.getAllTopicsByUserId(1L);
+        List<TopicView> allTopicsByUserId = topicService.getAllTopicsByUserId(userId);
 
-        //Assert
+        // Assert
         assertEquals(1, allTopicsByUserId.size());
-        assertNull(allTopicsByUserId.get(0).getId());
-        assertEquals("No topics", allTopicsByUserId.get(0).getName());
-        assertEquals(true, allTopicsByUserId.get(0).getApproved());
-        assertNull(allTopicsByUserId.get(0).getDescription());
-        assertEquals("/images/picture-not-found.jpg", allTopicsByUserId.get(0).getPictureUrl());
-    }
-
-    @Test
-    void testGetAllTopicsUnsuccessful() {
-        // Arrange
-        String url = "testTopicDetailsUrl";
-
-        when(topicRestService.topicsAllUrlSource()).thenReturn(url);
-        ParameterizedTypeReference<List<TopicView>> parameterizedTypeReference = new ParameterizedTypeReference<>() {
-        };
-        when(topicRestService.getParameterizedTypeReferenceTopicViewList()).thenReturn(parameterizedTypeReference);
-
-        when(restTemplate
-                .exchange(url, HttpMethod.GET, null,
-                        topicRestService.getParameterizedTypeReferenceTopicViewList())
-        )
-                .thenThrow(RestClientException.class);
-        // Act //Assert
-        assertThrows(BadRequestException.class, () -> topicService.getAllTopicsByUserId(3L));
-        assertThrows(BadRequestException.class, topicService::getAllApprovedTopics);
-        assertThrows(BadRequestException.class, topicService::getAllNotApprovedTopics);
-        assertThrows(BadRequestException.class, topicService::getLatestTopic);
-        assertThrows(BadRequestException.class, topicService::getMostCommentedTopic);
+        assertTrue(allTopicsByUserId.get(0).getApproved());
+        assertEquals(emptyTopicView.getCommentCount(), allTopicsByUserId.get(0).getCommentCount());
+        assertEquals(emptyTopicView.getAuthor(), allTopicsByUserId.get(0).getAuthor());
+        assertEquals(emptyTopicView.getName(), allTopicsByUserId.get(0).getName());
+        assertEquals(emptyTopicView.getPictureUrl(), allTopicsByUserId.get(0).getPictureUrl());
+        assertEquals(emptyTopicView.getId(), allTopicsByUserId.get(0).getId());
+        assertEquals(emptyTopicView.getDescription(), allTopicsByUserId.get(0).getDescription());
     }
 }

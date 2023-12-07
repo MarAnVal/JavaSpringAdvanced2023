@@ -1,7 +1,7 @@
 package bg.softuni.aquagateclient.configuration;
 
-import bg.softuni.aquagateclient.service.rest.CommentRestService;
-import bg.softuni.aquagateclient.service.rest.TopicRestService;
+import bg.softuni.aquagateclient.service.rest.util.CommentRestUtil;
+import bg.softuni.aquagateclient.service.rest.util.TopicRestUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,13 +37,13 @@ public class ApplicationRestConfiguration {
     private String commentsAddPath;
 
     @Bean
-    public CommentRestService commentRestService() {
-        return new CommentRestService(host + commentsShema + commentsAddPath);
+    public CommentRestUtil commentRestUtil() {
+        return new CommentRestUtil(host + commentsShema + commentsAddPath);
     }
 
     @Bean
-    public TopicRestService topicRestService() {
-        return new TopicRestService(host + topicsShema + topicsAllPath,
+    public TopicRestUtil topicRestUtil() {
+        return new TopicRestUtil(host + topicsShema + topicsAllPath,
                 host + topicsShema + topicsAddPath,
                 host + topicsShema + topicsDetailsPath,
                 host + topicsShema + topicsRemovePath,

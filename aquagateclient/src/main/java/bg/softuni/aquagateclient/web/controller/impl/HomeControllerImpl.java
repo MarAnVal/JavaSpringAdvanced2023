@@ -19,7 +19,7 @@ public class HomeControllerImpl implements HomeController {
     }
 
     @Override
-    public ModelAndView index() throws BadRequestException {
+    public ModelAndView index() throws BadRequestException, ObjectNotFoundException {
 
             TopicView mostCommented = topicService.getMostCommentedTopic();
 
