@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class Topic extends BaseEntity {
     @ManyToOne
     private Picture picture;
 
-    @OneToMany(mappedBy = "topic")
+    @OneToMany(mappedBy = "topic", fetch = FetchType.EAGER)
     private List<Comment> comments;
 
 }

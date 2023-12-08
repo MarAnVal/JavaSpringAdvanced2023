@@ -50,7 +50,7 @@ public class TopicsControllerImpl implements TopicsController {
                 topicService.removeTopic(id)) {
             return ResponseEntity.ok(new TopicView());
         }
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.internalServerError().build(); //500
     }
 
     @Override
@@ -60,20 +60,27 @@ public class TopicsControllerImpl implements TopicsController {
     }
 
     @Override
-    public ResponseEntity<TopicView> doTopicAdd(@RequestBody TopicAddDTO topicAddDTO, BindingResult bindingResult)
-            throws ObjectNotFoundException {
+    public ResponseEntity<TopicView> doTopicAdd(@RequestBody TopicAddDTO topicAddDTO, BindingResult bindingResult) {
         Pattern pattern = Pattern.compile(".jpeg$|.jpg$|.bnp$|.png$");
         Matcher matcher = pattern.matcher(topicAddDTO.getPictureUrl());
 
         if (bindingResult.hasErrors() || !matcher.find()) {
-            return ResponseEntity.unprocessableEntity().build();
+
+            return ResponseEntity.unprocessableEntity().build(); //422
         }
-        return ResponseEntity.ok(topicService.addTopic(topicAddDTO));
+        try {
+
+            return ResponseEntity.ok(topicService.addTopic(topicAddDTO));
+
+        } catch (ObjectNotFoundException e) {
+
+            return ResponseEntity.internalServerError().build(); //500
+        }
     }
 
     @ExceptionHandler({ObjectNotFoundException.class})
     public ResponseEntity<TopicView> handleApplicationExceptions() {
 
-        return ResponseEntity.internalServerError().build();
+        return ResponseEntity.notFound().build();
     }
 }

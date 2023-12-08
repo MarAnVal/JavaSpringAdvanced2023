@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
@@ -99,17 +100,15 @@ public class TopicService {
         } else {
             return all.stream()
                     .map(this::mapTopicView)
-                    .toList();
+                    .collect(Collectors.toList());
         }
     }
 
     private TopicView mapTopicView(Topic topic) {
 
         TopicView topicView = modelMapper.map(topic, TopicView.class);
-
         topicView.setPictureUrl(topic.getPicture().getPictureUrl());
         topicView.setCommentCount(topic.getComments().size());
-
         return topicView;
     }
 

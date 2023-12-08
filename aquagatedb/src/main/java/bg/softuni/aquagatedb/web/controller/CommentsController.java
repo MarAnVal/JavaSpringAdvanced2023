@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/api/comments")
-@CrossOrigin("*")
-//TODO add corsOrigins only localhost:8080
+@CrossOrigin("localhost:8080/*")
 public interface CommentsController {
 
     @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")

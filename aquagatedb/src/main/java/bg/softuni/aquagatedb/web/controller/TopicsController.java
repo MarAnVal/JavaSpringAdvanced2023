@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequestMapping("/api/topics")
-@CrossOrigin("*")
-//TODO add corsOrigins only localhost:8080
+@CrossOrigin("localhost:8080/*")
 public interface TopicsController {
 
     @GetMapping("/all")
