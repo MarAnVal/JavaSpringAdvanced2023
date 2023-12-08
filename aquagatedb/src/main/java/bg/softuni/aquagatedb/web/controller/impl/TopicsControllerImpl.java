@@ -46,11 +46,9 @@ public class TopicsControllerImpl implements TopicsController {
     @Override
     public ResponseEntity<TopicView> doRemove(Long id) throws ObjectNotFoundException {
 
-        if (commentService.removeCommentsByTopicId(id) &&
-                topicService.removeTopic(id)) {
-            return ResponseEntity.ok(new TopicView());
-        }
-        return ResponseEntity.internalServerError().build(); //500
+        commentService.removeCommentsByTopicId(id);
+        topicService.removeTopic(id);
+        return ResponseEntity.ok(new TopicView());
     }
 
     @Override
@@ -66,7 +64,7 @@ public class TopicsControllerImpl implements TopicsController {
 
         if (bindingResult.hasErrors() || !matcher.find()) {
 
-            return ResponseEntity.unprocessableEntity().build(); //422
+            return ResponseEntity.unprocessableEntity().build();
         }
         try {
 
@@ -74,7 +72,7 @@ public class TopicsControllerImpl implements TopicsController {
 
         } catch (ObjectNotFoundException e) {
 
-            return ResponseEntity.internalServerError().build(); //500
+            return ResponseEntity.internalServerError().build();
         }
     }
 

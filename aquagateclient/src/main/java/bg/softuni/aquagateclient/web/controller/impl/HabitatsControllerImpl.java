@@ -1,9 +1,9 @@
 package bg.softuni.aquagateclient.web.controller.impl;
 
 import bg.softuni.aquagateclient.web.controller.HabitatsController;
+import bg.softuni.aquagateclient.web.error.BadRequestException;
 import bg.softuni.aquagateclient.web.error.BaseApplicationException;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
-import bg.softuni.aquagateclient.web.error.BadRequestException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;

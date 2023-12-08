@@ -62,6 +62,7 @@ public class UserService {
         return userEntity;
     }
 
+    //TODO move strings to application.properties
     public boolean initAdmin() throws ObjectNotFoundException {
         if (userRepo.count() < 1) {
             UserEntity userEntity = new UserEntity();
@@ -76,6 +77,7 @@ public class UserService {
         return false;
     }
 
+    //TODO move strings to application.properties
     public boolean initModerator() throws ObjectNotFoundException {
         if (userRepo.count() < 2) {
             UserEntity userEntity = new UserEntity();

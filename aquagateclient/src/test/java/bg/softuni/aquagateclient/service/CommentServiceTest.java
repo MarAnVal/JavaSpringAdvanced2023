@@ -1,19 +1,14 @@
 package bg.softuni.aquagateclient.service;
 
 import bg.softuni.aquagateclient.model.dto.binding.CommentAddDTO;
-import bg.softuni.aquagateclient.model.dto.request.CommentRequestAddDTO;
 import bg.softuni.aquagateclient.model.dto.view.CommentView;
 import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.service.rest.CommentRestService;
-import bg.softuni.aquagateclient.service.rest.util.CommentRestUtil;
 import bg.softuni.aquagateclient.web.error.BadRequestException;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

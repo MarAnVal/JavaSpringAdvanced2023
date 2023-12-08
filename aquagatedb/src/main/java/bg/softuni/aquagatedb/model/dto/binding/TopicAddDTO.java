@@ -1,6 +1,7 @@
 package bg.softuni.aquagatedb.model.dto.binding;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class TopicAddDTO {
 
     private String pictureUrl;
 
+    @Size(min = 11, max = 11)
     private String videoUrl;
 
     @NotNull
