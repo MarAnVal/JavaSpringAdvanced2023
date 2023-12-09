@@ -117,11 +117,12 @@ public class TopicService {
 
         String pictureUrl = "/images/picture-not-found.jpg";
 
-        if (topicAddDTO.getPictureFile() != null) {
+        if (!topicAddDTO.getPictureFile().isEmpty()) {
             pictureUrl = cloudinaryService.uploadImage(topicAddDTO.getPictureFile());
         }
 
-        if (topicAddDTO.getVideoUrl() == null) {
+        if (topicAddDTO.getVideoUrl() == null ||
+                topicAddDTO.getVideoUrl().length() != 11) {
             topicAddDTO.setVideoUrl("MebHynnz0FY");
         }
 
@@ -157,11 +158,8 @@ public class TopicService {
         return getTopicDetails(id);
     }
 
-    public TopicView getMostCommentedTopic() throws BadRequestException, ObjectNotFoundException {
+    public TopicView getMostCommentedTopic() throws BadRequestException{
         List<TopicView> allTopics = getAllApprovedTopics();
-        if (allTopics.size() == 1 && allTopics.get(0).getId() == null) {
-            throw new ObjectNotFoundException("Topic not found!");
-        }
 
         return allTopics.stream()
                 .sorted((e1, e2) -> {

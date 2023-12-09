@@ -40,7 +40,7 @@ public class UsersControllerImpl implements UsersController {
 
     @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
     public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
-        ModelAndView modelAndView = new ModelAndView("error");
+        ModelAndView modelAndView = new ModelAndView("error-page");
         modelAndView.addObject("message", e.getMessage());
         modelAndView.addObject("statusCode", e.getStatusCode());
 

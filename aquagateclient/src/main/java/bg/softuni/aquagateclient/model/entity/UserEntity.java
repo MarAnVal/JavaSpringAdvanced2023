@@ -27,6 +27,6 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private LevelEnum level;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private List<Role> roles;
 }

@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.management.relation.RoleNotFoundException;
 
-@RequestMapping("admin")
+@RequestMapping("/admin")
 public interface AdminController {
 
     @GetMapping("/pending")

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequestMapping("/api/topics")
-@CrossOrigin("localhost:8080/*")
+@CrossOrigin("*")
 public interface TopicsController {
 
     @GetMapping("/all")
@@ -28,6 +28,10 @@ public interface TopicsController {
     ResponseEntity<TopicDetailsView> doApprove(@PathVariable Long id) throws ObjectNotFoundException;
 
     @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
-    ResponseEntity<TopicView> doTopicAdd(@Valid TopicAddDTO topicAddDTO, BindingResult bindingResult) throws ObjectNotFoundException;
+    ResponseEntity<TopicView> doTopicAdd(@Valid TopicAddDTO topicAddDTO, BindingResult bindingResult)
+            throws ObjectNotFoundException;
+
+    @GetMapping("/count")
+    ResponseEntity<Integer> getApprovedTopicsCount();
 
 }

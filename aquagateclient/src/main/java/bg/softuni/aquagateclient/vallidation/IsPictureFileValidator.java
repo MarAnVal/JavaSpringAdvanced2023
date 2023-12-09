@@ -24,6 +24,9 @@ public class IsPictureFileValidator implements ConstraintValidator<IsPictureFile
 
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
+        if (file.isEmpty()) {
+            return true;
+        }
         String errorMsg = getErrorMsg(file);
 
         if (!errorMsg.isEmpty()) {

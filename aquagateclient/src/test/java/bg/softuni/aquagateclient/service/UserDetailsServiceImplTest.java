@@ -7,6 +7,7 @@ import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
@@ -61,6 +62,6 @@ class UserDetailsServiceImplTest {
         when(userService.findUserByUsername("testUsername"))
                 .thenThrow(new ObjectNotFoundException("Not Found!"));
         // Act // Assert
-        assertThrows(ObjectNotFoundException.class, () -> userDetailsService.loadUserByUsername("testUsername"));
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("testUsername"));
     }
 }

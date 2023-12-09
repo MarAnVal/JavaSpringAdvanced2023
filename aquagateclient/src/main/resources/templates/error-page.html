@@ -13,7 +13,7 @@
         <img th:src="|https://http.cat/${statusCode}|" th:width="500" th:height="450" alt="Title image">
         <div>
             <h2>Something Went Wrong:
-                <span th:text="|Please try again later|" style="color: red"></span>
+                <span th:text="${messages}" style="color: red"></span>
             </h2>
 
             <a th:href="@{/}" class="btn">Back home</a>

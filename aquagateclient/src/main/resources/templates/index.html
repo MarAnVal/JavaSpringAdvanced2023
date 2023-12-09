@@ -20,6 +20,25 @@
                 Don't hesitate to ask and share your experience!
                 Find out one hidden world and enjoy nature!
             </p>
+
+            <script>
+                const response = fetch("http://localhost:8000/api/topics/count");
+
+                response
+                    .then(res => {
+                        return res.json();
+                    })
+                    .then(data => {
+
+                            const markup = `<li>Topics to take part in: ${data}</li>`
+                            console.log(markup)
+                            document.querySelector('p').insertAdjacentHTML('afterbegin', markup)
+
+                        }
+                    )
+                ;
+            </script>
+
             <a th:href="@{/topics/}" class="btn">To topics</a>
         </div>
         <a th:href="@{/topics/my-topics}" class="main-btn">

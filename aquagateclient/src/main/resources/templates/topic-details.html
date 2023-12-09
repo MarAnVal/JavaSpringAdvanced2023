@@ -9,7 +9,6 @@
     <header th:replace="~{fragments/header}"></header>
     <h1 class="border-bottom">Topic details</h1>
 
-    <!--TODO add the topicView data-->
     <input type="hidden" name="topicId" id="topicId">
 
     <div class="details-main align-content-center">
@@ -42,8 +41,7 @@
             <p id="topic-description" th:text="${topicsDetailsView.description}"></p>
         </section>
 
-        <!--TODO comments section-->
-        <section class="comments">
+        <section th:if="${topicsDetailsView.approved}" class="comments">
             <h1>Comments</h1>
             <div class="comments">
                 <div class="form-group" th:each="comment:${topicsDetailsView.comments}">
@@ -53,8 +51,6 @@
             </div>
 
             <div>
-                <!-- Comments submission -->
-                <!--                TODO add action and fix the <textarea> content-->
                 <form id="commentForm"
                       th:action="@{|/topics/details/${topicsDetailsView.id}/comments/add|}"
                       th:method="POST">
@@ -81,14 +77,10 @@
                                value="Post Comment"/>
                     </div>
                 </form>
-                <!-- Comments submission -->
             </div>
-
-            <!-- All comments section -->
             <div>
                 <span id="commentCtnr"></span>
             </div>
-            <!--  All comments section -->
         </section>
 
     </div>

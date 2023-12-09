@@ -85,7 +85,7 @@ public class AdminControllerImpl implements AdminController {
                     .addFlashAttribute("org.springframework.validation.BindingResult.userEditDTO",
                             bindingResult);
 
-            modelAndView.setViewName("redirect:admin/users-editUser");
+            modelAndView.setViewName("redirect:/admin/edit-user");
         } else {
                 this.userService.editUser(userEditDTO);
                 modelAndView.setViewName("redirect:/");
@@ -96,7 +96,7 @@ public class AdminControllerImpl implements AdminController {
 
     @ExceptionHandler({ObjectNotFoundException.class, BadRequestException.class})
     public ModelAndView handleApplicationExceptions(BaseApplicationException e) {
-        ModelAndView modelAndView = new ModelAndView("error");
+        ModelAndView modelAndView = new ModelAndView("error-page");
         modelAndView.addObject("message", e.getMessage());
         modelAndView.addObject("statusCode", e.getStatusCode());
 

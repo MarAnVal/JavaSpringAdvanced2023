@@ -76,6 +76,12 @@ public class TopicsControllerImpl implements TopicsController {
         }
     }
 
+    @Override
+    public ResponseEntity<Integer> getApprovedTopicsCount() {
+        return ResponseEntity.ok(topicService.findAllTopics().stream()
+                .filter(TopicView::getApproved).toList().size());
+    }
+
     @ExceptionHandler({ObjectNotFoundException.class})
     public ResponseEntity<TopicView> handleApplicationExceptions() {
 

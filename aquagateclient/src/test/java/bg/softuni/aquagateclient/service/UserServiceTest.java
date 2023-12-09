@@ -196,8 +196,6 @@ class UserServiceTest {
         // Assert
         assertTrue(result);
     }
-
-    //TODO it as parameterized test
     @Test
     void testInitAdminFalse() throws ObjectNotFoundException {
         // Arrange
@@ -211,7 +209,6 @@ class UserServiceTest {
         assertFalse(result);
     }
 
-    //TODO it as parameterized test
     @Test
     void testInitModeratorTrue() throws ObjectNotFoundException {
         // Arrange 
@@ -225,7 +222,6 @@ class UserServiceTest {
         assertTrue(result);
     }
 
-    //TODO it as parameterized test
     @Test
     void testInitModeratorFalse() throws ObjectNotFoundException {
         // Arrange

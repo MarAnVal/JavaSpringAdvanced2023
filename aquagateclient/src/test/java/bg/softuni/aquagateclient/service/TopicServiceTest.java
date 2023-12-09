@@ -162,8 +162,9 @@ class TopicServiceTest {
     void testAddTopicSuccessfulWithoutPicture() throws IOException, BadRequestException {
         // Arrange
         String pictureUrlNotFoundFile = "/images/picture-not-found.jpg";
-
-        topicAddDTO.setPictureFile(null);
+        MultipartFile file = mock(MultipartFile.class);
+        topicAddDTO.setPictureFile(file);
+        when(file.isEmpty()).thenReturn(true);
         when(topicRestService.doAddTopic(topicAddDTO, pictureUrlNotFoundFile))
                 .thenReturn(ResponseEntity.ok(topicView));
 
@@ -462,19 +463,6 @@ class TopicServiceTest {
         // Assert
         assertEquals(topicView, mostCommentedTopic);
 
-    }
-
-    @Test
-    void testGetMostCommentedTopicGetAllApprovedTopicsUnsuccessful() throws ObjectNotFoundException {
-        // Arrange
-        when(topicRestService.getAllTopics())
-                .thenReturn(ResponseEntity.ok(List.of(topicViewNotApproved)));
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername("TestUsername");
-        when(userService.getUserById(7L)).thenReturn(userEntity);
-
-        // Act // Assert
-        assertThrows(ObjectNotFoundException.class, topicService::getMostCommentedTopic);
     }
 
     @Test

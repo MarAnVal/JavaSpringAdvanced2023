@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UniqueUsername {
-    String message() default "Username not available!";
+    String message() default "Email already occupied!";
 
     Class<?>[] groups() default {};
 

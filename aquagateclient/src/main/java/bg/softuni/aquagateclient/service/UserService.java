@@ -2,6 +2,7 @@ package bg.softuni.aquagateclient.service;
 
 import bg.softuni.aquagateclient.model.dto.binding.UserEditDTO;
 import bg.softuni.aquagateclient.model.dto.binding.UserRegistrationDTO;
+import bg.softuni.aquagateclient.model.entity.Role;
 import bg.softuni.aquagateclient.model.entity.UserEntity;
 import bg.softuni.aquagateclient.model.entity.enumeration.LevelEnum;
 import bg.softuni.aquagateclient.model.entity.enumeration.RoleEnum;
@@ -9,6 +10,9 @@ import bg.softuni.aquagateclient.repository.UserRepo;
 import bg.softuni.aquagateclient.web.error.ObjectNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -29,7 +33,10 @@ public class UserService {
             throw new ObjectNotFoundException("User not found!");
         } else {
             userEntity.setLevel(LevelEnum.valueOf(userEditDTO.getLevel()));
-            userEntity.setRoles(roleService.getRolesByName(RoleEnum.valueOf(userEditDTO.getRole())));
+            userEntity.setRoles(new ArrayList<>());
+            List<Role> rolesByName = roleService.getRolesByName(RoleEnum.valueOf(userEditDTO.getRole()));
+            userRepo.save(userEntity);
+            userEntity.getRoles().addAll(rolesByName);
             userRepo.save(userEntity);
 
             return userEntity;
@@ -62,7 +69,6 @@ public class UserService {
         return userEntity;
     }
 
-    //TODO move strings to application.properties
     public boolean initAdmin() throws ObjectNotFoundException {
         if (userRepo.count() < 1) {
             UserEntity userEntity = new UserEntity();
@@ -77,7 +83,6 @@ public class UserService {
         return false;
     }
 
-    //TODO move strings to application.properties
     public boolean initModerator() throws ObjectNotFoundException {
         if (userRepo.count() < 2) {
             UserEntity userEntity = new UserEntity();

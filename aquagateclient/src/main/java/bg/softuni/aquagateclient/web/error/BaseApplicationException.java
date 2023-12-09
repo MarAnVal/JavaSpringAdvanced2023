@@ -3,7 +3,7 @@ package bg.softuni.aquagateclient.web.error;
 import lombok.Getter;
 
 @Getter
-public class BaseApplicationException extends Throwable {
+public class BaseApplicationException extends RuntimeException {
 
     private final int statusCode;
 
