@@ -378,4 +378,23 @@ class TopicsControllerImplTest_IT {
 
         assertEquals(count, topicRepo.count());
     }
+
+    @Test
+    void testGetApprovedTopicsCountWithTopics() throws Exception {
+        // Arrange // Act // Assert
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/count")
+        ).andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void testGetApprovedTopicsCountWithoutTopics() throws Exception {
+        // Arrange
+        topicRepo.deleteAll();
+
+        // Act // Assert
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/topics/count")
+        ).andExpect(status().is2xxSuccessful());
+    }
 }
